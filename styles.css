@@ -183,16 +183,6 @@ img {
     width: 100%;
 }
 
-.hero-label {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    text-transform: lowercase;
-    color: var(--muted);
-    margin-bottom: 2rem;
-}
-
 /* Capped at 9.5rem so "Davis Dey" plus the cursor block still fit one line
    inside the 720px content column. Larger and the cursor wraps on its own. */
 .hero-title {
@@ -276,6 +266,12 @@ img {
     color: var(--muted);
     line-height: 1.7;
     max-width: 560px;
+}
+
+/* Project names lift out of the muted body copy. */
+.about-body strong {
+    font-weight: 500;
+    color: var(--text);
 }
 
 /* Projects */
@@ -396,6 +392,49 @@ img {
     text-decoration-color: var(--text);
 }
 
+/* Same slot as .project-link, but nothing to click through to yet. */
+.project-status {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--muted);
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding-top: 0.5rem;
+}
+
+/* Research */
+.research {
+    padding: 10rem 0;
+    background-color: var(--bg);
+    border-top: 1px solid var(--grid);
+}
+
+.research-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    list-style: none;
+}
+
+.research-list li {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 560px;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.research-list li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--text);
+}
+
 /* Contact */
 .contact {
     padding: 10rem 0;
@@ -411,6 +450,9 @@ img {
 }
 
 .contact-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     font-family: var(--font-mono);
     font-size: 0.9375rem;
     font-weight: 400;
@@ -420,7 +462,7 @@ img {
 }
 
 .contact-body p {
-    max-width: 360px;
+    max-width: 560px;
 }
 
 .contact-socials {
