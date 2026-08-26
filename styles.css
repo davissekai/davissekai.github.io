@@ -193,9 +193,11 @@ img {
     margin-bottom: 2rem;
 }
 
+/* Capped at 9.5rem so "Davis Dey" plus the cursor block still fit one line
+   inside the 720px content column. Larger and the cursor wraps on its own. */
 .hero-title {
     font-family: var(--font-display);
-    font-size: clamp(4rem, 14vw, 11rem);
+    font-size: clamp(4rem, 14vw, 9.5rem);
     font-weight: 400;
     line-height: 0.9;
     letter-spacing: -0.04em;
@@ -315,8 +317,7 @@ img {
     font-size: clamp(3rem, 8vw, 6rem);
     font-weight: 400;
     line-height: 1;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--grid);
+    color: var(--text);
     user-select: none;
     flex-shrink: 0;
     min-width: 80px;
@@ -352,17 +353,22 @@ img {
     gap: 0.5rem;
 }
 
+/* Frosted chips. The page is flat white, so backdrop-filter alone reads as
+   nothing — the tint, hairline border and inset highlight do the real work. */
 .project-tags span {
     font-family: var(--font-mono);
     font-size: 0.625rem;
     font-weight: 400;
     letter-spacing: 0.05em;
     text-transform: lowercase;
-    color: var(--muted);
-}
-
-.project-tags span::before {
-    content: '#';
+    color: var(--text);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.015));
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Stacks the live/source pair; a project may have one, both, or neither. */
