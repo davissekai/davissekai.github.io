@@ -586,3 +586,22 @@ img {
     font-size: 0.9rem;
     opacity: 0.85;
 }
+
+
+/* Paint splashes: the creator's marks on the researcher's white page */
+body { position: relative; overflow-x: hidden; }
+.nav, .hero, main, .footer { position: relative; z-index: 1; }
+.splashes { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+.splash { position: absolute; width: 260px; height: auto; opacity: 0.88; mix-blend-mode: multiply; }
+.s1 { top: 70px;  right: -40px; width: 300px; transform: rotate(18deg); }
+.s2 { top: 18%;   left: -70px;  width: 220px; transform: rotate(-30deg); }
+.s3 { top: 37%;   right: -60px; width: 240px; transform: rotate(75deg); }
+.s4 { top: 56%;   left: -50px;  width: 200px; transform: rotate(140deg); }
+.s5 { top: 74%;   right: -30px; width: 230px; transform: rotate(-12deg); }
+.s6 { top: 90%;   left: -60px;  width: 260px; transform: rotate(40deg); }
+@media (max-width: 720px) {
+    .splash { width: 150px !important; opacity: 0.8; }
+    .s1 { right: -50px; top: 60px; }
+    .s2, .s4, .s6 { left: -70px; }
+    .s3, .s5 { right: -70px; }
+}
