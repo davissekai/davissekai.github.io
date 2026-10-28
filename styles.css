@@ -579,3 +579,10 @@ img {
         min-width: auto;
     }
 }
+
+.research-interests {
+    margin: 0 0 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
