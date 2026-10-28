@@ -1,0 +1,117 @@
+{
+  "worlds": [
+    {
+      "id": "two-eyes",
+      "name": "Two Eyes",
+      "accent": "#D4FF3A",
+      "teaser": "A phone sees a muddy river; a satellite sees the scar upstream.",
+      "body": "Two Eyes pairs a citizen's phone video with Sentinel-2 imagery, turning them into a dated, shareable evidence card on likely mining sources. Made with SAM 3.1 and Muse Spark for the Meta Global AI Developer Hackathon, 2026.",
+      "tags": [
+        "computer vision",
+        "remote sensing",
+        "climate",
+        "ai"
+      ],
+      "links": [
+        {
+          "label": "source",
+          "href": "https://github.com/davissekai/two-eyes"
+        }
+      ],
+      "map": {
+        "x": 0.18,
+        "y": 0.3
+      }
+    },
+    {
+      "id": "atmo",
+      "name": "Atmo",
+      "accent": "#C9A27E",
+      "teaser": "An AI companion for climate questions \u2014 from Article 6 to adaptation finance.",
+      "body": "An AI companion for climate questions. Ask it anything from Article 6 to adaptation finance and get a grounded, readable answer.",
+      "tags": [
+        "climate",
+        "ai",
+        "typescript"
+      ],
+      "links": [
+        {
+          "label": "live",
+          "href": "https://atmo-v2.vercel.app"
+        },
+        {
+          "label": "source",
+          "href": "https://github.com/davissekai/atmo-v2"
+        }
+      ],
+      "map": {
+        "x": 0.55,
+        "y": 0.24
+      }
+    },
+    {
+      "id": "venturequest",
+      "name": "VentureQuest",
+      "accent": "#9C5A34",
+      "teaser": "A game about starting a climate venture \u2014 face the trade-offs founders face.",
+      "body": "A game about starting a climate venture: you face the choices real founders face and live with the trade-offs.",
+      "tags": [
+        "game",
+        "entrepreneurship",
+        "climate",
+        "web"
+      ],
+      "links": [
+        {
+          "label": "view project",
+          "href": "https://mvp-six-vert.vercel.app/"
+        }
+      ],
+      "map": {
+        "x": 0.42,
+        "y": 0.58
+      }
+    },
+    {
+      "id": "carbon-markets",
+      "name": "Carbon Markets for SMEs",
+      "accent": "#F2EDE4",
+      "teaser": "What it would take for small Ghanaian businesses and communities to join carbon markets on fair terms.",
+      "body": "Ongoing research into what it would take for small Ghanaian businesses and communities to take part in carbon markets on fair terms.",
+      "tags": [
+        "climate",
+        "carbon markets",
+        "ai",
+        "research"
+      ],
+      "links": [],
+      "status": "in development",
+      "map": {
+        "x": 0.78,
+        "y": 0.48
+      }
+    },
+    {
+      "id": "notify-crossx",
+      "name": "notify-crossx",
+      "accent": "#8A8278",
+      "teaser": "A desktop ping when your AI coding agent is done \u2014 and only when you've stepped away.",
+      "body": "A small utility for people who work with AI coding agents: a desktop ping when the agent is done or needs you, and only when you've stepped away. Free for OpenCode, with a Claude Code edition.",
+      "tags": [
+        "developer tools",
+        "ai agents",
+        "node"
+      ],
+      "links": [
+        {
+          "label": "source",
+          "href": "https://github.com/davissekai/opencode-notify-crossx"
+        }
+      ],
+      "map": {
+        "x": 0.26,
+        "y": 0.72
+      }
+    }
+  ]
+}
