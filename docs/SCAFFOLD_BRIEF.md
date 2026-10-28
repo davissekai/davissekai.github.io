@@ -8,7 +8,7 @@ Build the **structure and behaviour shell only**. Another human designer will ow
 ## Layout (three short scroll sections)
 1. **About (hero)** — `#about`
    - Greeting: `Greetings, welcome to my domain.`
-   - Then `I'm Davis…` with a short bio condensed from the current site (MPhil Climate Change & Sustainable Development at UG; Industrial Engineering KNUST; Africa Climate Collaborative service; works across AI, carbon, living systems in Accra/Ghana). Keep facts real.
+   - Then `I'm Davis…` with a short, evocative intro (no credentials). Keep facts real.
 2. **Worlds (star map)** — `#worlds`
    - Five worlds from the current live site, Two Eyes first.
    - Each world is a focusable/clickable node on a map.
