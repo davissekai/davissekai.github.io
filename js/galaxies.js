@@ -4,18 +4,19 @@
  */
 
 const PALETTE = {
-  core: [255, 236, 200],
-  magenta: [255, 92, 170],
-  cyan: [80, 214, 255],
-  violet: [150, 110, 255],
-  jade: [70, 255, 190],
-  amber: [255, 180, 90],
+  core: [255, 226, 180],
+  white: [236, 240, 255],
+  yellow: [255, 210, 40],
+  cyan: [40, 200, 255],
+  violet: [140, 80, 255],
+  jade: [30, 255, 170],
+  amber: [255, 160, 50],
 };
 
 /** Galaxy specs in viewport fractions; size scales off the shorter side. */
 const GALAXIES = [
   { x: 0.7, y: 0.36, r: 0.42, tilt: -0.5, squash: 0.42, arms: 2, share: 0.5, arm: "cyan", rim: "violet" },
-  { x: 0.3, y: 0.17, r: 0.2, tilt: 0.7, squash: 0.55, arms: 3, share: 0.16, arm: "magenta", rim: "amber" },
+  { x: 0.3, y: 0.17, r: 0.2, tilt: 0.7, squash: 0.55, arms: 3, share: 0.16, arm: "yellow", rim: "amber" },
   { x: 0.9, y: 0.86, r: 0.12, tilt: 0.2, squash: 0.6, arms: 2, share: 0.08, arm: "jade", rim: "cyan" },
 ];
 
@@ -78,14 +79,13 @@ function galaxyStar(g, w, h, unit, random) {
   };
 }
 
-/** Background star; static, twinkles only. */
+/** Background star; static, white, twinkles only. Color is kept for the galaxies. */
 function fieldStar(w, h, random) {
   const x = random() * w;
   const y = random() * h;
-  const hues = [PALETTE.core, PALETTE.cyan, PALETTE.amber, PALETTE.violet];
   return {
     home: () => ({ x, y }),
-    rgb: hues[Math.floor(random() * hues.length)],
+    rgb: PALETTE.white,
     size: 0.4 + random() * 1.1,
     bright: 1,
     twinkle: random() * Math.PI * 2,
@@ -105,11 +105,14 @@ export function paintNebula(w, h) {
   const ctx = c.getContext("2d");
   const unit = Math.min(w, h);
   const clouds = [
-    [0.68, 0.34, 0.55, PALETTE.violet, 0.22],
-    [0.78, 0.42, 0.3, PALETTE.cyan, 0.16],
-    [0.3, 0.17, 0.32, PALETTE.magenta, 0.18],
-    [0.1, 0.62, 0.4, PALETTE.jade, 0.05],
-    [0.9, 0.86, 0.2, PALETTE.amber, 0.12],
+    [0.68, 0.34, 0.55, PALETTE.violet, 0.34],
+    [0.78, 0.42, 0.3, PALETTE.cyan, 0.26],
+    [0.55, 0.22, 0.28, PALETTE.yellow, 0.1],
+    [0.3, 0.17, 0.32, PALETTE.yellow, 0.24],
+    [0.22, 0.08, 0.2, PALETTE.amber, 0.14],
+    [0.1, 0.62, 0.4, PALETTE.jade, 0.1],
+    [0.9, 0.86, 0.22, PALETTE.amber, 0.2],
+    [0.95, 0.7, 0.25, PALETTE.jade, 0.12],
   ];
   ctx.globalCompositeOperation = "lighter";
   for (const [fx, fy, fr, rgb, a] of clouds) {
