@@ -20,6 +20,15 @@ test("every star carries a brightness between 0 and 1", () => {
   }
 });
 
+test("galaxies turn slowly: no star drifts more than 6px in a second", () => {
+  const sky = buildSky(6000, 1200, 800, seeded(3));
+  for (const s of sky) {
+    const a = s.home(10);
+    const b = s.home(11);
+    assert.ok(Math.hypot(b.x - a.x, b.y - a.y) < 6);
+  }
+});
+
 test("crowded galaxy cores shine dimmer per star than the arms, so they do not sum to white", () => {
   const w = 1200;
   const h = 800;

@@ -1,6 +1,6 @@
 /**
- * Colorful galaxy sky for the Domain: a few spiral galaxies plus field stars.
- * Each star gets a "home" function so the sky keeps turning after 人皇 scatters.
+ * Spiral galaxy sky for the star chart (page 2): a few slow-turning galaxies
+ * plus white field stars. Each star's "home" function gives its place at time t.
  */
 
 const PALETTE = {
@@ -57,7 +57,8 @@ function galaxyStar(g, w, h, unit, random) {
   const arm = Math.floor(random() * g.arms);
   const spread = 0.12 + 0.45 * (1 - k);
   const a0 = (arm * Math.PI * 2) / g.arms + k * 3.6 + gauss(random) * spread;
-  const omega = 0.05 / (0.25 + k);
+  // Slow enough to feel stately: the fastest inner star takes about two minutes per orbit.
+  const omega = 0.015 / (0.25 + k);
   const cx = g.x * w;
   const cy = g.y * h;
   const cos = Math.cos(g.tilt);

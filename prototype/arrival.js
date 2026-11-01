@@ -1,10 +1,12 @@
 /**
  * Arrival prototype: stars drift in from the void, gather into 人皇,
- * hold a breath, then scatter into a turning, colorful galaxy sky.
+ * hold a breath, then scatter across a nebula of teal gas and a burning core.
  */
 import { sampleInkedPoints, pickTargets } from "../js/glyph-points.js";
 import { progress, easeInOutCubic } from "../js/timeline.js";
-import { buildSky, paintNebula } from "../js/galaxies.js";
+import { buildSky } from "../js/sky.js";
+import { paintNebula } from "../js/nebula.js";
+import { glowFor, spikeFor } from "../js/sprites.js";
 
 const T = { gather: 0.5, gatherDur: 2.6, scatter: 4.6, scatterDur: 2.8, reveal: 5.8 };
 const END = T.scatter + T.scatterDur + 1;
@@ -23,7 +25,6 @@ let w = 0;
 let h = 0;
 let stars = [];
 let nebula = null;
-const glows = new Map();
 let t0 = performance.now();
 const mouse = { x: -1e4, y: -1e4 };
 
@@ -46,32 +47,11 @@ function glyphStep() {
   return w < 700 ? 2 : 3;
 }
 
-/**
- * A soft glow sprite in the star's own color. White halos washed every star out,
- * so sprites are tinted and cached by color rounded to steps of 32 (≤729 sprites).
- */
-function glowFor(rgb) {
-  const q = rgb.map((v) => Math.min(255, Math.round(v / 32) * 32));
-  const key = q.join(",");
-  let c = glows.get(key);
-  if (c) return c;
-  c = document.createElement("canvas");
-  c.width = c.height = 32;
-  const g = c.getContext("2d");
-  const grad = g.createRadialGradient(16, 16, 0, 16, 16, 16);
-  grad.addColorStop(0, `rgba(${key},0.6)`);
-  grad.addColorStop(1, `rgba(${key},0)`);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, 32, 32);
-  glows.set(key, c);
-  return c;
-}
-
-/** (Re)builds the sky for the current viewport. */
+/** (Re)builds the sky for the arrival screen's current size. */
 function build() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  w = window.innerWidth;
-  h = window.innerHeight;
+  w = canvas.clientWidth;
+  h = canvas.clientHeight;
   canvas.width = Math.round(w * dpr);
   canvas.height = Math.round(h * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -142,9 +122,9 @@ function draw(t) {
       p.y += dy * pull;
     }
     if (s.size > 1.3 && p.glow > 0.01) {
-      const r = s.size * 5;
+      const r = s.size * (s.spike ? 9 : 5);
       ctx.globalAlpha = p.a * p.glow;
-      ctx.drawImage(glowFor(p.rgb), p.x - r, p.y - r, r * 2, r * 2);
+      ctx.drawImage(s.spike ? spikeFor(p.rgb) : glowFor(p.rgb), p.x - r, p.y - r, r * 2, r * 2);
     }
     ctx.globalAlpha = p.a;
     ctx.fillStyle = `rgb(${p.rgb[0] | 0},${p.rgb[1] | 0},${p.rgb[2] | 0})`;
@@ -154,20 +134,27 @@ function draw(t) {
   greeting.classList.toggle("is-revealed", t >= T.reveal);
 }
 
-/** Animation loop; reduced-motion visitors get the finished sky as a still. */
+/** Animation loop; skips painting while scrolled away. Reduced-motion gets a still. */
 function frame(now) {
-  draw(reduced ? END : (now - t0) / 1000);
+  if (onScreen || reduced) draw(reduced ? END : (now - t0) / 1000);
   if (!reduced) requestAnimationFrame(frame);
 }
 
-/** Restarts the arrival from the void. */
+/** Restarts the arrival from the void, bringing the visitor back up to see it. */
 function replay() {
+  window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
   t0 = performance.now();
 }
 
+let onScreen = true;
+new IntersectionObserver(([entry]) => {
+  onScreen = entry.isIntersecting;
+}).observe(canvas);
+
 window.addEventListener("pointermove", (e) => {
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
 });
 window.addEventListener("pointerleave", () => {
   mouse.x = mouse.y = -1e4;
