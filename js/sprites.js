@@ -25,6 +25,29 @@ function cached(cache, rgb, size, paint) {
 }
 
 /**
+ * Paints one star: a halo (or glint, for spiked stars) on the bigger ones, then
+ * a crisp core. Shared by every sky layer so baked and live stars look identical.
+ * Expects the context to be in "lighter" compositing at CSS-px scale.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {{ size: number, spike?: boolean }} star
+ * @param {number} x
+ * @param {number} y
+ * @param {number[]} rgb
+ * @param {number} alpha
+ * @param {number} [glow] halo strength multiplier
+ */
+export function paintStar(ctx, star, x, y, rgb, alpha, glow = 1) {
+  if (star.size > 1.3 && glow > 0.01) {
+    const r = star.size * (star.spike ? 9 : 5);
+    ctx.globalAlpha = alpha * glow;
+    ctx.drawImage(star.spike ? spikeFor(rgb) : glowFor(rgb), x - r, y - r, r * 2, r * 2);
+  }
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = `rgb(${rgb[0] | 0},${rgb[1] | 0},${rgb[2] | 0})`;
+  ctx.fillRect(x - star.size / 2, y - star.size / 2, star.size, star.size);
+}
+
+/**
  * A soft round halo in the star's color.
  * @param {number[]} rgb
  * @returns {HTMLCanvasElement}

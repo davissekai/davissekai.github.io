@@ -1,15 +1,30 @@
 /**
  * Arrival: stars drift in from the void, gather into 人皇,
  * hold a breath, then scatter across a nebula of teal gas and a burning core.
+ *
+ * While the stars fly, every one is repainted each frame (fewer on slow
+ * devices, via the frame budget). Once they settle, most are baked into one
+ * cached image and only a few hundred twinkle live, plus whatever sits under
+ * the cursor; settled frames also run at half rate unless the cursor moves.
  */
 import { sampleInkedPoints, pickTargets } from "./glyph-points.js";
 import { progress, easeInOutCubic } from "./timeline.js";
 import { buildSky } from "./sky.js";
 import { paintNebula } from "./nebula.js";
-import { glowFor, spikeFor } from "./sprites.js";
+import { paintStar } from "./sprites.js";
+import { splitLive, createGrid, createLayer, blitLayer } from "./star-layers.js";
+import { createFrameBudget } from "./frame-budget.js";
 
 const T = { gather: 0.5, gatherDur: 2.6, scatter: 4.6, scatterDur: 2.8, reveal: 5.8 };
-const END = T.scatter + T.scatterDur + 1;
+// Every star is home and the nebula fully faded in; from here the baked layer takes over.
+const END = T.scatter + T.scatterDur * 1.4 + 0.1;
+// Baked stars ease out of twinkling over this long before END, so the hand-off doesn't pop.
+const TWINKLE_FADE = 1.5;
+// Twinkle alone is slow enough for ~30fps; cursor movement still gets every frame.
+const SETTLED_FRAME_MS = 33;
+// Widest halo a baked star can have, so stars just outside the cursor's reach still paint their spill.
+const HALO_PAD = 10;
+const VOID = "#05040a";
 const GOLD = [255, 192, 96];
 // Peak alpha of a gathered glyph star; kept low so neighbours add up to gold, not white.
 const GLYPH_ALPHA = 0.9;
@@ -21,11 +36,19 @@ const ctx = canvas.getContext("2d", { alpha: false });
 const greeting = document.getElementById("greeting");
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+const budget = createFrameBudget();
+
 let w = 0;
 let h = 0;
-let stars = [];
+let dpr = 1;
+let drawOrder = [];
+let live = [];
+let grid = null;
+let baked = null;
 let nebula = null;
 let t0 = performance.now();
+let lastPaint = 0;
+let pointerDirty = false;
 const mouse = { x: -1e4, y: -1e4 };
 
 /** Renders the characters off-screen and returns inked pixel cells. */
@@ -49,7 +72,7 @@ function glyphStep() {
 
 /** (Re)builds the sky for the arrival screen's current size. */
 function build() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
   w = canvas.clientWidth;
   h = canvas.clientHeight;
   canvas.width = Math.round(w * dpr);
@@ -57,7 +80,7 @@ function build() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const count = w < 700 ? 2600 : 6000;
-  stars = buildSky(count, w, h, Math.random);
+  const stars = buildSky(count, w, h, Math.random);
   const pool = glyphPool();
   // Never more stars than ink cells: repeats would stack on one spot and burn white.
   const glyphCount = Math.min(Math.round(count * 0.62), pool.length);
@@ -70,7 +93,28 @@ function build() {
     s.start = { x: (Math.random() * 1.6 - 0.3) * w, y: (Math.random() * 1.6 - 0.3) * h };
     s.delay = Math.random() * 0.7;
   });
+  // Spikes first so a reduced-quality frame always keeps the brightest glints.
+  drawOrder = [...order.filter((s) => s.spike), ...order.filter((s) => !s.spike)];
   nebula = paintNebula(w, h);
+
+  const split = splitLive(stars, w < 700 ? 120 : 260, Math.random);
+  for (const s of split.live) s.live = true;
+  live = split.live;
+  grid = createGrid(split.baked, 64);
+  baked = createLayer(w, h, dpr);
+  baked.ctx.fillStyle = VOID;
+  baked.ctx.fillRect(0, 0, w, h);
+  baked.ctx.drawImage(nebula, 0, 0);
+  baked.ctx.globalCompositeOperation = "lighter";
+  for (const s of split.baked) {
+    const p = s.home(END);
+    paintStar(baked.ctx, s, p.x, p.y, s.rgb, settledAlpha(s));
+  }
+}
+
+/** A baked star's brightness once settled: the twinkle's mean. */
+function settledAlpha(s) {
+  return 0.9 * 0.75 * s.bright;
 }
 
 /** Mix helper for positions and colors. */
@@ -81,7 +125,8 @@ function lerp(a, b, k) {
 /** Where a star is, what color, and how bright at time t. */
 function place(s, t) {
   const home = s.home(t);
-  const tw = 0.75 + 0.25 * Math.sin(t * 2.2 + s.twinkle);
+  const amp = s.live ? 0.25 : 0.25 * (1 - progress(t, END - TWINKLE_FADE, TWINKLE_FADE));
+  const tw = 0.75 + amp * Math.sin(t * 2.2 + s.twinkle);
   const sc = easeInOutCubic(progress(t, T.scatter + s.delay * 0.5, T.scatterDur));
   if (!s.target) {
     return { x: home.x, y: home.y, rgb: s.rgb, a: lerp(0.06, 0.9, sc) * tw * s.bright, glow: 1 };
@@ -101,42 +146,78 @@ function place(s, t) {
   };
 }
 
-/** Paints one frame of the sky at time t (seconds since arrival). */
-function draw(t) {
+/** Qi follows the visitor: stars near the cursor lean gently toward it. Mutates `p`. */
+function pull(p) {
+  const dx = mouse.x - p.x;
+  const dy = mouse.y - p.y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < QI_RADIUS) {
+    const k = 0.12 * (1 - dist / QI_RADIUS);
+    p.x += dx * k;
+    p.y += dy * k;
+  }
+  return p;
+}
+
+/** Paints a frame while stars are in flight: every star (or the budget's share) is live. */
+function drawMoving(t) {
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = "#05040a";
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = VOID;
   ctx.fillRect(0, 0, w, h);
   ctx.globalAlpha = progress(t, T.scatter, T.scatterDur * 1.4);
   ctx.drawImage(nebula, 0, 0);
   ctx.globalCompositeOperation = "lighter";
-
-  for (const s of stars) {
-    const p = place(s, t);
-    const dx = mouse.x - p.x;
-    const dy = mouse.y - p.y;
-    const dist = Math.hypot(dx, dy);
-    // Qi follows the visitor: nearby stars lean gently toward the cursor.
-    if (dist < QI_RADIUS) {
-      const pull = 0.12 * (1 - dist / QI_RADIUS);
-      p.x += dx * pull;
-      p.y += dy * pull;
-    }
-    if (s.size > 1.3 && p.glow > 0.01) {
-      const r = s.size * (s.spike ? 9 : 5);
-      ctx.globalAlpha = p.a * p.glow;
-      ctx.drawImage(s.spike ? spikeFor(p.rgb) : glowFor(p.rgb), p.x - r, p.y - r, r * 2, r * 2);
-    }
-    ctx.globalAlpha = p.a;
-    ctx.fillStyle = `rgb(${p.rgb[0] | 0},${p.rgb[1] | 0},${p.rgb[2] | 0})`;
-    ctx.fillRect(p.x - s.size / 2, p.y - s.size / 2, s.size, s.size);
+  const n = Math.ceil(drawOrder.length * budget.quality);
+  for (let i = 0; i < n; i++) {
+    const s = drawOrder[i];
+    const p = pull(place(s, t));
+    paintStar(ctx, s, p.x, p.y, p.rgb, p.a, p.glow);
   }
   ctx.globalAlpha = 1;
-  greeting.classList.toggle("is-revealed", t >= T.reveal);
+}
+
+/** Paints a settled frame: the baked sky, the cursor's neighbourhood redrawn with its pull, then live twinklers. */
+function drawSettled(t) {
+  blitLayer(ctx, baked.canvas, dpr);
+  const reach = QI_RADIUS + HALO_PAD;
+  if (mouse.x > -reach && mouse.x < w + reach && mouse.y > -reach && mouse.y < h + reach) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, QI_RADIUS, 0, Math.PI * 2);
+    ctx.clip();
+    // The nebula is opaque, so it alone resets the patch; a second fill would double-darken the clip's soft edge into a ring.
+    ctx.drawImage(nebula, 0, 0);
+    ctx.globalCompositeOperation = "lighter";
+    for (const s of grid.near(mouse.x, mouse.y, reach)) {
+      const p = pull(s.home(t));
+      paintStar(ctx, s, p.x, p.y, s.rgb, settledAlpha(s));
+    }
+    ctx.restore();
+  }
+  ctx.globalCompositeOperation = "lighter";
+  for (const s of live) {
+    const p = pull(place(s, t));
+    paintStar(ctx, s, p.x, p.y, p.rgb, p.a, p.glow);
+  }
+  ctx.globalAlpha = 1;
 }
 
 /** Animation loop; skips painting while scrolled away. Reduced-motion gets a still. */
 function frame(now) {
-  if (onScreen || reduced) draw(reduced ? END : (now - t0) / 1000);
+  const t = reduced ? END : (now - t0) / 1000;
+  if (onScreen || reduced) {
+    if (t < END) {
+      const start = performance.now();
+      drawMoving(t);
+      budget.record(performance.now() - start);
+    } else if (reduced || pointerDirty || now - lastPaint >= SETTLED_FRAME_MS) {
+      drawSettled(t);
+      lastPaint = now;
+      pointerDirty = false;
+    }
+    greeting.classList.toggle("is-revealed", t >= T.reveal);
+  }
   if (!reduced) requestAnimationFrame(frame);
 }
 
@@ -155,9 +236,11 @@ window.addEventListener("pointermove", (e) => {
   const rect = canvas.getBoundingClientRect();
   mouse.x = e.clientX - rect.left;
   mouse.y = e.clientY - rect.top;
+  pointerDirty = true;
 });
 window.addEventListener("pointerleave", () => {
   mouse.x = mouse.y = -1e4;
+  pointerDirty = true;
 });
 
 let resizeTimer = 0;

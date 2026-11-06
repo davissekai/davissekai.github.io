@@ -36,7 +36,7 @@ function mix(a, b, k) {
  * @param {number} w viewport width (CSS px)
  * @param {number} h viewport height (CSS px)
  * @param {() => number} random
- * @returns {{home: (t: number) => {x: number, y: number}, rgb: number[], size: number, bright: number, twinkle: number}[]}
+ * @returns {{home: (t: number) => {x: number, y: number}, still?: boolean, rgb: number[], size: number, bright: number, twinkle: number}[]}
  */
 export function buildSky(count, w, h, random) {
   const unit = Math.min(w, h);
@@ -86,6 +86,8 @@ function fieldStar(w, h, random) {
   const y = random() * h;
   return {
     home: () => ({ x, y }),
+    // Still stars can be baked into a cached layer instead of repainted every frame.
+    still: true,
     rgb: PALETTE.white,
     size: 0.4 + random() * 1.1,
     bright: 1,

@@ -43,3 +43,12 @@ test("crowded galaxy cores shine dimmer per star than the arms, so they do not s
   const outer = byDist.slice(1000, 2000);
   assert.ok(mean(inner) < mean(outer) * 0.7, `inner ${mean(inner)} vs outer ${mean(outer)}`);
 });
+
+test("field stars are marked still and never move; galaxy stars are not still", () => {
+  const sky = buildSky(3000, 1200, 800, seeded(11));
+  const still = sky.filter((s) => s.still);
+  assert.ok(still.length > 0 && still.length < sky.length);
+  for (const s of still) assert.deepEqual(s.home(0), s.home(500));
+  const moving = sky.filter((s) => !s.still);
+  assert.ok(moving.every((s) => s.home(0).x !== s.home(500).x || s.home(0).y !== s.home(500).y));
+});
