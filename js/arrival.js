@@ -1,12 +1,12 @@
 /**
- * Arrival prototype: stars drift in from the void, gather into 人皇,
+ * Arrival: stars drift in from the void, gather into 人皇,
  * hold a breath, then scatter across a nebula of teal gas and a burning core.
  */
-import { sampleInkedPoints, pickTargets } from "../js/glyph-points.js";
-import { progress, easeInOutCubic } from "../js/timeline.js";
-import { buildSky } from "../js/sky.js";
-import { paintNebula } from "../js/nebula.js";
-import { glowFor, spikeFor } from "../js/sprites.js";
+import { sampleInkedPoints, pickTargets } from "./glyph-points.js";
+import { progress, easeInOutCubic } from "./timeline.js";
+import { buildSky } from "./sky.js";
+import { paintNebula } from "./nebula.js";
+import { glowFor, spikeFor } from "./sprites.js";
 
 const T = { gather: 0.5, gatherDur: 2.6, scatter: 4.6, scatterDur: 2.8, reveal: 5.8 };
 const END = T.scatter + T.scatterDur + 1;

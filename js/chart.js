@@ -2,8 +2,8 @@
  * Star chart (page 2): slow-turning spiral galaxies over soft nebula dust.
  * Paints only while the section is on screen; reduced-motion gets a still.
  */
-import { buildSky, paintNebula } from "../js/galaxies.js";
-import { glowFor } from "../js/sprites.js";
+import { buildSky, paintNebula } from "./galaxies.js";
+import { glowFor } from "./sprites.js";
 
 const canvas = document.getElementById("chart");
 const ctx = canvas.getContext("2d", { alpha: false });
