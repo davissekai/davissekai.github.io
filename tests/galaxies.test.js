@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildSky, GALAXIES, galaxyAt, labelAnchor, distantGalaxies } from "../js/galaxies.js";
+import { buildSky, GALAXIES, galaxyAt, galaxyShape, distantGalaxies } from "../js/galaxies.js";
 
 /** Deterministic PRNG (mulberry32) so sky layouts are reproducible. */
 function seeded(seed) {
@@ -91,15 +91,19 @@ test("empty sky and the blend zone hit no galaxy", () => {
   assert.equal(galaxyAt(-500, -500, w, h, top), null);
 });
 
-test("each label sits just below its galaxy and inside the frame", () => {
-  for (const { w, h, top } of FRAMES) {
+test("a galaxy's rim shape is centred on it, inside the frame, wider than it is tall", () => {
+  for (const { w, h } of FRAMES) {
     for (const g of GALAXIES) {
-      const a = labelAnchor(g.id, w, h, top);
-      assert.ok(a.y > top + g.y * h, `${g.id} label not below its galaxy`);
-      assert.ok(a.y < top + h, `${g.id} label below the frame`);
-      assert.ok(a.x >= 0 && a.x <= w);
+      const s = galaxyShape(g.id, w, h);
+      assert.ok(Math.abs(s.cx - g.x * w) < 1e-9 && Math.abs(s.cy - g.y * h) < 1e-9);
+      assert.ok(s.a > 0 && s.b > 0 && s.b <= s.a, `${g.id} rim axes ${s.a}/${s.b}`);
+      assert.equal(s.tilt, g.tilt);
     }
   }
+});
+
+test("asking for a galaxy that doesn't exist fails loudly", () => {
+  assert.throws(() => galaxyShape("nope", 800, 600), /nope/);
 });
 
 test("distant galaxies are small faint smudges spread across the whole canvas", () => {

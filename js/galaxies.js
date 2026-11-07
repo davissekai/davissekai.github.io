@@ -155,19 +155,20 @@ export function galaxyAt(x, y, w, h, top = 0) {
 }
 
 /**
- * Where a galaxy's label goes: centred under the galaxy's lower edge.
+ * A galaxy's visible rim, as a tilted ellipse in frame coordinates, for
+ * annotating it. Trimmed inside the outermost stars, since the arms thin out
+ * and the eye reads the galaxy's edge well inside them.
  * @param {string} id
- * @param {number} w
- * @param {number} h
- * @param {number} [top]
- * @returns {{x: number, y: number}}
+ * @param {number} w frame width
+ * @param {number} h frame height
+ * @returns {{cx: number, cy: number, a: number, b: number, tilt: number}}
  */
-export function labelAnchor(id, w, h, top = 0) {
+export function galaxyShape(id, w, h) {
   const g = GALAXIES.find((g) => g.id === id);
-  const { cx, cy, R } = place(g, w, h, top);
-  // Vertical half-extent of the tilted, squashed disc; arms thin out, so trim it.
-  const reach = R * Math.hypot(Math.sin(g.tilt), g.squash * Math.cos(g.tilt)) * (g.forming ? 0.6 : 0.8);
-  return { x: cx, y: Math.min(top + h - 24, cy + reach + 10) };
+  if (!g) throw new Error(`no galaxy called ${id}`);
+  const { cx, cy, R } = place(g, w, h, 0);
+  const a = R * (g.forming ? 0.6 : 0.8);
+  return { cx, cy, a, b: a * g.squash, tilt: g.tilt };
 }
 
 /**

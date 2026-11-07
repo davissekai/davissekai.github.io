@@ -54,6 +54,8 @@ function build() {
   top = frameEl.offsetTop;
   h = frameEl.clientHeight;
   const fullH = canvas.clientHeight;
+  // A hidden page (zero-size viewport) has nothing to paint; the resize on reveal rebuilds.
+  if (!w || !h) return;
   canvas.width = Math.round(w * dpr);
   canvas.height = Math.round(fullH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -81,7 +83,7 @@ function build() {
   paintGalaxySlice(front.ctx, galaxy.length);
   startCycle(back.ctx, t);
   draw(t);
-  placeLabels(w, h, top);
+  placeLabels(w, h);
 }
 
 /** Begins a fresh galaxy repaint into `layerCtx`, frozen at time t. */
@@ -124,7 +126,7 @@ function draw(t) {
 
 /** Animation loop; idles while the chart is scrolled out of view. */
 function frame(now) {
-  if (onScreen) {
+  if (onScreen && front) {
     const start = performance.now();
     const t = (now - t0) / 1000;
     advanceGalaxies(t);
