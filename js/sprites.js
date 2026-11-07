@@ -35,16 +35,18 @@ function cached(cache, rgb, size, paint) {
  * @param {number[]} rgb
  * @param {number} alpha
  * @param {number} [glow] halo strength multiplier
+ * @param {number} [scale] size multiplier, for stars seen up close (zoomed in)
  */
-export function paintStar(ctx, star, x, y, rgb, alpha, glow = 1) {
-  if (star.size > 1.3 && glow > 0.01) {
-    const r = star.size * (star.spike ? 9 : 5);
+export function paintStar(ctx, star, x, y, rgb, alpha, glow = 1, scale = 1) {
+  const size = star.size * scale;
+  if (size > 1.3 && glow > 0.01) {
+    const r = size * (star.spike ? 9 : 5);
     ctx.globalAlpha = alpha * glow;
     ctx.drawImage(star.spike ? spikeFor(rgb) : glowFor(rgb), x - r, y - r, r * 2, r * 2);
   }
   ctx.globalAlpha = alpha;
   ctx.fillStyle = `rgb(${rgb[0] | 0},${rgb[1] | 0},${rgb[2] | 0})`;
-  ctx.fillRect(x - star.size / 2, y - star.size / 2, star.size, star.size);
+  ctx.fillRect(x - size / 2, y - size / 2, size, size);
 }
 
 /**

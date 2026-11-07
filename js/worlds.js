@@ -1,8 +1,10 @@
 /**
  * The star chart's worlds: annotates each galaxy with its project's label and
- * a hairline leader, and opens the project's card (a native <dialog>, so
- * focus, Esc and screen readers come for free). The content lives in
- * index.html; this measures it, asks annotations.js where it goes, and wires it up.
+ * a hairline leader, and opens each project's story. Visiting a world flies
+ * the chart into its galaxy (chart.js, on the "world:visit" event) while the
+ * story appears beside it in open sky. The story is a native <dialog>, styled
+ * boxless, so focus, Esc and screen readers come for free. The content lives
+ * in index.html; this measures it, asks annotations.js where labels go, and wires it up.
  */
 import { GALAXIES, galaxyShape } from "./galaxies.js";
 import { layoutLabels } from "./annotations.js";
@@ -61,12 +63,18 @@ export function placeLabels(w, h) {
 }
 
 /**
- * Opens a world's card.
+ * Visits a world: lines the chart up with the screen (the landed galaxy and its
+ * story are placed in screen terms), locks scrolling, and flies in.
  * @param {string} id project id, as in data-world
  */
 export function openWorld(id) {
   const card = document.getElementById(`world-${id}`);
-  if (card && !card.open) card.showModal();
+  if (!card || card.open) return;
+  window.scrollBy({ top: frame.getBoundingClientRect().top, behavior: "instant" });
+  document.documentElement.classList.add("is-visiting");
+  markNear(null);
+  card.showModal();
+  document.dispatchEvent(new CustomEvent("world:visit", { detail: id }));
 }
 
 /**
@@ -92,11 +100,16 @@ document.fonts?.ready.then(() => {
   if (lastSize) placeLabels(lastSize.w, lastSize.h);
 });
 
-// A click on the backdrop closes the card. The dialog itself is also the click target for its own
-// padding, so test against its box rather than the event target.
 for (const card of document.querySelectorAll("dialog.world")) {
+  // A tap anywhere outside the story flies back. The dialog is also the click target for its own
+  // padding, so test against its box rather than the event target.
   card.addEventListener("click", (e) => {
     const r = card.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) card.close();
+  });
+  // However it closes (back link, Esc, tap outside), fly back to the chart.
+  card.addEventListener("close", () => {
+    document.documentElement.classList.remove("is-visiting");
+    document.dispatchEvent(new CustomEvent("world:visit", { detail: null }));
   });
 }

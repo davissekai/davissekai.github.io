@@ -82,27 +82,44 @@ h1 em { color: var(--gold); }
 .leaders line { stroke: var(--bone); stroke-width: 1; stroke-opacity: 0.3; vector-effect: non-scaling-stroke; transition: stroke .2s ease, stroke-opacity .2s ease; }
 .leaders line.is-near { stroke: var(--gold); stroke-opacity: 0.8; }
 
-/* World card: a native modal dialog, so focus, Esc, and screen readers behave. */
+/* Visiting a world: the chart flies into the galaxy and its story floats beside it in open sky.
+   Still a native modal dialog (focus, Esc, screen readers), just with no box. */
+html { scrollbar-gutter: stable; }
+.is-visiting { overflow: hidden; }
+.seal, .nav, .chart-head, .worlds, .leaders { transition: opacity .5s ease; }
+.is-visiting :is(.seal, .nav, .chart-head, .worlds, .leaders) { opacity: 0; pointer-events: none; }
+.is-visiting .worlds .world-label { pointer-events: none; }
 .world {
-  margin: auto; width: min(26rem, calc(100vw - 32px)); padding: 28px 28px 24px;
-  background: rgba(10, 9, 16, 0.94); color: var(--bone);
-  border: 1px solid rgba(244, 238, 228, 0.14); border-radius: 4px;
+  position: fixed; inset: auto; margin: 0;
+  top: 50%; right: clamp(16px, 7vw, 120px); transform: translateY(-50%);
+  width: min(26rem, 34vw); max-height: 86vh; max-height: 86svh; overflow: auto;
+  padding: 8px 4px; background: none; border: 0; color: var(--bone);
+  text-shadow: 0 0 18px rgba(5, 4, 10, 0.95), 0 0 3px rgba(5, 4, 10, 0.8);
 }
-.world[open] { animation: world-rise .35s ease; }
-.world::backdrop { background: rgba(5, 4, 10, 0.55); }
-.world h3 { font: 400 2.2rem/1.05 "Instrument Serif", serif; margin: 8px 0 12px; }
-.world .lead { font-size: 1.02rem; }
-.world-links { display: flex; gap: 20px; margin-top: 18px; font-size: 0.85rem; }
+.world::backdrop { background: transparent; }
+.world:focus { outline: none; }
+/* The words arrive as the flight lands, one after another. */
+.world[open] > * { animation: world-in .8s ease both; animation-delay: .6s; }
+.world[open] > :nth-child(2) { animation-delay: .72s; }
+.world[open] > :nth-child(3) { animation-delay: .86s; }
+.world[open] > :nth-child(4) { animation-delay: 1s; }
+.world[open] > :nth-child(5) { animation-delay: 1.14s; }
+.world[open] > :nth-child(6) { animation-delay: 1.28s; }
+.world h3 { font: 400 clamp(2.4rem, 4vw, 3.4rem)/1 "Instrument Serif", serif; margin: 10px 0 16px; }
+.world .lead { font: italic 400 1.3rem/1.35 "Instrument Serif", serif; margin-bottom: 14px; }
+.world .body { line-height: 1.7; }
+.world-links { display: flex; gap: 22px; margin-top: 22px; font-size: 0.85rem; }
 .world-links a { color: var(--gold); }
 .world-links a:hover { color: var(--bone); }
 .world-links span { color: var(--dim); font-style: italic; }
-.world-close {
-  position: absolute; top: 8px; right: 8px; width: 40px; height: 40px;
-  background: none; border: 0; color: var(--dim); font-size: 1.5rem; cursor: pointer;
+.world-links a:focus-visible, .world-back:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.world-back {
+  margin-top: 30px; padding: 6px 0; background: none; border: 0; cursor: pointer;
+  color: var(--dim); font: 0.75rem Inter, sans-serif; letter-spacing: 0.2em; text-transform: uppercase;
 }
-.world-close:hover { color: var(--bone); }
-.world-close:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
-@keyframes world-rise { from { opacity: 0; transform: translateY(8px); } }
+.world-back:hover { color: var(--bone); }
+.world-back:focus:not(:focus-visible) { outline: none; }
+@keyframes world-in { from { opacity: 0; transform: translateY(6px); } }
 
 .replay { position: absolute; right: 20px; bottom: 20px; z-index: 2; background: none; border: 1px solid rgba(244,238,228,0.25); color: var(--dim); border-radius: 999px; padding: 6px 14px; font: 0.75rem Inter, sans-serif; cursor: pointer; }
 .replay:hover { filter: brightness(1.15); }
@@ -113,10 +130,17 @@ h1 em { color: var(--gold); }
   .greeting { right: 16px; left: 16px; bottom: 64px; }
   .chart-head { top: 92px; right: 16px; left: 16px; }
   .world-label { font-size: 1rem; }
+  /* The galaxy lands in the top half; the story fills the lower half. */
+  .world { top: auto; bottom: 0; left: 16px; right: 16px; transform: none; width: auto; max-height: 56vh; max-height: 56svh; padding: 8px 0 24px; }
+  .world h3 { margin: 6px 0 10px; }
+  .world .lead { font-size: 1.15rem; margin-bottom: 10px; }
+  .world .body { font-size: 0.9rem; line-height: 1.6; }
+  .world-back { margin-top: 18px; }
   /* Text spans the full width here, so darken the whole lower band, not just the left corner. */
   .veil { background: linear-gradient(to top, rgba(5,4,10,0.9) 0%, rgba(5,4,10,0.6) 40%, rgba(5,4,10,0) 65%); }
 }
 @media (prefers-reduced-motion: reduce) {
   .greeting > * { transition: none; }
-  .world[open] { animation: none; }
+  .world[open] > * { animation: none; }
+  .seal, .nav, .chart-head, .worlds, .leaders { transition: none; }
 }
