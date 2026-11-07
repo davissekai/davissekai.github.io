@@ -1,6 +1,8 @@
 /**
- * Star chart (page 2): slow-turning spiral galaxies over soft nebula dust.
- * Paints only while the section is on screen; reduced-motion gets a still.
+ * Star chart (page 2): one slow-turning galaxy per project over a deep field.
+ * Animates only while its own screen is in view (its top edge also shows,
+ * still, through the arrival's fading bottom); reduced-motion gets a still.
+ * Pointing at a galaxy lights its label; clicking opens its world.
  *
  * Painting ~6000 stars every frame stutters on ordinary devices, so the sky is
  * layered: still field stars and the nebula are baked once; the turning
@@ -8,22 +10,26 @@
  * when complete (they move under 4px a second, so a few frames' lag is
  * invisible); only a few hundred field stars twinkle live each frame.
  */
-import { buildSky, paintNebula } from "./galaxies.js";
+import { buildSky, paintNebula, galaxyAt } from "./galaxies.js";
 import { paintStar } from "./sprites.js";
 import { splitLive, createLayer, blitLayer } from "./star-layers.js";
 import { createFrameBudget } from "./frame-budget.js";
+import { placeLabels, openWorld, markNear } from "./worlds.js";
 
 // Frames per galaxy refresh at full quality; slower devices stretch it.
 const BASE_CYCLE = 3;
 const VOID = "#05040a";
 
 const canvas = document.getElementById("chart");
+const frameEl = document.getElementById("chart-frame");
 const ctx = canvas.getContext("2d", { alpha: false });
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const budget = createFrameBudget();
 
 let w = 0;
+// Frame height, and the blend zone above it; the canvas is top + h tall.
 let h = 0;
+let top = 0;
 let dpr = 1;
 let galaxy = [];
 let live = [];
@@ -45,20 +51,22 @@ function alphaAt(s, t) {
 function build() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   w = canvas.clientWidth;
-  h = canvas.clientHeight;
+  top = frameEl.offsetTop;
+  h = frameEl.clientHeight;
+  const fullH = canvas.clientHeight;
   canvas.width = Math.round(w * dpr);
-  canvas.height = Math.round(h * dpr);
+  canvas.height = Math.round(fullH * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const stars = buildSky(w < 700 ? 2600 : 6000, w, h, Math.random);
+  const stars = buildSky(w < 700 ? 2600 : 6000, w, h, Math.random, top);
   galaxy = stars.filter((s) => !s.still);
   const split = splitLive(stars.filter((s) => s.still), w < 700 ? 120 : 240, Math.random);
   live = split.live;
 
-  still = createLayer(w, h, dpr);
+  still = createLayer(w, fullH, dpr);
   still.ctx.fillStyle = VOID;
-  still.ctx.fillRect(0, 0, w, h);
-  still.ctx.drawImage(paintNebula(w, h), 0, 0);
+  still.ctx.fillRect(0, 0, w, fullH);
+  still.ctx.drawImage(paintNebula(w, h, top), 0, 0);
   still.ctx.globalCompositeOperation = "lighter";
   // Baked at the twinkle's mean so the layer matches the live stars' average glow.
   for (const s of split.baked) {
@@ -66,12 +74,14 @@ function build() {
     paintStar(still.ctx, s, p.x, p.y, s.rgb, 0.675 * s.bright);
   }
 
-  front = createLayer(w, h, dpr);
-  back = createLayer(w, h, dpr);
+  front = createLayer(w, fullH, dpr);
+  back = createLayer(w, fullH, dpr);
   const t = (performance.now() - t0) / 1000;
   startCycle(front.ctx, t);
   paintGalaxySlice(front.ctx, galaxy.length);
   startCycle(back.ctx, t);
+  draw(t);
+  placeLabels(w, h, top);
 }
 
 /** Begins a fresh galaxy repaint into `layerCtx`, frozen at time t. */
@@ -126,17 +136,32 @@ function frame(now) {
 
 new IntersectionObserver(([entry]) => {
   onScreen = entry.isIntersecting;
-}).observe(canvas);
+}).observe(frameEl);
+
+/** The project galaxy under a pointer event, if any. */
+function galaxyUnder(e) {
+  const rect = canvas.getBoundingClientRect();
+  return galaxyAt(e.clientX - rect.left, e.clientY - rect.top, w, h, top);
+}
+
+canvas.addEventListener("pointermove", (e) => {
+  const id = galaxyUnder(e);
+  canvas.style.cursor = id ? "pointer" : "";
+  markNear(id);
+});
+canvas.addEventListener("pointerleave", () => markNear(null));
+canvas.addEventListener("click", (e) => {
+  const id = galaxyUnder(e);
+  if (id) openWorld(id);
+});
 
 let resizeTimer = 0;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     build();
-    if (reduced) draw(0);
   }, 200);
 });
 
 build();
-if (reduced) draw(0);
-else requestAnimationFrame(frame);
+if (!reduced) requestAnimationFrame(frame);

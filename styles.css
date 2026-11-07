@@ -1,0 +1,118 @@
+:root {
+  --void: #05040a;
+  --bone: #f4eee4;
+  --dim: rgba(244, 238, 228, 0.66);
+  --gold: #ffd68c;
+  --brush: "Ma Shan Zheng", "KaiTi", serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+html, body { background: var(--void); color: var(--bone); overflow-x: hidden; }
+body { font: 400 1rem/1.6 Inter, system-ui, sans-serif; }
+a { color: inherit; text-decoration: none; }
+/* Each page is one full screen with its own sky canvas. */
+.screen { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+.screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* Minimal mark: black tile, white hairline, white characters. */
+.seal {
+  position: fixed; top: 20px; left: 20px; z-index: 2;
+  width: 52px; height: 52px; padding: 0; border: 0;
+  background: none; color: var(--bone); cursor: pointer;
+  transition: opacity .2s ease;
+}
+.seal svg { display: block; width: 100%; height: 100%; }
+.seal:hover { opacity: 0.75; }
+.nav { position: fixed; top: 32px; right: 28px; z-index: 2; display: flex; gap: 22px; font-size: 0.8rem; color: var(--dim); }
+.nav b { font: 400 1rem var(--brush); color: var(--gold); margin-right: 6px; }
+.nav a:hover { color: var(--bone); }
+
+.veil { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 0% 100%, rgba(5,4,10,0.85) 0%, rgba(5,4,10,0) 60%); }
+.greeting { position: absolute; left: clamp(16px, 7vw, 120px); bottom: clamp(56px, 12vh, 140px); max-width: 34rem; z-index: 2; }
+.greeting > * { opacity: 0; transform: translateY(8px); clip-path: inset(0 100% 0 0); transition: opacity 1.2s ease, transform 1.2s ease, clip-path 1.6s cubic-bezier(.6,.1,.2,1); }
+.greeting.is-revealed > * { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+.greeting.is-revealed > :nth-child(2) { transition-delay: .25s; }
+.greeting.is-revealed > :nth-child(3) { transition-delay: .7s; }
+.greeting.is-revealed > :nth-child(4) { transition-delay: 1.1s; }
+.greeting.is-revealed > :nth-child(5) { transition-delay: 1.5s; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+.eyebrow b { font: 400 1.1rem var(--brush); color: var(--gold); letter-spacing: 0.1em; margin-right: 8px; }
+h1 { font: 400 clamp(2.2rem, 5vw, 3.8rem)/1.05 "Instrument Serif", serif; margin: 10px 0 14px; }
+h1 em { color: var(--gold); }
+.lead { font-size: 1.1rem; margin-bottom: 10px; }
+.body { color: var(--dim); font-size: 0.95rem; }
+.cue { margin-top: 18px; font-size: 0.8rem; color: var(--dim); }
+.cue b { font: 400 1rem var(--brush); color: var(--gold); }
+.cue a:hover { color: var(--bone); }
+
+/* Seam: the chart rises under the arrival's bottom edge, which fades out, so one sky dissolves into the next. */
+:root { --blend: 34vh; }
+@supports (height: 1svh) { :root { --blend: 34svh; } }
+#arrival { z-index: 1; }
+#arrival canvas, #arrival .veil {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--blend)), transparent);
+  mask-image: linear-gradient(#000 calc(100% - var(--blend)), transparent);
+}
+.chart-screen {
+  height: calc(100vh + var(--blend)); height: calc(100svh + var(--blend));
+  margin-top: calc(-1 * var(--blend));
+  /* Anchor links land on the full chart screen, past the shared blend zone. */
+  scroll-margin-top: calc(-1 * var(--blend));
+}
+/* The chart's own screen, below the blend zone; labels are placed in its coordinates. */
+.chart-frame { position: absolute; left: 0; right: 0; top: var(--blend); bottom: 0; pointer-events: none; }
+.chart-head { position: absolute; top: clamp(96px, 14vh, 150px); left: clamp(16px, 7vw, 120px); }
+.chart-head .cue { font-weight: 400; margin-top: 8px; }
+
+/* Galaxy labels: hidden until the chart script has placed them beside their galaxies. */
+.worlds { list-style: none; padding: 0; visibility: hidden; }
+.worlds.is-placed { visibility: visible; }
+.world-label {
+  position: absolute; pointer-events: auto; text-align: center; white-space: nowrap;
+  background: none; border: 0; padding: 4px 8px; cursor: pointer;
+  color: var(--bone); opacity: 0.8; font: italic 400 1.15rem/1.2 "Instrument Serif", serif;
+  text-shadow: 0 0 12px rgba(5, 4, 10, 0.9);
+  transition: opacity .2s ease, color .2s ease;
+}
+.world-label small { display: block; font: 400 0.62rem Inter, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.world-label:hover, .world-label.is-near, .world-label:focus-visible { opacity: 1; color: var(--gold); }
+.world-label:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+
+/* World card: a native modal dialog, so focus, Esc, and screen readers behave. */
+.world {
+  margin: auto; width: min(26rem, calc(100vw - 32px)); padding: 28px 28px 24px;
+  background: rgba(10, 9, 16, 0.94); color: var(--bone);
+  border: 1px solid rgba(244, 238, 228, 0.14); border-radius: 4px;
+}
+.world[open] { animation: world-rise .35s ease; }
+.world::backdrop { background: rgba(5, 4, 10, 0.55); }
+.world h3 { font: 400 2.2rem/1.05 "Instrument Serif", serif; margin: 8px 0 12px; }
+.world .lead { font-size: 1.02rem; }
+.world-links { display: flex; gap: 20px; margin-top: 18px; font-size: 0.85rem; }
+.world-links a { color: var(--gold); }
+.world-links a:hover { color: var(--bone); }
+.world-links span { color: var(--dim); font-style: italic; }
+.world-close {
+  position: absolute; top: 8px; right: 8px; width: 40px; height: 40px;
+  background: none; border: 0; color: var(--dim); font-size: 1.5rem; cursor: pointer;
+}
+.world-close:hover { color: var(--bone); }
+.world-close:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
+@keyframes world-rise { from { opacity: 0; transform: translateY(8px); } }
+
+.replay { position: absolute; right: 20px; bottom: 20px; z-index: 2; background: none; border: 1px solid rgba(244,238,228,0.25); color: var(--dim); border-radius: 999px; padding: 6px 14px; font: 0.75rem Inter, sans-serif; cursor: pointer; }
+.replay:hover { filter: brightness(1.15); }
+.seal:focus-visible, .replay:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+@media (max-width: 700px) {
+  .nav { display: none; }
+  .greeting { right: 16px; left: 16px; bottom: 64px; }
+  .chart-head { top: 92px; right: 16px; left: 16px; }
+  .world-label { font-size: 1rem; }
+  /* Text spans the full width here, so darken the whole lower band, not just the left corner. */
+  .veil { background: linear-gradient(to top, rgba(5,4,10,0.9) 0%, rgba(5,4,10,0.6) 40%, rgba(5,4,10,0) 65%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .greeting > * { transition: none; }
+  .world[open] { animation: none; }
+}
