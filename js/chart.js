@@ -16,13 +16,16 @@ import { paintStar } from "./sprites.js";
 import { splitLive, createLayer, blitLayer } from "./star-layers.js";
 import { pull, warpPatch, OFF } from "./warp.js";
 import { createChartWarp } from "./chart-warp.js";
+import { whenNeeded } from "./when-needed.js";
 import { createFrameBudget } from "./frame-budget.js";
 import { placeLabels, openWorld, markNear } from "./worlds.js";
 import { focusView, viewAt, createFlight } from "./visit.js";
 import { paintZoomed } from "./zoomed-sky.js";
 
-// Frames per galaxy refresh at full quality; slower devices stretch it.
-const BASE_CYCLE = 3;
+// Frames per galaxy refresh at full quality; slower devices stretch it. Galaxy stars move under
+// 4px a second, so a refresh every quarter-second steps them at most a pixel: invisible, at a fifth
+// of the per-frame painting a 3-frame cycle cost.
+const BASE_CYCLE = 15;
 const VOID = "#05040a";
 
 const canvas = document.getElementById("chart");
@@ -105,6 +108,7 @@ function build() {
   if (visiting) aim(visiting);
   render(performance.now());
   placeLabels(w, h);
+  canvas.classList.add("is-built");
 }
 
 /** Begins a fresh galaxy repaint into `layerCtx`, frozen at time t. */
@@ -221,10 +225,11 @@ document.documentElement.addEventListener("pointerleave", () => Object.assign(mo
 let resizeTimer = 0;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    build();
-  }, 200);
+  // Before its first build the chart has nothing to resize.
+  resizeTimer = setTimeout(() => front && build(), 200);
 });
 
-build();
+// Built when the visitor heads for the chart or once the arrival settles, not at load. The frame
+// starts exactly at the screen's bottom edge, so it must truly overlap the viewport to count.
+whenNeeded(frameEl, build, "0px 0px -2px 0px");
 if (!reduced) requestAnimationFrame(frame);

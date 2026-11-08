@@ -102,31 +102,36 @@ export function nebulaColor(x, y, w, h, seed) {
 }
 
 /**
- * Paints the nebula into an offscreen canvas the size of the viewport.
- * @param {number} w
- * @param {number} h
- * @param {number} [seed]
- * @returns {HTMLCanvasElement}
+ * The nebula sampled on its coarse grid (one sample per SCALE px), as RGBA
+ * bytes. Pure, so a worker can compute it off the main thread.
+ * @param {number} lw grid width (samples)
+ * @param {number} lh grid height (samples)
+ * @param {number} w viewport width (CSS px)
+ * @param {number} h viewport height (CSS px)
+ * @param {number} seed
+ * @returns {Uint8ClampedArray}
  */
-export function paintNebula(w, h, seed = 7) {
-  const lw = Math.max(1, Math.ceil(w / SCALE));
-  const lh = Math.max(1, Math.ceil(h / SCALE));
-  const small = document.createElement("canvas");
-  small.width = lw;
-  small.height = lh;
-  const sctx = small.getContext("2d");
-  const img = sctx.createImageData(lw, lh);
+export function nebulaPixels(lw, lh, w, h, seed) {
+  const px = new Uint8ClampedArray(lw * lh * 4);
   for (let j = 0; j < lh; j++) {
     for (let i = 0; i < lw; i++) {
       const rgb = nebulaColor(i * SCALE, j * SCALE, w, h, seed);
       const k = (j * lw + i) * 4;
-      img.data[k] = rgb[0];
-      img.data[k + 1] = rgb[1];
-      img.data[k + 2] = rgb[2];
-      img.data[k + 3] = 255;
+      px[k] = rgb[0];
+      px[k + 1] = rgb[1];
+      px[k + 2] = rgb[2];
+      px[k + 3] = 255;
     }
   }
-  sctx.putImageData(img, 0, 0);
+  return px;
+}
+
+/** Upscales a coarse pixel grid to a viewport-sized canvas; the smoothing blurs it into soft gas. */
+function toCanvas(px, lw, lh, w, h) {
+  const small = document.createElement("canvas");
+  small.width = lw;
+  small.height = lh;
+  small.getContext("2d").putImageData(new ImageData(px, lw, lh), 0, 0);
   const out = document.createElement("canvas");
   out.width = w;
   out.height = h;
@@ -134,4 +139,37 @@ export function paintNebula(w, h, seed = 7) {
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(small, 0, 0, lw * SCALE, lh * SCALE);
   return out;
+}
+
+/**
+ * Paints the nebula into a viewport-sized canvas. The pixel maths takes a few
+ * hundred ms, so it runs in a worker; if workers aren't available it falls
+ * back to the main thread.
+ * @param {number} w
+ * @param {number} h
+ * @param {number} [seed]
+ * @returns {Promise<HTMLCanvasElement>}
+ */
+export function paintNebula(w, h, seed = 7) {
+  const lw = Math.max(1, Math.ceil(w / SCALE));
+  const lh = Math.max(1, Math.ceil(h / SCALE));
+  const onMain = () => toCanvas(nebulaPixels(lw, lh, w, h, seed), lw, lh, w, h);
+  return new Promise((resolve) => {
+    let worker;
+    try {
+      worker = new Worker(new URL("./nebula-worker.js", import.meta.url), { type: "module" });
+    } catch {
+      resolve(onMain());
+      return;
+    }
+    worker.onmessage = (e) => {
+      worker.terminate();
+      resolve(toCanvas(new Uint8ClampedArray(e.data), lw, lh, w, h));
+    };
+    worker.onerror = () => {
+      worker.terminate();
+      resolve(onMain());
+    };
+    worker.postMessage({ lw, lh, w, h, seed });
+  });
 }

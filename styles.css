@@ -164,6 +164,10 @@ html { scrollbar-gutter: stable; }
 
 .seal:focus-visible, .nav a:focus-visible { outline: 2px solid var(--star); outline-offset: 3px; }
 
+/* The lower skies build after load (when-needed.js) and fade in once painted, so they never pop. */
+#chart, #transmission-sky { opacity: 0; transition: opacity 1.2s ease; }
+#chart.is-built, #transmission-sky.is-built { opacity: 1; }
+
 /* The comet cursor (comet.js) replaces the system pointer on mouse-driven screens. */
 .comet { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 60; pointer-events: none; }
 .has-comet, .has-comet * { cursor: none !important; }
@@ -191,5 +195,5 @@ html { scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: reduce) {
   .greeting > * { transition: none; }
   .world[open] > * { animation: none; }
-  .masthead, .chart-head, .worlds, .leaders { transition: none; }
+  .masthead, .chart-head, .worlds, .leaders, #chart, #transmission-sky { transition: none; }
 }
