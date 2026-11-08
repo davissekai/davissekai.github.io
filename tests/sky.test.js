@@ -48,3 +48,17 @@ test("only a handful of stars are spiked glints, and they are the bright ones", 
 test("an empty sky is allowed", () => {
   assert.deepEqual(buildSky(0, W, H, seeded(5)), []);
 });
+
+test("stars shine blue-white or faintly pink, never gold", () => {
+  for (const s of buildSky(3000, W, H, seeded(9))) {
+    const [, g, b] = s.rgb;
+    assert.ok(b >= g, `gold-ish star ${s.rgb}`);
+  }
+});
+
+test("ordinary stars are crisp pinpoints; only the spiked glints are big enough to carry a halo", () => {
+  // paintStar adds a soft halo to any star over 1.3px; on the hero those read as blur.
+  for (const s of buildSky(3000, W, H, seeded(10))) {
+    if (!s.spike) assert.ok(s.size <= 1.3, `blurry star of size ${s.size}`);
+  }
+});

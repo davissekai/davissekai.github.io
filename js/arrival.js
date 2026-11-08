@@ -14,6 +14,7 @@ import { paintNebula } from "./nebula.js";
 import { paintStar } from "./sprites.js";
 import { splitLive, createGrid, createLayer, blitLayer } from "./star-layers.js";
 import { createFrameBudget } from "./frame-budget.js";
+import { pull, WARP_RADIUS } from "./warp.js";
 
 const T = { gather: 0.5, gatherDur: 2.6, scatter: 4.6, scatterDur: 2.8, reveal: 5.8 };
 // Every star is home and the nebula fully faded in; from here the baked layer takes over.
@@ -25,11 +26,12 @@ const SETTLED_FRAME_MS = 33;
 // Widest halo a baked star can have, so stars just outside the cursor's reach still paint their spill.
 const HALO_PAD = 10;
 const VOID = "#05040a";
-const GOLD = [255, 192, 96];
-// Peak alpha of a gathered glyph star; kept low so neighbours add up to gold, not white.
+// 人皇 forms in cool starlight. Saturated on its own, because packed neighbours add up toward
+// white: this way the glyph reads pale blue, like a young star cluster, not a white blot.
+const STARLIGHT = [150, 176, 255];
+// Peak alpha of a gathered glyph star; kept low so neighbours add up to starlight, not white.
 const GLYPH_ALPHA = 0.9;
 const GLYPH_FONT = '"Ma Shan Zheng", "KaiTi", "STKaiti", serif';
-const QI_RADIUS = 140;
 
 const canvas = document.getElementById("sky");
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -139,25 +141,13 @@ function place(s, t) {
   return {
     x: lerp(fx, home.x, k),
     y: lerp(fy, home.y, k),
-    rgb: [lerp(GOLD[0], s.rgb[0], k), lerp(GOLD[1], s.rgb[1], k), lerp(GOLD[2], s.rgb[2], k)],
+    rgb: [lerp(STARLIGHT[0], s.rgb[0], k), lerp(STARLIGHT[1], s.rgb[1], k), lerp(STARLIGHT[2], s.rgb[2], k)],
     a: lerp(lerp(0.15, GLYPH_ALPHA, ga), 0.9 * tw * s.bright, k),
     // Halos blur packed glyph stars into a smear; fade them while gathered, restore on scatter.
     glow: lerp(1 - ga * 0.8, 1, k),
   };
 }
 
-/** Qi follows the visitor: stars near the cursor lean gently toward it. Mutates `p`. */
-function pull(p) {
-  const dx = mouse.x - p.x;
-  const dy = mouse.y - p.y;
-  const dist = Math.hypot(dx, dy);
-  if (dist < QI_RADIUS) {
-    const k = 0.12 * (1 - dist / QI_RADIUS);
-    p.x += dx * k;
-    p.y += dy * k;
-  }
-  return p;
-}
 
 /** Paints a frame while stars are in flight: every star (or the budget's share) is live. */
 function drawMoving(t) {
@@ -171,7 +161,7 @@ function drawMoving(t) {
   const n = Math.ceil(drawOrder.length * budget.quality);
   for (let i = 0; i < n; i++) {
     const s = drawOrder[i];
-    const p = pull(place(s, t));
+    const p = pull(place(s, t), mouse);
     paintStar(ctx, s, p.x, p.y, p.rgb, p.a, p.glow);
   }
   ctx.globalAlpha = 1;
@@ -180,24 +170,24 @@ function drawMoving(t) {
 /** Paints a settled frame: the baked sky, the cursor's neighbourhood redrawn with its pull, then live twinklers. */
 function drawSettled(t) {
   blitLayer(ctx, baked.canvas, dpr);
-  const reach = QI_RADIUS + HALO_PAD;
+  const reach = WARP_RADIUS + HALO_PAD;
   if (mouse.x > -reach && mouse.x < w + reach && mouse.y > -reach && mouse.y < h + reach) {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(mouse.x, mouse.y, QI_RADIUS, 0, Math.PI * 2);
+    ctx.arc(mouse.x, mouse.y, WARP_RADIUS, 0, Math.PI * 2);
     ctx.clip();
     // The nebula is opaque, so it alone resets the patch; a second fill would double-darken the clip's soft edge into a ring.
     ctx.drawImage(nebula, 0, 0);
     ctx.globalCompositeOperation = "lighter";
     for (const s of grid.near(mouse.x, mouse.y, reach)) {
-      const p = pull(s.home(t));
+      const p = pull(s.home(t), mouse);
       paintStar(ctx, s, p.x, p.y, s.rgb, settledAlpha(s));
     }
     ctx.restore();
   }
   ctx.globalCompositeOperation = "lighter";
   for (const s of live) {
-    const p = pull(place(s, t));
+    const p = pull(place(s, t), mouse);
     paintStar(ctx, s, p.x, p.y, p.rgb, p.a, p.glow);
   }
   ctx.globalAlpha = 1;
@@ -254,7 +244,6 @@ window.addEventListener("resize", () => {
 });
 
 document.getElementById("seal").addEventListener("click", replay);
-document.getElementById("replay").addEventListener("click", replay);
 
 // Sampling before the brush font loads would trace a fallback face; wait, but never forever.
 Promise.race([document.fonts.load(`200px ${GLYPH_FONT}`, "人皇"), new Promise((r) => setTimeout(r, 2500))])

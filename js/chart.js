@@ -3,6 +3,7 @@
  * Animates only while its own screen is in view (its top edge also shows,
  * still, through the arrival's fading bottom); reduced-motion gets a still.
  * Pointing at a galaxy lights its label; clicking flies into it to visit its world.
+ * Stars near the cursor lean toward it (warp.js), galaxy stars included.
  *
  * Painting ~6000 stars every frame stutters on ordinary devices, so the sky is
  * layered: still field stars and the nebula are baked once; the turning
@@ -13,6 +14,8 @@
 import { buildSky, paintNebula, galaxyAt, galaxyShape } from "./galaxies.js";
 import { paintStar } from "./sprites.js";
 import { splitLive, createLayer, blitLayer } from "./star-layers.js";
+import { pull, warpPatch, OFF } from "./warp.js";
+import { createChartWarp } from "./chart-warp.js";
 import { createFrameBudget } from "./frame-budget.js";
 import { placeLabels, openWorld, markNear } from "./worlds.js";
 import { focusView, viewAt, createFlight } from "./visit.js";
@@ -37,6 +40,10 @@ let dpr = 1;
 let galaxy = [];
 let live = [];
 let still = null;
+// The sky without stars, which the cursor's warp repaints over, and the warp itself.
+let bare = null;
+let warp = null;
+const mouse = { ...OFF };
 let front = null;
 let back = null;
 // Progress of the back buffer's repaint: next star index, and the time it shows.
@@ -73,10 +80,15 @@ function build() {
   const split = splitLive(stars.filter((s) => s.still), w < 700 ? 120 : 240, Math.random);
   live = split.live;
 
+  const nebula = paintNebula(w, h, top);
+  bare = createLayer(w, fullH, dpr);
+  bare.ctx.fillStyle = VOID;
+  bare.ctx.fillRect(0, 0, w, fullH);
+  bare.ctx.drawImage(nebula, 0, 0);
+  warp = createChartWarp({ galaxy, baked: split.baked, w, h, top });
+
   still = createLayer(w, fullH, dpr);
-  still.ctx.fillStyle = VOID;
-  still.ctx.fillRect(0, 0, w, fullH);
-  still.ctx.drawImage(paintNebula(w, h, top), 0, 0);
+  blitLayer(still.ctx, bare.canvas, dpr);
   still.ctx.globalCompositeOperation = "lighter";
   // Baked at the twinkle's mean so the layer matches the live stars' average glow.
   for (const s of split.baked) {
@@ -122,12 +134,13 @@ function advanceGalaxies(t) {
   startCycle(back.ctx, t);
 }
 
-/** Shows the latest galaxies plus the live twinkling stars at time t. */
+/** Shows the latest galaxies, the cursor's warp, and the live twinkling stars at time t. */
 function draw(t) {
   blitLayer(ctx, front.canvas, dpr);
+  warpPatch(ctx, { mouse, w, h: fullH, dpr, backdrop: bare.canvas, paint: () => warp.paint(ctx, t, mouse, alphaAt) });
   ctx.globalCompositeOperation = "lighter";
   for (const s of live) {
-    const p = s.home(t);
+    const p = pull(s.home(t), mouse);
     paintStar(ctx, s, p.x, p.y, s.rgb, alphaAt(s, t));
   }
   ctx.globalAlpha = 1;
@@ -196,6 +209,14 @@ document.addEventListener("world:visit", (e) => {
   canvas.style.cursor = "";
   if (reduced && front) render(performance.now());
 });
+
+// The warp follows the pointer anywhere over the chart, labels included.
+window.addEventListener("pointermove", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = e.clientX - rect.left;
+  mouse.y = e.clientY - rect.top;
+});
+document.documentElement.addEventListener("pointerleave", () => Object.assign(mouse, OFF));
 
 let resizeTimer = 0;
 window.addEventListener("resize", () => {

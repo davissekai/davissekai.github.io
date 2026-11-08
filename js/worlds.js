@@ -95,7 +95,7 @@ for (const el of labels) {
   el.addEventListener("blur", () => markNear(null));
 }
 
-// Label widths change once Instrument Serif replaces the fallback font, so place again then.
+// Label widths change once the display webfont replaces the fallback font, so place again then.
 document.fonts?.ready.then(() => {
   if (lastSize) placeLabels(lastSize.w, lastSize.h);
 });

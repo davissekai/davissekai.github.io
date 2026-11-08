@@ -8,7 +8,7 @@
 export const BAND = { x0: 0, y0: 0.14, x1: 1, y1: 0.76, core: { x: 0.6, y: 0.51 }, width: 0.12 };
 
 const WHITE = [236, 242, 255];
-const WARM = [255, 196, 130];
+const BLUSH = [255, 216, 232];
 const LANE_SHARE = 0.45;
 const SPIKED = 14;
 
@@ -63,15 +63,16 @@ function lanePosition(w, h, random) {
   return x >= 0 && x <= w && y >= 0 && y <= h ? { x, y } : null;
 }
 
-/** One static star; stars near the core run warm, and spiked ones are big and full-bright. */
+/** One static star; stars near the core blush pink, and spiked ones are big and full-bright. */
 function makeStar({ x, y }, w, h, random, spike) {
   const r = Math.hypot(x - BAND.core.x * w, y - BAND.core.y * h) / Math.min(w, h);
   const warm = random() < 0.1 + 0.6 * Math.exp(-Math.pow(r / 0.3, 2));
   return {
     home: () => ({ x, y }),
-    rgb: warm ? WARM : WHITE,
-    // Squared so most stars are pinpoints; only a few grow big enough to earn a halo.
-    size: spike ? 2.2 + random() * 1.2 : 0.35 + Math.pow(random(), 2.2) * 1.2,
+    rgb: warm ? BLUSH : WHITE,
+    // Squared so most stars are pinpoints. Ordinary stars stay under the 1.3px halo threshold: haloed
+    // stars read as blur on the hero, so only the spiked glints carry light beyond their core.
+    size: spike ? 2.2 + random() * 1.2 : 0.35 + Math.pow(random(), 2.2) * 0.9,
     bright: spike ? 1 : 0.35 + random() * 0.65,
     spike,
     twinkle: random() * Math.PI * 2,
