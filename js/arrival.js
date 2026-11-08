@@ -1,6 +1,8 @@
 /**
  * Arrival: stars drift in from the void, gather into 人皇,
- * hold a breath, then scatter across a nebula of teal gas and a burning core.
+ * hold a breath, then scatter across a blue-violet nebula with a white-hot core.
+ * The nebula is painted in a worker while the stars gather (it isn't seen
+ * until they scatter), so the arrival starts at once.
  *
  * While the stars fly, every one is repainted each frame (fewer on slow
  * devices, via the frame budget). Once they settle, most are baked into one
@@ -48,6 +50,11 @@ let live = [];
 let grid = null;
 let baked = null;
 let nebula = null;
+// Counts builds, so a nebula painted for an old size is dropped.
+let buildId = 0;
+let settledAnnounced = false;
+// The settled layer being baked a slice per frame, until it's complete and becomes `baked`.
+let bakeJob = null;
 let t0 = performance.now();
 let lastPaint = 0;
 let pointerDirty = false;
@@ -55,16 +62,22 @@ const mouse = { x: -1e4, y: -1e4 };
 
 /** Renders the characters off-screen and returns inked pixel cells. */
 function glyphPool() {
-  const off = document.createElement("canvas");
-  off.width = w;
-  off.height = h;
-  const g = off.getContext("2d");
   const size = Math.min((w * 0.82) / 2, h * 0.5);
+  // Read back only the box the two characters can occupy, not the whole screen: a full-viewport
+  // readback is most of the setup's cost, and everything outside the box is empty anyway.
+  const bw = Math.min(w, Math.ceil(size * 2.3));
+  const bh = Math.min(h, Math.ceil(size * 1.3));
+  const off = document.createElement("canvas");
+  off.width = bw;
+  off.height = bh;
+  const g = off.getContext("2d", { willReadFrequently: true });
   g.font = `${size}px ${GLYPH_FONT}`;
   g.textAlign = "center";
   g.textBaseline = "middle";
-  g.fillText("人皇", w / 2, h * 0.45);
-  return sampleInkedPoints(g.getImageData(0, 0, w, h).data, w, h, glyphStep());
+  g.fillText("人皇", bw / 2, bh / 2);
+  const ox = w / 2 - bw / 2;
+  const oy = h * 0.45 - bh / 2;
+  return sampleInkedPoints(g.getImageData(0, 0, bw, bh).data, bw, bh, glyphStep()).map((p) => ({ x: p.x + ox, y: p.y + oy }));
 }
 
 /** Sampling grid spacing for the glyph; denser on small screens where the strokes are thin. */
@@ -97,21 +110,57 @@ function build() {
   });
   // Spikes first so a reduced-quality frame always keeps the brightest glints.
   drawOrder = [...order.filter((s) => s.spike), ...order.filter((s) => !s.spike)];
-  nebula = paintNebula(w, h);
 
   const split = splitLive(stars, w < 700 ? 120 : 260, Math.random);
   for (const s of split.live) s.live = true;
   live = split.live;
   grid = createGrid(split.baked, 64);
-  baked = createLayer(w, h, dpr);
-  baked.ctx.fillStyle = VOID;
-  baked.ctx.fillRect(0, 0, w, h);
-  baked.ctx.drawImage(nebula, 0, 0);
-  baked.ctx.globalCompositeOperation = "lighter";
-  for (const s of split.baked) {
-    const p = s.home(END);
-    paintStar(baked.ctx, s, p.x, p.y, s.rgb, settledAlpha(s));
+  // The nebula only fades in once the stars scatter, so it's painted in a worker while they gather.
+  // A newer build (resize) supersedes this one's nebula if it lands late.
+  nebula = null;
+  baked = null;
+  bakeJob = null;
+  const id = ++buildId;
+  paintNebula(w, h).then((painted) => {
+    if (id !== buildId) return;
+    nebula = painted;
+    startBake(split.baked);
+    if (reduced) {
+      bakeStep(Infinity);
+      frame(performance.now());
+    }
+  });
+}
+
+/**
+ * Starts baking the settled sky (void, nebula, the non-live stars at home)
+ * into one layer. Painting thousands of stars at once would stall the
+ * gathering animation for over 100ms, so frame() bakes a few ms at a time.
+ */
+function startBake(stars) {
+  const layer = createLayer(w, h, dpr);
+  layer.ctx.fillStyle = VOID;
+  layer.ctx.fillRect(0, 0, w, h);
+  layer.ctx.drawImage(nebula, 0, 0);
+  layer.ctx.globalCompositeOperation = "lighter";
+  bakeJob = { stars, next: 0, layer };
+}
+
+/** Bakes stars for up to `ms` milliseconds; publishes the layer once every star is in. */
+function bakeStep(ms) {
+  const job = bakeJob;
+  const end = performance.now() + ms;
+  while (job.next < job.stars.length && performance.now() < end) {
+    const stop = Math.min(job.stars.length, job.next + 64);
+    for (; job.next < stop; job.next++) {
+      const s = job.stars[job.next];
+      const p = s.home(END);
+      paintStar(job.layer.ctx, s, p.x, p.y, s.rgb, settledAlpha(s));
+    }
   }
+  if (job.next < job.stars.length) return;
+  baked = job.layer;
+  bakeJob = null;
 }
 
 /** A baked star's brightness once settled: the twinkle's mean. */
@@ -155,8 +204,10 @@ function drawMoving(t) {
   ctx.globalAlpha = 1;
   ctx.fillStyle = VOID;
   ctx.fillRect(0, 0, w, h);
-  ctx.globalAlpha = progress(t, T.scatter, T.scatterDur * 1.4);
-  ctx.drawImage(nebula, 0, 0);
+  if (nebula) {
+    ctx.globalAlpha = progress(t, T.scatter, T.scatterDur * 1.4);
+    ctx.drawImage(nebula, 0, 0);
+  }
   ctx.globalCompositeOperation = "lighter";
   const n = Math.ceil(drawOrder.length * budget.quality);
   for (let i = 0; i < n; i++) {
@@ -195,20 +246,31 @@ function drawSettled(t) {
 
 /** Animation loop; skips painting while scrolled away. Reduced-motion gets a still. */
 function frame(now) {
+  // A few ms of baking per frame keeps the gathering smooth while the settled layer fills in.
+  if (bakeJob) bakeStep(3);
   const t = reduced ? END : (now - t0) / 1000;
   if (onScreen || reduced) {
-    if (t < END) {
+    // Until the settled layer is baked (the nebula worker can land late on slow devices), keep drawing it live.
+    if (t < END || !baked) {
       const start = performance.now();
-      drawMoving(t);
+      drawMoving(Math.min(t, END));
       budget.record(performance.now() - start);
     } else if (reduced || pointerDirty || now - lastPaint >= SETTLED_FRAME_MS) {
       drawSettled(t);
+      announceSettled();
       lastPaint = now;
       pointerDirty = false;
     }
     greeting.classList.toggle("is-revealed", t >= T.reveal);
   }
   if (!reduced) requestAnimationFrame(frame);
+}
+
+/** Tells the other skies, once, that the opening is over and the main thread is free for them to build. */
+function announceSettled() {
+  if (settledAnnounced) return;
+  settledAnnounced = true;
+  document.dispatchEvent(new Event("arrival:settled"));
 }
 
 /** Restarts the arrival from the void, bringing the visitor back up to see it. */

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fbm, nebulaColor } from "../js/nebula.js";
+import { fbm, nebulaColor, nebulaPixels } from "../js/nebula.js";
 import { BAND } from "../js/sky.js";
 
 const W = 1200;
@@ -79,4 +79,17 @@ test("no part of the sky is gold: green never outweighs blue by much", () => {
     const c = nebulaColor((i * 97) % W, (i * 61) % H, W, H, 7);
     assert.ok(c[1] - c[2] < 12, `gold-ish at sample ${i}: ${c.map(Math.round)}`);
   }
+});
+
+test("the nebula's pixel grid is every sample's colour, fully opaque, ready for a canvas", () => {
+  const lw = 30;
+  const lh = 20;
+  const px = nebulaPixels(lw, lh, 120, 80, 7);
+  assert.equal(px.length, lw * lh * 4);
+  for (let k = 3; k < px.length; k += 4) assert.equal(px[k], 255);
+  // Sample (i, j) holds the colour at (i, j) * the 4px grid step.
+  const [i, j] = [17, 9];
+  const k = (j * lw + i) * 4;
+  const want = nebulaColor(i * 4, j * 4, 120, 80, 7).map((v) => Math.round(v));
+  assert.deepEqual([px[k], px[k + 1], px[k + 2]], want);
 });

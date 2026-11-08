@@ -41,12 +41,13 @@ export function ringsAt(t) {
  * @param {number} d distance from the pulsar (CSS px)
  * @param {number} t time (s)
  * @param {number} reach how far ripples spread before they're gone (CSS px)
+ * @param {{progress: number, alpha: number}[]} [rings] ringsAt(t), passed in when bending many stars in one frame
  * @returns {{shift: number, glow: number}} radial shift (px, outward positive) and brightness multiplier
  */
-export function rippleAt(d, t, reach) {
+export function rippleAt(d, t, reach, rings = ringsAt(t)) {
   let shift = 0;
   let glow = 1;
-  for (const r of ringsAt(t)) {
+  for (const r of rings) {
     const x = (d - (6 + r.progress * reach)) / FRONT;
     const bell = Math.exp(-(x * x) / 2);
     // x * e^(1/2 - x²/2) peaks at exactly 1 one front-width ahead, so RIPPLE_MAX is the true maximum.

@@ -108,3 +108,9 @@ test("stars riding a wavefront brighten a little, like light focused by the bend
   assert.ok(rippleAt(front, t, reach).glow > 1.1);
   assert.ok(Math.abs(rippleAt(reach * 3, t, reach).glow - 1) < 0.01);
 });
+
+test("rings worked out once per frame give the same ripple as working them out per star", () => {
+  const t = PERIOD * 7 + 1.1;
+  const rings = ringsAt(t);
+  for (const d of [3, 50, 140, 260, 390]) assert.deepEqual(rippleAt(d, t, 400, rings), rippleAt(d, t, 400));
+});

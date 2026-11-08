@@ -8,10 +8,11 @@
  * live so the ripples (and the cursor's warp) can move them. Animates only
  * while on screen; reduced motion gets a still frame.
  */
-import { rippleAt, beat, pulsarPlace, fieldStars } from "./pulsar.js";
+import { rippleAt, ringsAt, beat, pulsarPlace, fieldStars } from "./pulsar.js";
 import { paintStar } from "./sprites.js";
 import { createLayer, blitLayer } from "./star-layers.js";
 import { pull, OFF } from "./warp.js";
+import { whenNeeded } from "./when-needed.js";
 
 const VOID = "#05040a";
 const BEAM = "196, 208, 255";
@@ -73,6 +74,7 @@ function build() {
     return { ...s, d, ux: dx / d, uy: dy / d };
   });
   draw((performance.now() - t0) / 1000);
+  canvas.classList.add("is-built");
 }
 
 /** Draws the sky at time t (s): stars bent by the ripples and the cursor, the beams, and the pulsar. */
@@ -81,8 +83,9 @@ function draw(t) {
   ctx.globalCompositeOperation = "lighter";
   const flare = beat(t);
   paintBeams(t, flare);
+  const rings = ringsAt(t);
   for (const s of stars) {
-    const rip = rippleAt(s.d, t, place.reach);
+    const rip = rippleAt(s.d, t, place.reach, rings);
     const p = pull({ x: s.x + s.ux * rip.shift, y: s.y + s.uy * rip.shift }, mouse);
     paintStar(ctx, s, p.x, p.y, s.rgb, Math.min(1, 0.75 * s.bright * rip.glow));
   }
@@ -131,8 +134,10 @@ document.documentElement.addEventListener("pointerleave", () => Object.assign(mo
 let resizeTimer = 0;
 window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(build, 200);
+  // Before its first build the section has nothing to resize.
+  resizeTimer = setTimeout(() => backdrop && build(), 200);
 });
 
-build();
+// Built a screen before the visitor reaches it, or once the arrival settles, not at load.
+whenNeeded(canvas, build, "100% 0px");
 if (!reduced) requestAnimationFrame(frame);
