@@ -2,9 +2,8 @@
  * Transmission (page 3): past the star chart the sky thins to near-black and
  * one pulsar beats. Each beat sends a gravitational ripple outward: as a
  * wavefront passes, the stars it crosses are shoved out, drawn back, and
- * briefly brightened, so the ripple shows only as bending starlight. Two faint
- * beams sweep slowly from the pulsar, the way real pulsars shine like
- * lighthouses. The void and haze are baked; the few hundred stars are drawn
+ * briefly brightened, so the ripple shows only as bending starlight.
+ * The void and haze are baked; the few hundred stars are drawn
  * live so the ripples (and the cursor's warp) can move them. Animates only
  * while on screen; reduced motion gets a still frame.
  */
@@ -15,13 +14,8 @@ import { pull, OFF } from "./warp.js";
 import { whenNeeded } from "./when-needed.js";
 
 const VOID = "#05040a";
-const BEAM = "196, 208, 255";
 const PULSAR = { size: 3.2, spike: true };
 const PULSAR_RGB = [226, 234, 255];
-// Seconds per turn of the pulsar's beams: slow, so they sweep rather than spin.
-const BEAM_TURN = 26;
-// Half-width of each beam (radians).
-const BEAM_SPREAD = 0.045;
 
 const canvas = document.getElementById("transmission-sky");
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -77,12 +71,11 @@ function build() {
   canvas.classList.add("is-built");
 }
 
-/** Draws the sky at time t (s): stars bent by the ripples and the cursor, the beams, and the pulsar. */
+/** Draws the sky at time t (s): stars bent by the ripples and the cursor, and the pulsar. */
 function draw(t) {
   blitLayer(ctx, backdrop.canvas, dpr);
   ctx.globalCompositeOperation = "lighter";
   const flare = beat(t);
-  paintBeams(t, flare);
   const rings = ringsAt(t);
   for (const s of stars) {
     const rip = rippleAt(s.d, t, place.reach, rings);
@@ -92,25 +85,6 @@ function draw(t) {
   paintStar(ctx, PULSAR, place.x, place.y, PULSAR_RGB, 0.6 + 0.4 * flare, 0.7 + flare);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "source-over";
-}
-
-/** Two opposed beams sweeping slowly round, brightening on each beat. */
-function paintBeams(t, flare) {
-  const angle = (t / BEAM_TURN) * Math.PI * 2;
-  const len = place.reach * 1.15;
-  ctx.globalAlpha = 1;
-  for (const a of [angle, angle + Math.PI]) {
-    const glow = ctx.createRadialGradient(place.x, place.y, 0, place.x, place.y, len);
-    glow.addColorStop(0, `rgba(${BEAM}, ${0.16 + 0.22 * flare})`);
-    glow.addColorStop(1, `rgba(${BEAM}, 0)`);
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.moveTo(place.x, place.y);
-    ctx.lineTo(place.x + Math.cos(a - BEAM_SPREAD) * len, place.y + Math.sin(a - BEAM_SPREAD) * len);
-    ctx.lineTo(place.x + Math.cos(a + BEAM_SPREAD) * len, place.y + Math.sin(a + BEAM_SPREAD) * len);
-    ctx.closePath();
-    ctx.fill();
-  }
 }
 
 /** Animation loop; idles while the section is scrolled out of view. */
