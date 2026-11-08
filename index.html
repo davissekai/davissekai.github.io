@@ -8,24 +8,27 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <button class="seal" id="seal" aria-label="人皇 — replay arrival">
-    <svg viewBox="0 0 56 56" aria-hidden="true">
-      <rect x="0.5" y="0.5" width="55" height="55" fill="#000" stroke="currentColor" stroke-width="1"/>
-      <g fill="currentColor" font-family="'Ma Shan Zheng', KaiTi, serif" font-size="20" text-anchor="middle">
-        <text x="28" y="26">人</text>
-        <text x="28" y="47">皇</text>
-      </g>
-    </svg>
-  </button>
-  <nav class="nav" aria-label="Sections">
-    <a href="#arrival"><b>降临</b>arrival</a>
-    <a href="#chart-page"><b>星图</b>star chart</a>
-    <span><b>传音</b>transmission</span>
-  </nav>
+  <header class="masthead">
+    <button class="seal" id="seal" aria-label="Renhuang 人皇, replay arrival">
+      <svg viewBox="0 0 56 56" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="55" height="55" fill="none" stroke="currentColor" stroke-width="1"/>
+        <g fill="currentColor" font-family="'Ma Shan Zheng', KaiTi, serif" font-size="20" text-anchor="middle" dominant-baseline="central">
+          <text x="28" y="18">人</text>
+          <text x="28" y="38">皇</text>
+        </g>
+      </svg>
+      <span class="seal-name" aria-hidden="true">Renhuang</span>
+    </button>
+    <nav class="nav" aria-label="Sections">
+      <a href="#arrival"><b>降临</b>arrival</a>
+      <a href="#chart-page"><b>星图</b>star chart</a>
+      <a href="#transmission"><b>传音</b>transmission</a>
+    </nav>
+  </header>
 
   <section class="screen" id="arrival" aria-labelledby="greet-title">
     <canvas id="sky" aria-hidden="true"></canvas>
@@ -37,7 +40,6 @@
       <p class="body">One watches rivers from orbit. One lets founders fail before it costs them. One waits in silence and calls you back when the work is done. They all turn around the same sun: this planet, and what we can still make of it.</p>
       <p class="cue"><a href="#chart-page"><b>星图</b> look up ↓</a></p>
     </div>
-    <button class="replay" id="replay" type="button">replay arrival</button>
   </section>
 
   <section class="screen chart-screen" id="chart-page" aria-labelledby="chart-title">
@@ -55,6 +57,20 @@
         <li><button class="world-label" type="button" data-world="carbon-markets" aria-haspopup="dialog">Carbon Markets for SMEs<small>still forming</small></button></li>
       </ul>
     </div>
+  </section>
+
+  <section class="screen transmission-screen" id="transmission" aria-labelledby="transmission-title">
+    <canvas id="transmission-sky" aria-hidden="true"></canvas>
+    <div class="transmission">
+      <p class="eyebrow"><b>传音</b>transmission</p>
+      <h2 id="transmission-title">Send word across <em>the dark.</em></h2>
+      <p class="body">Every world up there began as a question someone couldn't put down. If you have one, a project to build together, or a river you think I should look at, send it my way.</p>
+      <ul class="channels" aria-label="Ways to reach me">
+        <li><a href="mailto:davisdey001@gmail.com" aria-label="Email Davis"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></a></li>
+        <li><a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer" aria-label="Davis on X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z"/></svg></a></li>
+      </ul>
+    </div>
+    <footer class="colophon">Davis Dey · <span lang="zh">人皇</span> · 2026</footer>
   </section>
 
   <dialog class="world" id="world-two-eyes" aria-labelledby="world-two-eyes-title">
@@ -100,5 +116,8 @@
 
   <script type="module" src="js/arrival.js"></script>
   <script type="module" src="js/chart.js"></script>
+  <script type="module" src="js/transmission.js"></script>
+  <script type="module" src="js/nav.js"></script>
+  <script type="module" src="js/comet.js"></script>
 </body>
 </html>

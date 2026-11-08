@@ -1,15 +1,16 @@
 /**
- * Procedural nebula behind the Domain: teal gas billowing above a hot orange
- * dust lane, dark dust masses, and a glowing core. Painted once per viewport.
+ * Procedural nebula behind the Domain, in Hubble/Webb colours: blue-violet gas
+ * billowing above a lane of pink hydrogen glow (star formation), dark dust
+ * masses, and a white-hot core. Painted once per viewport.
  */
 import { BAND, bandDistance } from "./sky.js";
 
-const BASE = [4, 8, 12];
-const TEAL = [60, 118, 134];
-const TEAL_LIT = [160, 210, 216];
-const EMBER = [176, 72, 22];
-const HALO = [150, 92, 38];
-const CORE = [255, 226, 170];
+const BASE = [5, 4, 12];
+const GAS = [34, 54, 118];
+const GAS_LIT = [132, 158, 236];
+const HYDROGEN = [124, 34, 84];
+const HALO = [78, 74, 150];
+const CORE = [236, 230, 255];
 // Noise is evaluated on a coarse grid and upscaled; the blur reads as soft gas.
 const SCALE = 4;
 
@@ -93,8 +94,8 @@ export function nebulaColor(x, y, w, h, seed) {
 
   const rgb = [0, 0, 0];
   for (let c = 0; c < 3; c++) {
-    const gasC = TEAL[c] + (TEAL_LIT[c] - TEAL[c]) * halo;
-    const lit = (gas * gasC + lane * EMBER[c] + halo * HALO[c] * 0.6) * shadow;
+    const gasC = GAS[c] + (GAS_LIT[c] - GAS[c]) * halo;
+    const lit = (gas * gasC + lane * HYDROGEN[c] + halo * HALO[c] * 0.6) * shadow;
     rgb[c] = Math.min(255, BASE[c] + lit + core * CORE[c]);
   }
   return rgb;

@@ -1,9 +1,14 @@
 :root {
   --void: #05040a;
-  --bone: #f4eee4;
-  --dim: rgba(244, 238, 228, 0.66);
-  --gold: #ffd68c;
+  /* Cool starlight whites, after Hubble/Webb: text, accents, and the rare pink of star formation. */
+  --bone: #eceefa;
+  --dim: rgba(226, 230, 250, 0.66);
+  --star: #c4d0ff;
+  --blush: #ffb8d2;
+  --line: rgba(226, 230, 250, 0.22);
+  --gutter: clamp(16px, 7vw, 120px);
   --brush: "Ma Shan Zheng", "KaiTi", serif;
+  --display: "Cormorant Garamond", "Cormorant", Garamond, serif;
 }
 * { box-sizing: border-box; margin: 0; }
 html { scroll-behavior: smooth; }
@@ -14,18 +19,35 @@ a { color: inherit; text-decoration: none; }
 .screen { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
 .screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-/* Minimal mark: black tile, white hairline, white characters. */
-.seal {
-  position: fixed; top: 20px; left: 20px; z-index: 2;
-  width: 52px; height: 52px; padding: 0; border: 0;
-  background: none; color: var(--bone); cursor: pointer;
-  transition: opacity .2s ease;
+/* Masthead: the seal and its name on the left, the sections on the right, on one line and on the page's gutters. */
+.masthead {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px var(--gutter); pointer-events: none;
 }
-.seal svg { display: block; width: 100%; height: 100%; }
+.masthead > * { pointer-events: auto; }
+/* A soft fade of night behind the masthead, so text scrolling under it never collides with it. */
+.masthead::before {
+  content: ""; position: absolute; inset: 0 0 -36px; z-index: -1; pointer-events: none;
+  background: linear-gradient(rgba(5, 4, 10, 0.94), rgba(5, 4, 10, 0.72) 60%, rgba(5, 4, 10, 0));
+}
+/* The seal: white hairline and characters, open in the middle so the sky shows through. */
+.seal {
+  display: flex; align-items: center; gap: 14px; padding: 0; border: 0;
+  background: none; color: var(--bone); cursor: pointer; transition: opacity .2s ease;
+}
+.seal svg { display: block; width: 44px; height: 44px; flex: none; }
+.seal-name { font: 300 1.45rem/1 var(--display); letter-spacing: 0.14em; }
 .seal:hover { opacity: 0.75; }
-.nav { position: fixed; top: 32px; right: 28px; z-index: 2; display: flex; gap: 22px; font-size: 0.8rem; color: var(--dim); }
-.nav b { font: 400 1rem var(--brush); color: var(--gold); margin-right: 6px; }
-.nav a:hover { color: var(--bone); }
+.nav { display: flex; align-items: center; font: 500 0.66rem/1 Inter, sans-serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--dim); }
+.nav > * { display: flex; align-items: center; gap: 8px; padding: 8px 0; position: relative; transition: color .2s ease; }
+/* Hairline dividers between sections, like a star atlas's index. */
+.nav > * + * { margin-left: 22px; padding-left: 22px; border-left: 1px solid var(--line); }
+.nav b { font: 400 0.95rem/1 var(--brush); letter-spacing: 0; color: var(--bone); }
+.nav a:hover, .nav [aria-current] { color: var(--bone); }
+.nav [aria-current]::after { content: ""; position: absolute; right: 0; bottom: 0; left: 22px; height: 1px; background: var(--star); opacity: 0.6; }
+.nav > :first-child[aria-current]::after { left: 0; }
+.nav span { opacity: 0.55; }
 
 .veil { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 0% 100%, rgba(5,4,10,0.85) 0%, rgba(5,4,10,0) 60%); }
 .greeting { position: absolute; left: clamp(16px, 7vw, 120px); bottom: clamp(56px, 12vh, 140px); max-width: 34rem; z-index: 2; }
@@ -36,13 +58,13 @@ a { color: inherit; text-decoration: none; }
 .greeting.is-revealed > :nth-child(4) { transition-delay: 1.1s; }
 .greeting.is-revealed > :nth-child(5) { transition-delay: 1.5s; }
 .eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
-.eyebrow b { font: 400 1.1rem var(--brush); color: var(--gold); letter-spacing: 0.1em; margin-right: 8px; }
-h1 { font: 400 clamp(2.2rem, 5vw, 3.8rem)/1.05 "Instrument Serif", serif; margin: 10px 0 14px; }
-h1 em { color: var(--gold); }
+.eyebrow b { font: 400 1.1rem var(--brush); color: var(--bone); letter-spacing: 0.1em; margin-right: 8px; }
+h1 { font: 300 clamp(2.6rem, 5.8vw, 4.4rem)/1 var(--display); letter-spacing: -0.01em; margin: 10px 0 16px; }
+h1 em { font-weight: 300; color: var(--star); }
 .lead { font-size: 1.1rem; margin-bottom: 10px; }
 .body { color: var(--dim); font-size: 0.95rem; }
 .cue { margin-top: 18px; font-size: 0.8rem; color: var(--dim); }
-.cue b { font: 400 1rem var(--brush); color: var(--gold); }
+.cue b { font: 400 1rem var(--brush); color: var(--bone); }
 .cue a:hover { color: var(--bone); }
 
 /* Seam: the chart rises under the arrival's bottom edge, which fades out, so one sky dissolves into the next. */
@@ -70,24 +92,43 @@ h1 em { color: var(--gold); }
 .world-label {
   position: absolute; pointer-events: auto; text-align: center; white-space: nowrap;
   background: none; border: 0; padding: 4px 8px; cursor: pointer;
-  color: var(--bone); opacity: 0.8; font: italic 400 1.15rem/1.2 "Instrument Serif", serif;
+  color: var(--bone); opacity: 0.8; font: italic 400 1.3rem/1.15 var(--display);
   text-shadow: 0 0 12px rgba(5, 4, 10, 0.9);
   transition: opacity .2s ease, color .2s ease;
 }
 .world-label small { display: block; font: 400 0.62rem Inter, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
-.world-label:hover, .world-label.is-near, .world-label:focus-visible { opacity: 1; color: var(--gold); }
-.world-label:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.world-label:hover, .world-label.is-near, .world-label:focus-visible { opacity: 1; color: var(--star); }
+.world-label:focus-visible { outline: 1px solid var(--star); outline-offset: 4px; }
 /* Leader hairlines from each galaxy's rim to its label, star-atlas style. */
 .leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .leaders line { stroke: var(--bone); stroke-width: 1; stroke-opacity: 0.3; vector-effect: non-scaling-stroke; transition: stroke .2s ease, stroke-opacity .2s ease; }
-.leaders line.is-near { stroke: var(--gold); stroke-opacity: 0.8; }
+.leaders line.is-near { stroke: var(--star); stroke-opacity: 0.8; }
+
+/* Transmission: one pulsar beating in the dark, and the ways to reach me beside it. */
+.transmission { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(30rem, calc(100% - 2 * var(--gutter))); }
+.transmission h2 { font: 300 clamp(2.6rem, 5.4vw, 4.2rem)/1 var(--display); letter-spacing: -0.01em; margin: 10px 0 18px; }
+.transmission h2 em { color: var(--star); }
+.transmission .body { max-width: 26rem; }
+/* Ways to reach me: two quiet icons in hairline rings, like stars ringed on a chart. */
+.channels { list-style: none; padding: 0; margin-top: 32px; display: flex; gap: 14px; }
+.channels a {
+  display: grid; place-items: center; width: 52px; height: 52px;
+  border: 1px solid var(--line); border-radius: 50%; color: var(--bone);
+  transition: color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.channels svg { width: 20px; height: 20px; }
+.channels li:last-child svg { width: 17px; height: 17px; }
+.channels a:hover, .channels a:focus-visible { color: var(--star); border-color: var(--star); transform: translateY(-2px); }
+.channels a:focus-visible { outline: 1px solid var(--star); outline-offset: 3px; }
+.colophon { position: absolute; left: var(--gutter); bottom: 22px; font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); opacity: 0.7; }
+.colophon span { font-family: var(--brush); }
 
 /* Visiting a world: the chart flies into the galaxy and its story floats beside it in open sky.
    Still a native modal dialog (focus, Esc, screen readers), just with no box. */
 html { scrollbar-gutter: stable; }
 .is-visiting { overflow: hidden; }
-.seal, .nav, .chart-head, .worlds, .leaders { transition: opacity .5s ease; }
-.is-visiting :is(.seal, .nav, .chart-head, .worlds, .leaders) { opacity: 0; pointer-events: none; }
+.masthead, .chart-head, .worlds, .leaders { transition: opacity .5s ease; }
+.is-visiting :is(.masthead, .masthead > *, .chart-head, .worlds, .leaders) { opacity: 0; pointer-events: none; }
 .is-visiting .worlds .world-label { pointer-events: none; }
 .world {
   position: fixed; inset: auto; margin: 0;
@@ -105,14 +146,14 @@ html { scrollbar-gutter: stable; }
 .world[open] > :nth-child(4) { animation-delay: 1s; }
 .world[open] > :nth-child(5) { animation-delay: 1.14s; }
 .world[open] > :nth-child(6) { animation-delay: 1.28s; }
-.world h3 { font: 400 clamp(2.4rem, 4vw, 3.4rem)/1 "Instrument Serif", serif; margin: 10px 0 16px; }
-.world .lead { font: italic 400 1.3rem/1.35 "Instrument Serif", serif; margin-bottom: 14px; }
+.world h3 { font: 300 clamp(2.8rem, 4.6vw, 3.9rem)/1 var(--display); margin: 10px 0 16px; }
+.world .lead { font: italic 400 1.45rem/1.3 var(--display); margin-bottom: 14px; }
 .world .body { line-height: 1.7; }
 .world-links { display: flex; gap: 22px; margin-top: 22px; font-size: 0.85rem; }
-.world-links a { color: var(--gold); }
+.world-links a { color: var(--star); }
 .world-links a:hover { color: var(--bone); }
 .world-links span { color: var(--dim); font-style: italic; }
-.world-links a:focus-visible, .world-back:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.world-links a:focus-visible, .world-back:focus-visible { outline: 1px solid var(--star); outline-offset: 4px; }
 .world-back {
   margin-top: 30px; padding: 6px 0; background: none; border: 0; cursor: pointer;
   color: var(--dim); font: 0.75rem Inter, sans-serif; letter-spacing: 0.2em; text-transform: uppercase;
@@ -121,19 +162,27 @@ html { scrollbar-gutter: stable; }
 .world-back:focus:not(:focus-visible) { outline: none; }
 @keyframes world-in { from { opacity: 0; transform: translateY(6px); } }
 
-.replay { position: absolute; right: 20px; bottom: 20px; z-index: 2; background: none; border: 1px solid rgba(244,238,228,0.25); color: var(--dim); border-radius: 999px; padding: 6px 14px; font: 0.75rem Inter, sans-serif; cursor: pointer; }
-.replay:hover { filter: brightness(1.15); }
-.seal:focus-visible, .replay:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.seal:focus-visible, .nav a:focus-visible { outline: 2px solid var(--star); outline-offset: 3px; }
+
+/* The comet cursor (comet.js) replaces the system pointer on mouse-driven screens. */
+.comet { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 60; pointer-events: none; }
+.has-comet, .has-comet * { cursor: none !important; }
 
 @media (max-width: 700px) {
   .nav { display: none; }
   .greeting { right: 16px; left: 16px; bottom: 64px; }
   .chart-head { top: 92px; right: 16px; left: 16px; }
-  .world-label { font-size: 1rem; }
+  .world-label { font-size: 1.12rem; }
+  .masthead { padding: 16px 16px; }
+  /* The pulsar beats in the top third; the words sit below it. */
+  .transmission { top: auto; bottom: 64px; left: 16px; right: 16px; width: auto; transform: none; }
+  .colophon { left: 16px; }
+  .seal svg { width: 40px; height: 40px; }
+  .seal-name { font-size: 1.25rem; }
   /* The galaxy lands in the top half; the story fills the lower half. */
   .world { top: auto; bottom: 0; left: 16px; right: 16px; transform: none; width: auto; max-height: 56vh; max-height: 56svh; padding: 8px 0 24px; }
   .world h3 { margin: 6px 0 10px; }
-  .world .lead { font-size: 1.15rem; margin-bottom: 10px; }
+  .world .lead { font-size: 1.25rem; margin-bottom: 10px; }
   .world .body { font-size: 0.9rem; line-height: 1.6; }
   .world-back { margin-top: 18px; }
   /* Text spans the full width here, so darken the whole lower band, not just the left corner. */
@@ -142,5 +191,5 @@ html { scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: reduce) {
   .greeting > * { transition: none; }
   .world[open] > * { animation: none; }
-  .seal, .nav, .chart-head, .worlds, .leaders { transition: none; }
+  .masthead, .chart-head, .worlds, .leaders { transition: none; }
 }

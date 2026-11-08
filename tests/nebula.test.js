@@ -54,9 +54,10 @@ test("far below the lane the sky falls to near-black", () => {
   assert.ok(lum(nebulaColor(20, H - 20, W, H, 7)) < 30);
 });
 
-test("the lane burns warm while the gas above it runs cool", () => {
-  let laneWarm = 0;
-  let gasCool = 0;
+test("the lane glows hydrogen pink while the gas above it runs blue-violet, like Hubble's nebulae", () => {
+  let lanePink = 0;
+  let laneOrange = 0;
+  let gasBlue = 0;
   const n = 60;
   for (let i = 0; i < n; i++) {
     const t = 0.72 + (i / n) * 0.22;
@@ -64,9 +65,18 @@ test("the lane burns warm while the gas above it runs cool", () => {
     const [gx, gy] = lanePoint(t, 0.28);
     const lane = nebulaColor(lx, ly, W, H, 7);
     const gas = nebulaColor(gx, gy, W, H, 7);
-    laneWarm += lane[0] - lane[2];
-    gasCool += gas[2] - gas[0];
+    lanePink += lane[0] - lane[1];
+    laneOrange += lane[1] - lane[2];
+    gasBlue += gas[2] - gas[0];
   }
-  assert.ok(laneWarm > 0, "lane should lean red/orange");
-  assert.ok(gasCool > 0, "gas should lean teal/blue");
+  assert.ok(lanePink > 0, "lane should lean red over green (pink)");
+  assert.ok(laneOrange < 0, "lane should carry more blue than green, so it reads pink, not orange");
+  assert.ok(gasBlue > 0, "gas should lean blue");
+});
+
+test("no part of the sky is gold: green never outweighs blue by much", () => {
+  for (let i = 0; i < 400; i++) {
+    const c = nebulaColor((i * 97) % W, (i * 61) % H, W, H, 7);
+    assert.ok(c[1] - c[2] < 12, `gold-ish at sample ${i}: ${c.map(Math.round)}`);
+  }
 });

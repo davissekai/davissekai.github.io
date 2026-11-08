@@ -118,3 +118,56 @@ test("distant galaxies are small faint smudges spread across the whole canvas", 
     assert.ok(d.alpha > 0 && d.alpha <= 0.6);
   }
 });
+
+test("no two project galaxies share a form, so each world reads as its own", () => {
+  const forms = GALAXIES.map((g) => g.form);
+  assert.equal(new Set(forms).size, forms.length, `repeated forms: ${forms}`);
+});
+
+/** A galaxy's stars at t=0 in its own frame: u along the disc, v across it, in units of its radius. */
+function local(id, w = 1200, h = 800) {
+  const g = GALAXIES.find((g) => g.id === id);
+  const R = g.r * Math.min(w, h);
+  const c = Math.cos(-g.tilt);
+  const s = Math.sin(-g.tilt);
+  return buildSky(6000, w, h, seeded(11))
+    .filter((st) => st.galaxy === id)
+    .map((st) => {
+      const p = st.home(0);
+      const dx = p.x - g.x * w;
+      const dy = p.y - g.y * h;
+      return { u: (dx * c - dy * s) / R, v: (dx * s + dy * c) / R };
+    });
+}
+
+test("notify-crossx is seen edge-on: a thin needle with a round bulge and a dark dust lane", () => {
+  const stars = local("notify-crossx");
+  const disc = stars.filter((p) => Math.abs(p.u) > 0.35);
+  const thickness = Math.max(...disc.map((p) => Math.abs(p.v)));
+  assert.ok(thickness < 0.15, `disc too thick: ${thickness}`);
+  const bulge = stars.filter((p) => Math.abs(p.u) < 0.15);
+  assert.ok(Math.max(...bulge.map((p) => Math.abs(p.v))) > 0.12, "no bulge above and below the disc");
+  // The lane: along the disc, the thin band at its middle holds far fewer stars than the bands beside it.
+  const midplane = disc.filter((p) => Math.abs(p.v) < 0.012).length;
+  const beside = disc.filter((p) => Math.abs(p.v) >= 0.012 && Math.abs(p.v) < 0.036).length;
+  assert.ok(midplane < beside * 0.25, `no dust lane: ${midplane} vs ${beside}`);
+});
+
+test("VentureQuest is a patchy many-armed spiral, rich in pink star-forming knots", () => {
+  const vq = GALAXIES.find((g) => g.id === "venturequest");
+  const twoEyes = GALAXIES.find((g) => g.id === "two-eyes");
+  assert.ok(vq.arms >= 5 && vq.arms > twoEyes.arms);
+  const knotShare = (id) => {
+    const stars = buildSky(6000, 1200, 800, seeded(12)).filter((s) => s.galaxy === id);
+    return stars.filter((s) => s.rgb[0] === 255 && s.rgb[1] === 128).length / stars.length;
+  };
+  assert.ok(knotShare("venturequest") > knotShare("two-eyes") * 2);
+});
+
+test("a thin edge-on galaxy is still easy to point at, just above or below its disc", () => {
+  const { w, h, top } = FRAMES[0];
+  const g = GALAXIES.find((g) => g.id === "notify-crossx");
+  const R = g.r * Math.min(w, h);
+  assert.equal(galaxyAt(g.x * w, top + g.y * h - 0.15 * R, w, h, top), "notify-crossx");
+  assert.equal(galaxyAt(g.x * w, top + g.y * h + 0.15 * R, w, h, top), "notify-crossx");
+});
