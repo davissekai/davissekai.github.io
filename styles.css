@@ -8,7 +8,8 @@
   --ink: #1c2731;
   --muted: #5b6b76;
   --line: rgba(28, 39, 49, 0.12);
-  --veil: linear-gradient(180deg, rgba(10, 25, 40, 0) 40%, rgba(10, 25, 40, 0.35));
+  --veil: radial-gradient(ellipse at top left, rgba(10, 25, 40, 0.35), transparent 55%),
+    linear-gradient(180deg, rgba(10, 25, 40, 0) 40%, rgba(10, 25, 40, 0.35));
   --sky: linear-gradient(180deg, #3f8fdc, #b9dbf6);
   --open: #2f6f4f;
   --chasing: #a85a14;
