@@ -13,3 +13,10 @@ test("dates read as day, short month, year", () => {
   assert.equal(formatDate("2026-11-25"), "25 Nov 2026");
   assert.equal(formatDate("2027-01-03"), "3 Jan 2027");
 });
+
+test("dates that don't exist on the calendar are rejected", () => {
+  assert.ok(!isIsoDate("2026-02-31"));
+  assert.ok(!isIsoDate("2026-04-31"));
+  assert.ok(!isIsoDate("2026-02-29"));
+  assert.ok(isIsoDate("2024-02-29"));
+});
