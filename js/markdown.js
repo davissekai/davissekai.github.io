@@ -1,5 +1,6 @@
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
-const SAFE_URL = /^(https?:\/\/|mailto:|#|\/)/i;
+const SAFE_URL = /^(https?:\/\/|mailto:|#|\/(?!\/))/i;
+const LINK = /\[([^\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
 
 /** Makes text safe to drop into HTML, including attribute values. */
 export function escapeHtml(text) {
@@ -41,17 +42,32 @@ function renderBlock(block) {
 function renderInline(text) {
   return text
     .split(/(`[^`]*`)/)
-    .map((part, i) => (i % 2 === 1 ? `<code>${escapeHtml(part.slice(1, -1))}</code>` : renderEmphasis(renderLinks(escapeHtml(part)))))
+    .map((part, i) => (i % 2 === 1 ? `<code>${escapeHtml(part.slice(1, -1))}</code>` : renderTextAndLinks(escapeHtml(part))))
     .join("");
 }
 
-/** [text](url). Unsafe schemes keep the text and drop the link. */
-function renderLinks(escaped) {
-  return escaped.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
-    if (!SAFE_URL.test(url)) return label;
-    const external = /^https?:/i.test(url) ? ' rel="noopener" target="_blank"' : "";
-    return `<a href="${url}"${external}>${label}</a>`;
-  });
+/**
+ * Links are tokens like code spans: emphasis is applied to the text between them and to
+ * their labels, never to the address, so a `*` in a URL survives. Unsafe schemes keep the
+ * label and drop the link. The address may hold one level of balanced parentheses.
+ */
+function renderTextAndLinks(escaped) {
+  let out = "";
+  let last = 0;
+  for (const m of escaped.matchAll(LINK)) {
+    const [whole, label, url] = m;
+    out += renderEmphasis(escaped.slice(last, m.index));
+    out += renderLink(label, url);
+    last = m.index + whole.length;
+  }
+  return out + renderEmphasis(escaped.slice(last));
+}
+
+/** One link. Only http(s), mailto, #anchors and single-slash paths get an href. */
+function renderLink(label, url) {
+  if (!SAFE_URL.test(url)) return renderEmphasis(label);
+  const external = /^https?:/i.test(url) ? ' rel="noopener" target="_blank"' : "";
+  return `<a href="${url}"${external}>${renderEmphasis(label)}</a>`;
 }
 
 /** **strong** before *em*, so the double asterisks aren't read as two single ones. */

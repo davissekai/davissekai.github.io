@@ -47,3 +47,34 @@ test("empty or missing input renders nothing", () => {
 test("escapeHtml covers the five characters that matter", () => {
   assert.equal(escapeHtml(`<a href="x" title='y'>&</a>`), "&lt;a href=&quot;x&quot; title=&#39;y&#39;&gt;&amp;&lt;/a&gt;");
 });
+
+test("asterisks inside a link's address are left alone", () => {
+  assert.equal(
+    renderMarkdown("[x](https://e.com/a*b*c)"),
+    '<p><a href="https://e.com/a*b*c" rel="noopener" target="_blank">x</a></p>',
+  );
+  assert.equal(
+    renderMarkdown("*a [x](https://e.com/*b)"),
+    '<p>*a <a href="https://e.com/*b" rel="noopener" target="_blank">x</a></p>',
+  );
+});
+
+test("link labels and surrounding text still get emphasis", () => {
+  assert.equal(
+    renderMarkdown("*hi* [*x*](#q) **yo**"),
+    '<p><em>hi</em> <a href="#q"><em>x</em></a> <strong>yo</strong></p>',
+  );
+});
+
+test("one level of parentheses is allowed inside a link address", () => {
+  assert.equal(
+    renderMarkdown("[x](https://en.wikipedia.org/wiki/Foo_(bar))"),
+    '<p><a href="https://en.wikipedia.org/wiki/Foo_(bar)" rel="noopener" target="_blank">x</a></p>',
+  );
+  assert.equal(renderMarkdown("[x](javascript:alert(1))"), "<p>x</p>");
+});
+
+test("protocol-relative addresses are not internal links", () => {
+  assert.equal(renderMarkdown("[x](//evil.com)"), "<p>x</p>");
+  assert.equal(renderMarkdown("[x](/about)"), '<p><a href="/about">x</a></p>');
+});
