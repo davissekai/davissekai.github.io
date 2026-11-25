@@ -47,3 +47,13 @@ test("a single note shows its date, its rendered body and a way back", () => {
   assert.match(html, /<p>Hello <em>there<\/em><\/p>/);
   assert.match(html, /href="#notes"/);
 });
+
+test("when a slug repeats, only its first entry in the file is kept", () => {
+  const out = cleanNotes([
+    good({ slug: "dup", title: "First", date: "2026-01-01" }),
+    good({ slug: "dup", title: "Second", date: "2026-12-01" }),
+    good({ slug: "other", date: "2026-06-01" }),
+  ]);
+  assert.deepEqual(out.map((n) => n.slug), ["other", "dup"]);
+  assert.equal(out.find((n) => n.slug === "dup").title, "First");
+});

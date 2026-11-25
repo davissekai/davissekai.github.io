@@ -4,12 +4,14 @@ import { isSlug } from "./router.js";
 
 /**
  * Validates and sorts data/notes/index.json. Entries with a bad slug, title or date are dropped
- * so one typo in a hand-edited file hides one note, not the whole list.
+ * so one typo in a hand-edited file hides one note, not the whole list. A repeated slug keeps
+ * its first entry (in file order), since the slug is the note's address and must be unique.
  */
 export function cleanNotes(raw) {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((n) => n && isSlug(n.slug) && typeof n.title === "string" && n.title.trim() !== "" && isIsoDate(n.date))
+    .filter((n, i, all) => all.findIndex((o) => o.slug === n.slug) === i)
     .map((n) => ({
       slug: n.slug,
       title: n.title.trim(),
