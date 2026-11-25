@@ -1,0 +1,110 @@
+/*
+ * The illustrated print cards on the home screen. Their art is inline SVG painted with
+ * these tokens, so switching data-phase repaints every illustration for night with no extra files.
+ */
+:root {
+  --ill-sky: #f4dcae;
+  --ill-sun: #e8603c;
+  --ill-far: #7fa7c9;
+  --ill-water: #4f86b5;
+  --ill-green: #6aa253;
+  --ill-deep: #2f5d3a;
+  --ill-paper: #fbf3e2;
+  --ill-ink: #2a2f3a;
+  --ill-accent: #e8a23c;
+  --ill-red: #d2553f;
+  --ill-wood: #7a4a2a;
+  --ill-door: #3a2a20;
+  --ill-glow: #ffcf6b;
+  --ill-stars: 0;
+  --ill-halo: 0;
+  --ill-cloud: 0.95;
+  --band-notes: #dcebf5;
+  --band-questions: #e3efd6;
+  --band-about: #f6e6cf;
+  --band-ink: #1c2731;
+}
+:root[data-phase="night"] {
+  --ill-sky: #1c2747;
+  --ill-sun: #f1e6c8;
+  --ill-far: #34466f;
+  --ill-water: #223a63;
+  --ill-green: #2f4c3b;
+  --ill-deep: #1a2e25;
+  --ill-paper: #e9e1cc;
+  --ill-ink: #0d1220;
+  --ill-accent: #e0a24a;
+  --ill-red: #b4553f;
+  --ill-wood: #4a3020;
+  --ill-door: #ffcf6b;
+  --ill-stars: 1;
+  --ill-halo: 0.22;
+  --ill-cloud: 0.25;
+  --band-notes: #1f2c40;
+  --band-questions: #1f2f28;
+  --band-about: #33291f;
+  --band-ink: #eef1f4;
+}
+.ill-stars { opacity: var(--ill-stars); }
+.ill-halo { opacity: var(--ill-halo); }
+.ill-cloud { opacity: var(--ill-cloud); }
+
+.cards { display: flex; align-items: end; gap: 1.1rem; }
+.card {
+  position: relative;
+  display: flex; flex-direction: column;
+  width: 14rem; overflow: hidden;
+  color: var(--band-ink); text-decoration: none;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+/* A slight, different lean on each print, like cards propped up by hand. */
+.card-notes { --tilt: -1.2deg; }
+.card-questions { --tilt: 0.8deg; }
+.card-about { --tilt: -0.5deg; }
+.card:hover, .card:focus-visible { transform: translateY(-6px) rotate(0deg); box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32); }
+.cards .card:focus-visible { box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32), 0 0 0 5px rgba(255, 255, 255, 0.6); }
+
+.card-art { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; }
+
+/* Paper grain over the whole card, so flat vector shapes read as a printed illustration. */
+.card::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .35 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.2;
+}
+
+.card-band {
+  display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  padding: 0.7rem 0.8rem 0.85rem;
+  text-align: center;
+}
+.card-notes .card-band { background: var(--band-notes); }
+.card-questions .card-band { background: var(--band-questions); }
+.card-about .card-band { background: var(--band-about); }
+.card .label { color: inherit; opacity: 0.7; }
+.card-title { font-size: 1.1rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+
+/* Phones: three small prints side by side; the one-word label stands in for the longer title. */
+@media (max-width: 600px) {
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .card { width: auto; }
+  .card-band { padding: 0.45rem 0.3rem 0.55rem; }
+  .card .label { font-size: 0.78rem; opacity: 1; }
+  .card-title { display: none; }
+}
+
+/* Short viewports: crop the art to a wider strip so the cards still fit. */
+@media (max-height: 560px) {
+  .card { width: 12rem; }
+  .card-art { aspect-ratio: 5 / 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}

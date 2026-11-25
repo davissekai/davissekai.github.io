@@ -50,3 +50,17 @@ test("about and archive exist as static sections the panel can show", () => {
   assert.match(html, /<section id="about"/);
   assert.match(html, /<section id="archive"/);
 });
+
+test("each notebook card carries its own illustration, hidden from screen readers", () => {
+  const cards = [...html.matchAll(/<a class="card card-(\w+)" href="#(\w+)">([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(cards.map((m) => m[1]), ["notes", "questions", "about"]);
+  for (const [, name, hash, inner] of cards) {
+    assert.equal(name, hash);
+    assert.match(inner, /<svg class="card-art"[^>]*aria-hidden="true"/, name);
+    assert.match(inner, /<span class="card-title">/, name);
+  }
+});
+
+test("card styles are loaded", () => {
+  assert.match(html, /<link rel="stylesheet" href="cards\.css">/);
+});

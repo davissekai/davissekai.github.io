@@ -56,17 +56,6 @@ body { font-family: var(--font); color: var(--ink); background: var(--sky) fixed
 .intro { margin: 0; max-width: 30rem; font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.5; }
 
 .dock { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.5rem; }
-.cards { display: flex; flex-wrap: wrap; gap: 1rem; }
-.card {
-  display: flex; flex-direction: column; gap: 0.6rem;
-  width: 13.5rem; padding: 1rem 1.1rem 1.2rem;
-  background: var(--paper); color: var(--ink); text-decoration: none;
-  border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(10px);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover, .card:focus-visible { transform: translateY(-4px) rotate(-0.6deg); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24); }
-.card-title { font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
 .label { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
 .corner { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.8rem; }
@@ -76,8 +65,6 @@ body { font-family: var(--font); color: var(--ink); background: var(--sky) fixed
 a:focus-visible, button:focus-visible {
   outline: 2px solid var(--focus); outline-offset: 3px; box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.6);
 }
-/* The card hover rule sets its own shadow; this keeps the focus halo and the lift shadow together. */
-.cards .card:focus-visible { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24), 0 0 0 5px rgba(255, 255, 255, 0.6); }
 /* The title only takes focus from script, so it needs no ring. */
 .panel-title:focus { outline: none; }
 
@@ -131,12 +118,9 @@ a:focus-visible, button:focus-visible {
 .prose code { padding: 0.1em 0.35em; border-radius: 4px; background: var(--line); font-family: var(--mono); font-size: 0.88em; }
 .back { font-family: var(--mono); font-size: 0.8rem; }
 
-/* Phones: cards stack into slim rows so the home screen still fits without scrolling. */
+/* Phones: the dock stacks the cards above the links (card layout itself lives in cards.css). */
 @media (max-width: 600px) {
   .dock { flex-direction: column; align-items: stretch; }
-  .cards { flex-direction: column; gap: 0.6rem; }
-  .card { width: 100%; flex-direction: row; align-items: baseline; justify-content: space-between; padding: 0.8rem 1rem; }
-  .card-title { font-size: 1rem; text-align: right; }
   .corner { justify-content: space-between; }
 }
 
@@ -148,6 +132,6 @@ a:focus-visible, button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scene, .card { transition: none; }
+  .scene { transition: none; }
   .panel[open] { animation: none; }
 }

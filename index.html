@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="cards.css">
   <link rel="modulepreload" href="js/router.js">
   <link rel="modulepreload" href="js/time-of-day.js">
   <link rel="modulepreload" href="js/scenes.js">
@@ -39,9 +40,79 @@
 
     <div class="dock">
       <nav class="cards" aria-label="Notebook">
-        <a class="card" href="#notes"><span class="label">notes</span><span class="card-title">What I'm reading and thinking</span></a>
-        <a class="card" href="#questions"><span class="label">questions</span><span class="card-title">What I'm circling</span></a>
-        <a class="card" href="#about"><span class="label">about</span><span class="card-title">Who I am</span></a>
+        <a class="card card-notes" href="#notes">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <rect width="240" height="160" fill="var(--ill-sky)"/>
+            <g class="ill-stars" fill="var(--ill-paper)"><circle cx="24" cy="18" r="1"/><circle cx="62" cy="30" r=".8"/><circle cx="104" cy="14" r="1.1"/><circle cx="140" cy="28" r=".8"/><circle cx="220" cy="16" r="1"/><circle cx="84" cy="44" r=".7"/></g>
+            <circle cx="182" cy="38" r="16" fill="var(--ill-sun)"/>
+            <path d="M0 88 L34 56 L58 72 L94 40 L134 78 L166 60 L204 84 L240 68 V100 H0Z" fill="var(--ill-far)"/>
+            <path d="M94 40 L106 51 L98 50 L88 56 L82 51Z" fill="var(--ill-paper)" opacity=".85"/>
+            <rect y="94" width="240" height="66" fill="var(--ill-water)"/>
+            <path d="M18 104h30M70 112h40M146 106h18M196 118h26M36 124h22" stroke="var(--ill-paper)" stroke-width="1.5" stroke-linecap="round" opacity=".45"/>
+            <path d="M170 101h24M174 107h16M179 113h6" stroke="var(--ill-sun)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M0 138 Q60 126 120 133 T240 130 V160 H0Z" fill="var(--ill-green)"/>
+            <g transform="translate(64 120) rotate(-7)">
+              <path d="M0 6 L46 0 L48 30 L2 36Z" fill="var(--ill-paper)" stroke="var(--ill-ink)" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M46 0 L92 6 L90 36 L48 30Z" fill="var(--ill-paper)" stroke="var(--ill-ink)" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M9 14 l29 -3 M9 21 l29 -3 M9 28 l20 -2 M56 10 l27 3 M56 17 l27 3 M56 24 l17 2" stroke="var(--ill-water)" stroke-width="1.2" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(152 146) rotate(-22)">
+              <rect width="44" height="5" fill="var(--ill-accent)"/>
+              <path d="M44 0 L53 2.5 L44 5Z" fill="var(--ill-paper)"/>
+              <path d="M50 1.6 L53 2.5 L50 3.4Z" fill="var(--ill-ink)"/>
+              <rect x="-6" width="6" height="5" fill="var(--ill-red)"/>
+            </g>
+          </svg>
+          <span class="card-band"><span class="label">notes</span><span class="card-title">What I'm reading and thinking</span></span>
+        </a>
+        <a class="card card-questions" href="#questions">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <rect width="240" height="160" fill="var(--ill-sky)"/>
+            <g class="ill-stars" fill="var(--ill-paper)"><circle cx="96" cy="16" r="1"/><circle cx="130" cy="34" r=".8"/><circle cx="214" cy="22" r="1.1"/><circle cx="180" cy="62" r=".7"/><circle cx="20" cy="66" r=".9"/></g>
+            <circle cx="44" cy="36" r="14" fill="var(--ill-sun)"/>
+            <g class="ill-cloud" fill="var(--ill-paper)"><ellipse cx="196" cy="44" rx="24" ry="8"/><ellipse cx="184" cy="37" rx="12" ry="9"/><ellipse cx="203" cy="35" rx="10" ry="8"/></g>
+            <path d="M104 46 C 112 20, 178 18, 182 44 S 132 80, 120 58" stroke="var(--ill-ink)" stroke-width="1.2" stroke-dasharray="3 4" fill="none" stroke-linecap="round" opacity=".55"/>
+            <path d="M0 110 Q50 80 112 102 T240 94 V160 H0Z" fill="var(--ill-green)"/>
+            <path d="M0 134 Q70 110 142 130 T240 126 V160 H0Z" fill="var(--ill-deep)"/>
+            <path d="M148 70 Q112 112 66 132" stroke="var(--ill-ink)" stroke-width=".9" fill="none"/>
+            <path d="M66 132 v8" stroke="var(--ill-ink)" stroke-width="2" stroke-linecap="round"/>
+            <g transform="translate(150 48) rotate(16)">
+              <path d="M0 -24 L17 0 L0 30 L-17 0Z" fill="var(--ill-red)"/>
+              <path d="M0 -24 L17 0 L0 0Z M0 0 L-17 0 L0 30Z" fill="var(--ill-accent)"/>
+              <path d="M0 -24 V30 M-17 0 H17" stroke="var(--ill-ink)" stroke-width="1"/>
+            </g>
+            <path d="M142 76 q-9 9 0 17 q9 8 -1 17" stroke="var(--ill-ink)" stroke-width="1" fill="none"/>
+            <path d="M136 88 l5 -3 l1 6Z M146 102 l-5 -3 l0 6Z" fill="var(--ill-red)"/>
+          </svg>
+          <span class="card-band"><span class="label">questions</span><span class="card-title">What I'm circling</span></span>
+        </a>
+        <a class="card card-about" href="#about">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <rect width="240" height="160" fill="var(--ill-sky)"/>
+            <g class="ill-stars" fill="var(--ill-paper)"><circle cx="30" cy="20" r="1"/><circle cx="120" cy="12" r="1.1"/><circle cx="150" cy="40" r=".8"/><circle cx="210" cy="26" r="1"/><circle cx="96" cy="36" r=".7"/></g>
+            <circle cx="186" cy="34" r="13" fill="var(--ill-sun)"/>
+            <path d="M0 92 Q60 62 120 84 T240 78 V120 H0Z" fill="var(--ill-far)"/>
+            <g fill="var(--ill-deep)">
+              <path d="M18 128 L34 64 L50 128Z"/><path d="M44 128 L58 78 L72 128Z"/>
+              <path d="M170 128 L186 70 L202 128Z"/><path d="M196 128 L214 58 L232 128Z"/><path d="M222 128 L236 84 L250 128Z"/>
+            </g>
+            <g fill="var(--ill-green)">
+              <path d="M2 136 L16 90 L30 136Z"/><path d="M150 136 L164 92 L178 136Z"/>
+            </g>
+            <path d="M0 134 Q120 122 240 134 V160 H0Z" fill="var(--ill-green)"/>
+            <circle class="ill-halo" cx="120" cy="124" r="40" fill="var(--ill-glow)"/>
+            <path d="M92 136 L118 96 L144 136Z" fill="var(--ill-red)"/>
+            <path d="M118 96 L126 136 H110Z" fill="var(--ill-door)"/>
+            <path d="M118 96 L106 136 M118 96 L130 136" stroke="var(--ill-ink)" stroke-width="1" opacity=".35"/>
+            <path d="M118 96 l-4 -6 M118 96 l4 -6" stroke="var(--ill-ink)" stroke-width="1.4" stroke-linecap="round"/>
+            <g transform="translate(166 138)">
+              <path d="M-10 4 L10 -2 M-10 -2 L10 4" stroke="var(--ill-wood)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M0 -2 C -7 -8, -3 -14, 0 -20 C 3 -14, 7 -8, 0 -2Z" fill="var(--ill-red)"/>
+              <path d="M0 -3 C -3 -7, -1 -10, 0 -13 C 1 -10, 3 -7, 0 -3Z" fill="var(--ill-accent)"/>
+            </g>
+          </svg>
+          <span class="card-band"><span class="label">about</span><span class="card-title">Who I am</span></span>
+        </a>
       </nav>
       <footer class="corner">
         <a href="#archive">archive</a>
