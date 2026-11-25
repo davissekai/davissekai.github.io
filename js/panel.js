@@ -22,8 +22,14 @@ export function createPanel(dialog, { onDismiss }) {
     onDismiss();
   });
   // The dialog element has no padding, so a click that lands on it (not its contents) is on the backdrop.
+  // Both the press and the release must be there, or a text selection dragged out of the panel would close it.
+  let pressedOnBackdrop = false;
+  dialog.addEventListener("pointerdown", (event) => {
+    pressedOnBackdrop = event.target === dialog;
+  });
   dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) onDismiss();
+    if (pressedOnBackdrop && event.target === dialog) onDismiss();
+    pressedOnBackdrop = false;
   });
   dialog.querySelector(".panel-close").addEventListener("click", onDismiss);
 
@@ -34,7 +40,12 @@ export function createPanel(dialog, { onDismiss }) {
       body.innerHTML = content.html;
       body.scrollTop = 0;
       meantToBeOpen = true;
-      if (!dialog.open) dialog.showModal();
+      if (!dialog.open) {
+        dialog.showModal();
+      } else {
+        // The link that was clicked is gone with the old content; keep focus inside the panel.
+        title.focus();
+      }
     },
     hide() {
       meantToBeOpen = false;
