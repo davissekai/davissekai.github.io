@@ -6,7 +6,7 @@ const NOTES = [{ slug: "first", title: "First", date: "2026-11-25", label: "fiel
 const QUESTIONS = [{ id: "q", text: "Why rivers?", status: "open", added: "2026-11-25" }];
 
 /** Fake I/O so views can be tested without a browser or network. */
-function io({ fail = false } = {}) {
+function io({ fail = false, fetched = [] } = {}) {
   const files = { "data/notes/index.json": NOTES, "data/questions.json": QUESTIONS, "data/notes/first.md": "Hello." };
   return {
     fetchJson: async (url) => {
@@ -14,10 +14,11 @@ function io({ fail = false } = {}) {
       return files[url];
     },
     fetchText: async (url) => {
+      fetched.push(url);
       if (fail) throw new Error("offline");
       return files[url];
     },
-    staticHtml: (id) => (id === "about" ? "<p>me</p>" : null),
+    staticHtml: (id) => ({ about: "<p>me</p>", archive: "<p>old stuff</p>" })[id] ?? null,
   };
 }
 
@@ -43,9 +44,23 @@ test("#questions renders the questions", async () => {
   assert.match(v.html, /Why rivers\?/);
 });
 
-test("about and archive come from static page content", async () => {
+test("about and archive show their static page content", async () => {
   assert.equal((await viewFor({ view: "about", slug: null }, io())).html, "<p>me</p>");
-  assert.deepEqual(await viewFor({ view: "archive", slug: null }, io()), MISSING);
+  const archive = await viewFor({ view: "archive", slug: null }, io());
+  assert.equal(archive.label, "archive");
+  assert.equal(archive.title, "Archive");
+  assert.equal(archive.html, "<p>old stuff</p>");
+});
+
+test("a page with no static content is 'nothing here'", async () => {
+  const noStatic = { ...io(), staticHtml: () => null };
+  assert.deepEqual(await viewFor({ view: "archive", slug: null }, noStatic), MISSING);
+});
+
+test("a slug missing from the index is never fetched", async () => {
+  const fetched = [];
+  await viewFor({ view: "notes", slug: "nope" }, io({ fetched }));
+  assert.deepEqual(fetched, []);
 });
 
 test("unknown routes are 'nothing here'", async () => {
