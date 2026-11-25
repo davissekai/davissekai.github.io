@@ -1,7 +1,7 @@
 # The research notebook: site redesign
 
 Date: 2026-11-25
-Status: draft, awaiting Davis's review
+Status: approved, implemented
 
 ## Why
 
@@ -54,7 +54,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 - The photos come from Unsplash or Pexels, whose free licenses allow this use. Pinterest is ruled out because its images are usually reposted with no license.
 - No on-page photo credits. Neither license requires attribution, and the source URL for each photo is recorded in `img/scenes/SOURCES.md` in the repo.
-- The photos are self-hosted in `img/scenes/` as WebP, about 2400px wide, at most about 350 KB each. That makes 8 photos in all.
+- The photos are self-hosted in `img/scenes/` as WebP, about 2400px wide, at most about 400 KB each. That makes 8 photos in all.
 - Only the current scene loads at first. The other scenes load quietly after the page is idle, so the first crossfade has no blank frame.
 - Davis can replace any photo with their own by overwriting the file of the same name.
 
@@ -73,9 +73,11 @@ Each view has a scene, and each scene comes in a day version and a night version
 - The space theme is retired: its `js/` modules, tests, styles and fonts are removed. The project list moves into the archive panel. Git history keeps the old site.
 - New modules, grouped by feature:
   - `js/time-of-day.js`: maps a `Date` to `day` or `night`.
-  - `js/scenes.js`: maps a view and time to a photo, handles preloading and the crossfade.
+  - `js/scenes.js`: maps a view and time to a photo.
+  - `js/backdrop.js`: preloads the photos and crossfades between them.
   - `js/panel.js`: opening and closing, focus handling, the dialog itself.
-  - `js/router.js`: parses a hash into a view and slug, and syncs it with the browser history.
+  - `js/router.js`: parses a hash into a view and slug.
+  - `js/main.js`: wires everything together and syncs the hash with the browser history.
   - `js/notes.js`: loads the index and note files and renders them.
   - `js/markdown.js`: the small, escaping Markdown renderer.
   - `js/questions.js`: loads and renders the questions.
