@@ -72,7 +72,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 - Plain HTML, CSS and ES modules on GitHub Pages, as now. No frameworks and no new dependencies.
 - The space theme is retired: its `js/` modules, tests, styles and fonts are removed. The project list moves into the archive panel. Git history keeps the old site.
 - New modules, grouped by feature:
-  - `js/time-of-day.js`: maps a `Date` to `day` or `night` and reports when the next change is due.
+  - `js/time-of-day.js`: maps a `Date` to `day` or `night`.
   - `js/scenes.js`: maps a view and time to a photo, handles preloading and the crossfade.
   - `js/panel.js`: opening and closing, focus handling, the dialog itself.
   - `js/router.js`: parses a hash into a view and slug, and syncs it with the browser history.
@@ -91,7 +91,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 Unit tests run with `node --test`, as now, and are written before the code:
 
-- `time-of-day`: the boundaries at 05:59, 06:00, 17:59 and 18:00, plus the time until the next change.
+- `time-of-day`: the boundaries at 05:59, 06:00, 17:59 and 18:00.
 - `router`: `#notes/slug` parses correctly; empty, unknown and malformed hashes fall back safely.
 - `markdown`: each supported construct renders; HTML and `javascript:` links are escaped or stripped.
 - `notes` and `questions`: newest-first sorting, the status filter, and malformed entries skipped without crashing.
