@@ -28,11 +28,16 @@ async function fetchOk(url) {
   return response;
 }
 
+/** Points the page and the backdrop at the current phase and view, without touching the panel. */
+function applyScene() {
+  root.dataset.phase = phase;
+  backdrop.show(sceneFor(route.view, phase));
+}
+
 /** Brings the scene and the panel in line with the current route and phase. */
 async function render() {
   const token = ++renderToken;
-  root.dataset.phase = phase;
-  backdrop.show(sceneFor(route.view, phase));
+  applyScene();
   if (route.view === "home") {
     panel.hide();
     return;
@@ -54,6 +59,8 @@ function go() {
  * so the back button stays honest. If the visitor landed on a deep link, replace it with home instead.
  */
 function dismiss() {
+  // A second call while history.go is pending (double-click, double-Esc) would step back too far.
+  if (closing) return;
   const depth = history.state?.depth ?? 0;
   if (depth > 0) {
     closing = true;
@@ -78,6 +85,10 @@ document.addEventListener("click", (event) => {
     render();
     return;
   }
+  if (link.hasAttribute("data-close")) {
+    dismiss();
+    return;
+  }
   const href = link.getAttribute("href");
   const next = parseHash(href);
   const depth = next.view === "home" ? 0 : (history.state?.depth ?? 0) + 1;
@@ -98,12 +109,12 @@ window.addEventListener("popstate", () => {
   go();
 });
 
-/** Re-checks the clock, and crossfades the scene if day just turned to night or back. */
+/** Re-checks the clock, and crossfades the scene if day just turned to night or back. The open panel is left alone, so its scroll position survives. */
 function checkPhase() {
   const next = phaseAt(new Date());
   if (next !== phase) {
     phase = next;
-    render();
+    applyScene();
   }
 }
 setInterval(checkPhase, 60_000);

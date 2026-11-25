@@ -7,7 +7,7 @@ const TITLES = { notes: "Notes", questions: "Open questions", about: "About", ar
 export const MISSING = {
   label: "lost",
   title: "Nothing here",
-  html: `<p>That page doesn't exist. <a href="#">Back to the start</a></p>`,
+  html: `<p>That page doesn't exist. <a href="#" data-close>Back to the start</a></p>`,
 };
 
 /**

@@ -72,3 +72,7 @@ test("a failed load offers a retry for the same hash", async () => {
   assert.match(v.html, /Couldn't load this right now/);
   assert.match(v.html, /href="#notes\/first" data-retry/);
 });
+
+test("the 'Back to the start' link closes the panel instead of pushing history", () => {
+  assert.match(MISSING.html, /<a href="#" data-close>/);
+});
