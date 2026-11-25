@@ -30,7 +30,7 @@ Davis has started a master's and now presents as a researcher, though the topic 
   - `#notes`: a dated list of notes, newest first. Each item shows its label, title and date.
   - `#notes/<slug>`: a single note, shown inside the same panel with a "← all notes" link.
   - `#questions`: a list of research questions, each with a status of `open`, `chasing` or `dropped`, plus an optional one-line comment.
-  - `#about`: a short bio, the master's program, contact details and photo credits.
+  - `#about`: a short bio, the master's program, and contact details.
   - `#archive`: the old projects (Two Eyes, Atmo, VentureQuest, notify-crossx, Carbon Markets for SMEs), each with a one-line description and a link.
 - An unknown hash or slug shows a short "nothing here" message in the panel. It does not break the page.
 
@@ -53,7 +53,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 ### Photos
 
 - The photos come from Unsplash or Pexels, whose free licenses allow this use. Pinterest is ruled out because its images are usually reposted with no license.
-- Photographer credits go in the About panel.
+- No on-page photo credits. Neither license requires attribution, and the source URL for each photo is recorded in `img/scenes/SOURCES.md` in the repo.
 - The photos are self-hosted in `img/scenes/` as WebP, about 2400px wide, at most about 350 KB each. That makes 8 photos in all.
 - Only the current scene loads at first. The other scenes load quietly after the page is idle, so the first crossfade has no blank frame.
 - Davis can replace any photo with their own by overwriting the file of the same name.
