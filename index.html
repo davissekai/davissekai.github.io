@@ -1,144 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Davis Dey · 人皇</title>
-  <meta name="theme-color" content="#05040a">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Davis Dey · research notebook</title>
+  <meta name="description" content="Davis Dey's research notebook: notes, open questions, and the work so far.">
+  <!-- Mirrors phaseAt() in js/time-of-day.js (a test keeps the hours equal) so night visitors never see a day flash before the modules load. -->
+  <script>(function(h){var d=document.documentElement;d.classList.add("js");d.dataset.phase=h>=6&&h<18?"day":"night";})(new Date().getHours());</script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- The brush face is a full CJK font; ask only for the characters the page writes in it. -->
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E4%BA%BA%E7%9A%87%E9%99%8D%E4%B8%B4%E6%98%9F%E5%9B%BE%E4%BC%A0%E9%9F%B3&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <!-- Every module the scripts import, fetched in parallel now instead of discovered one import at a time. -->
-  <link rel="modulepreload" href="js/annotations.js">
-  <link rel="modulepreload" href="js/chart-warp.js">
-  <link rel="modulepreload" href="js/frame-budget.js">
-  <link rel="modulepreload" href="js/galaxies.js">
-  <link rel="modulepreload" href="js/galaxy-stars.js">
-  <link rel="modulepreload" href="js/glyph-points.js">
-  <link rel="modulepreload" href="js/nebula.js">
-  <link rel="modulepreload" href="js/pulsar.js">
-  <link rel="modulepreload" href="js/sky.js">
-  <link rel="modulepreload" href="js/sprites.js">
-  <link rel="modulepreload" href="js/star-layers.js">
-  <link rel="modulepreload" href="js/timeline.js">
-  <link rel="modulepreload" href="js/trail.js">
-  <link rel="modulepreload" href="js/visit.js">
-  <link rel="modulepreload" href="js/warp.js">
-  <link rel="modulepreload" href="js/when-needed.js">
-  <link rel="modulepreload" href="js/worlds.js">
-  <link rel="modulepreload" href="js/zoomed-sky.js">
+  <link rel="modulepreload" href="js/router.js">
+  <link rel="modulepreload" href="js/time-of-day.js">
+  <link rel="modulepreload" href="js/scenes.js">
+  <link rel="modulepreload" href="js/views.js">
+  <link rel="modulepreload" href="js/notes.js">
+  <link rel="modulepreload" href="js/questions.js">
+  <link rel="modulepreload" href="js/markdown.js">
+  <link rel="modulepreload" href="js/dates.js">
+  <link rel="modulepreload" href="js/backdrop.js">
+  <link rel="modulepreload" href="js/panel.js">
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <header class="masthead">
-    <button class="seal" id="seal" aria-label="Renhuang 人皇, replay arrival">
-      <svg viewBox="0 0 56 56" aria-hidden="true">
-        <rect x="0.5" y="0.5" width="55" height="55" fill="none" stroke="currentColor" stroke-width="1"/>
-        <g fill="currentColor" font-family="'Ma Shan Zheng', KaiTi, serif" font-size="20" text-anchor="middle" dominant-baseline="central">
-          <text x="28" y="18">人</text>
-          <text x="28" y="38">皇</text>
-        </g>
-      </svg>
-      <span class="seal-name" aria-hidden="true">Renhuang</span>
-    </button>
-    <nav class="nav" aria-label="Sections">
-      <a href="#arrival"><b>降临</b>arrival</a>
-      <a href="#chart-page"><b>星图</b>star chart</a>
-      <a href="#transmission"><b>传音</b>transmission</a>
-    </nav>
-  </header>
+  <div class="backdrop" aria-hidden="true">
+    <div class="scene"></div>
+    <div class="scene"></div>
+    <div class="veil"></div>
+  </div>
 
-  <section class="screen" id="arrival" aria-labelledby="greet-title">
-    <canvas id="sky" aria-hidden="true"></canvas>
-    <div class="veil" aria-hidden="true"></div>
-    <div class="greeting" id="greeting">
-      <p class="eyebrow"><b>降临</b>arrival</p>
-      <h1 id="greet-title">Welcome to <em>my domain.</em></h1>
-      <p class="lead">Greetings, I'm Davis. Every question I couldn't put down became a world, and this is the sky they hang in.</p>
-      <p class="body">One watches rivers from orbit. One lets founders fail before it costs them. One waits in silence and calls you back when the work is done. They all turn around the same sun: this planet, and what we can still make of it.</p>
-      <p class="cue"><a href="#chart-page"><b>星图</b> look up ↓</a></p>
+  <main class="home">
+    <header class="greeting">
+      <h1>Greetings. <span>I'm Davis.</span></h1>
+      <p class="intro">I've just started a master's and I'm still working out what to research. This notebook is where I do that thinking in the open.</p>
+    </header>
+
+    <div class="dock">
+      <nav class="cards" aria-label="Notebook">
+        <a class="card" href="#notes"><span class="label">notes</span><span class="card-title">What I'm reading and thinking</span></a>
+        <a class="card" href="#questions"><span class="label">questions</span><span class="card-title">What I'm circling</span></a>
+        <a class="card" href="#about"><span class="label">about</span><span class="card-title">Who I am</span></a>
+      </nav>
+      <footer class="corner">
+        <a href="#archive">archive</a>
+        <a href="mailto:davisdey001@gmail.com" aria-label="Email Davis"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></a>
+        <a href="https://github.com/davissekai" target="_blank" rel="noopener noreferrer" aria-label="Davis on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+        <a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer" aria-label="Davis on X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z"/></svg></a>
+      </footer>
     </div>
-  </section>
+  </main>
 
-  <section class="screen chart-screen" id="chart-page" aria-labelledby="chart-title">
-    <canvas id="chart" aria-hidden="true"></canvas>
-    <div class="chart-frame" id="chart-frame">
-      <div class="chart-head">
-        <p class="eyebrow"><b>星图</b>star chart</p>
-        <h2 class="cue" id="chart-title">Each galaxy is a world I made. Tap one to visit.</h2>
-      </div>
-      <ul class="worlds" id="worlds" aria-label="Worlds">
-        <li><button class="world-label" type="button" data-world="two-eyes" aria-haspopup="dialog">Two Eyes<small>remote sensing</small></button></li>
-        <li><button class="world-label" type="button" data-world="atmo" aria-haspopup="dialog">Atmo<small>climate ai</small></button></li>
-        <li><button class="world-label" type="button" data-world="venturequest" aria-haspopup="dialog">VentureQuest<small>climate game</small></button></li>
-        <li><button class="world-label" type="button" data-world="notify-crossx" aria-haspopup="dialog">notify-crossx<small>developer tool</small></button></li>
-        <li><button class="world-label" type="button" data-world="carbon-markets" aria-haspopup="dialog">Carbon Markets for SMEs<small>still forming</small></button></li>
-      </ul>
+  <!-- Source for the About and Archive panels. Hidden when JS runs; readable as a plain page when it doesn't. -->
+  <div class="nojs-only">
+    <section id="about">
+      <p>I'm Davis Dey. I build at the meeting point of climate and AI: rivers watched from orbit, carbon markets that let small players in, and tools for people who usually get left out of both.</p>
+      <p>I've just started a master's. I don't have a research topic yet, and that's the point of this notebook: the reading, the half-formed questions, and the narrowing-down, done where anyone can watch.</p>
+      <p>Have a question you think I should chase? <a href="mailto:davisdey001@gmail.com">Write to me</a>, or find me on <a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer">X</a> and <a href="https://github.com/davissekai" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+    </section>
+    <section id="archive">
+      <ol class="entries">
+        <li><a href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">remote sensing</span><span class="title">Two Eyes</span><span class="aside">A phone video of a muddy river, matched to the mining scar upstream in Sentinel-2.</span></a></li>
+        <li><a href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">climate ai</span><span class="title">Atmo</span><span class="aside">Ask the climate anything: Article 6, loss and damage, adaptation finance, answered plainly.</span></a></li>
+        <li><a href="https://mvp-six-vert.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="label">climate game</span><span class="title">VentureQuest</span><span class="aside">Run a climate startup and live with every trade-off.</span></a></li>
+        <li><a href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer"><span class="label">developer tool</span><span class="title">notify-crossx</span><span class="aside">Pings your desktop when your AI coding agent is done or needs you.</span></a></li>
+        <li><span class="row"><span class="label">research in progress</span><span class="title">Carbon Markets for SMEs</span><span class="aside">What it would take for small Ghanaian businesses to enter carbon markets on their own terms.</span></span></li>
+      </ol>
+    </section>
+  </div>
+
+  <dialog id="panel" class="panel" aria-labelledby="panel-title">
+    <div class="panel-inner">
+      <header class="panel-head">
+        <span class="panel-label label"></span>
+        <h2 id="panel-title" class="panel-title"></h2>
+        <button class="panel-close" type="button" aria-label="Close">×</button>
+      </header>
+      <div class="panel-body"></div>
     </div>
-  </section>
-
-  <section class="screen transmission-screen" id="transmission" aria-labelledby="transmission-title">
-    <canvas id="transmission-sky" aria-hidden="true"></canvas>
-    <div class="transmission">
-      <p class="eyebrow"><b>传音</b>transmission</p>
-      <h2 id="transmission-title">Send word across <em>the dark.</em></h2>
-      <p class="body">Every world up there began as a question someone couldn't put down. If you have one, a project to build together, or a river you think I should look at, send it my way.</p>
-      <ul class="channels" aria-label="Ways to reach me">
-        <li><a href="mailto:davisdey001@gmail.com" aria-label="Email Davis"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></a></li>
-        <li><a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer" aria-label="Davis on X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z"/></svg></a></li>
-      </ul>
-    </div>
-    <footer class="colophon">Davis Dey · <span lang="zh">人皇</span> · 2026</footer>
-  </section>
-
-  <dialog class="world" id="world-two-eyes" aria-labelledby="world-two-eyes-title">
-    <p class="eyebrow">computer vision · remote sensing · climate</p>
-    <h3 id="world-two-eyes-title">Two Eyes</h3>
-    <p class="lead">A river turns brown. One eye on the ground, one in orbit, and the mud finally has an address.</p>
-    <p class="body">Someone films a muddy river on their phone. Two Eyes looks upstream through Sentinel-2, finds the fresh mining scar, and folds both into a dated evidence card anyone can share. Made for the Meta Global AI Developer Hackathon, 2026.</p>
-    <p class="world-links"><a href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer">live ↗</a><a href="https://github.com/davissekai/two-eyes" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
   </dialog>
-  <dialog class="world" id="world-atmo" aria-labelledby="world-atmo-title">
-    <p class="eyebrow">climate · ai · typescript</p>
-    <h3 id="world-atmo-title">Atmo</h3>
-    <p class="lead">Ask the climate anything.</p>
-    <p class="body">Article 6, loss and damage, adaptation finance: the questions that usually need a policy brief and an afternoon. Atmo answers them plainly and keeps its answers grounded.</p>
-    <p class="world-links"><a href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">live ↗</a><a href="https://github.com/davissekai/atmo-v2" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-venturequest" aria-labelledby="world-venturequest-title">
-    <p class="eyebrow">game · entrepreneurship · climate</p>
-    <h3 id="world-venturequest-title">VentureQuest</h3>
-    <p class="lead">Run a climate startup. Survive your own decisions.</p>
-    <p class="body">A game where you found a climate venture and live with every trade-off real founders face, one decision at a time.</p>
-    <p class="world-links"><a href="https://mvp-six-vert.vercel.app/" target="_blank" rel="noopener noreferrer">view project ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-notify-crossx" aria-labelledby="world-notify-crossx-title">
-    <p class="eyebrow">developer tools · ai agents · node</p>
-    <h3 id="world-notify-crossx-title">notify-crossx</h3>
-    <p class="lead">Step away. It'll call you back.</p>
-    <p class="body">Your AI coding agent works while you make tea. notify-crossx pings your desktop when it's done or needs you, and stays quiet while you're watching. Free for OpenCode, with a Claude Code edition.</p>
-    <p class="world-links"><a href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-carbon-markets" aria-labelledby="world-carbon-markets-title">
-    <p class="eyebrow">climate · carbon markets · ai</p>
-    <h3 id="world-carbon-markets-title">Carbon Markets for SMEs</h3>
-    <p class="lead">Who gets a seat at the carbon table?</p>
-    <p class="body">Ongoing research into what it would take for small Ghanaian businesses and communities to enter carbon markets on their own terms, not someone else's.</p>
-    <p class="world-links"><span>research in progress</span></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-
-  <script type="module" src="js/arrival.js"></script>
-  <script type="module" src="js/chart.js"></script>
-  <script type="module" src="js/transmission.js"></script>
-  <script type="module" src="js/nav.js"></script>
-  <script type="module" src="js/comet.js"></script>
 </body>
 </html>

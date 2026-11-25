@@ -1,199 +1,137 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Day tokens. Night overrides them below; the phase is set on <html> before first paint. */
 :root {
-  --void: #05040a;
-  /* Cool starlight whites, after Hubble/Webb: text, accents, and the rare pink of star formation. */
-  --bone: #eceefa;
-  --dim: rgba(226, 230, 250, 0.66);
-  --star: #c4d0ff;
-  --blush: #ffb8d2;
-  --line: rgba(226, 230, 250, 0.22);
-  --gutter: clamp(16px, 7vw, 120px);
-  --brush: "Ma Shan Zheng", "KaiTi", serif;
-  --display: "Cormorant Garamond", "Cormorant", Garamond, serif;
+  --font: "Bricolage Grotesque", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --paper: rgba(255, 253, 247, 0.86);
+  --ink: #1c2731;
+  --muted: #5b6b76;
+  --line: rgba(28, 39, 49, 0.12);
+  --veil: linear-gradient(180deg, rgba(10, 25, 40, 0) 40%, rgba(10, 25, 40, 0.35));
+  --sky: linear-gradient(180deg, #3f8fdc, #b9dbf6);
+  --open: #2f6f4f;
+  --chasing: #a85a14;
+  --dropped: #7a7f85;
+  --focus: #ffd166;
+  color-scheme: light;
 }
-* { box-sizing: border-box; margin: 0; }
-html { scroll-behavior: smooth; }
-html, body { background: var(--void); color: var(--bone); overflow-x: hidden; }
-body { font: 400 1rem/1.6 Inter, system-ui, sans-serif; }
-a { color: inherit; text-decoration: none; }
-/* Each page is one full screen with its own sky canvas. */
-.screen { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
-.screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+:root[data-phase="night"] {
+  --paper: rgba(16, 22, 32, 0.84);
+  --ink: #e8edf2;
+  --muted: #9ba9b5;
+  --line: rgba(232, 237, 242, 0.14);
+  --veil: linear-gradient(180deg, rgba(3, 8, 18, 0.35), rgba(3, 8, 18, 0.6));
+  --sky: linear-gradient(180deg, #040a18, #16233d);
+  --open: #7fd1a4;
+  --chasing: #f0a868;
+  --dropped: #8d949b;
+  color-scheme: dark;
+}
 
-/* Masthead: the seal and its name on the left, the sections on the right, on one line and on the page's gutters. */
-.masthead {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 2;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 22px var(--gutter); pointer-events: none;
-}
-.masthead > * { pointer-events: auto; }
-/* A soft fade of night behind the masthead, so text scrolling under it never collides with it. */
-.masthead::before {
-  content: ""; position: absolute; inset: 0 0 -36px; z-index: -1; pointer-events: none;
-  background: linear-gradient(rgba(5, 4, 10, 0.94), rgba(5, 4, 10, 0.72) 60%, rgba(5, 4, 10, 0));
-}
-/* The seal: white hairline and characters, open in the middle so the sky shows through. */
-.seal {
-  display: flex; align-items: center; gap: 14px; padding: 0; border: 0;
-  background: none; color: var(--bone); cursor: pointer; transition: opacity .2s ease;
-}
-.seal svg { display: block; width: 44px; height: 44px; flex: none; }
-.seal-name { font: 300 1.45rem/1 var(--display); letter-spacing: 0.14em; }
-.seal:hover { opacity: 0.75; }
-.nav { display: flex; align-items: center; font: 500 0.66rem/1 Inter, sans-serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--dim); }
-.nav > * { display: flex; align-items: center; gap: 8px; padding: 8px 0; position: relative; transition: color .2s ease; }
-/* Hairline dividers between sections, like a star atlas's index. */
-.nav > * + * { margin-left: 22px; padding-left: 22px; border-left: 1px solid var(--line); }
-.nav b { font: 400 0.95rem/1 var(--brush); letter-spacing: 0; color: var(--bone); }
-.nav a:hover, .nav [aria-current] { color: var(--bone); }
-.nav [aria-current]::after { content: ""; position: absolute; right: 0; bottom: 0; left: 22px; height: 1px; background: var(--star); opacity: 0.6; }
-.nav > :first-child[aria-current]::after { left: 0; }
-.nav span { opacity: 0.55; }
+html, body { margin: 0; height: 100%; }
+body { font-family: var(--font); color: var(--ink); background: var(--sky) fixed; }
+.js body { overflow: hidden; }
 
-.veil { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 0% 100%, rgba(5,4,10,0.85) 0%, rgba(5,4,10,0) 60%); }
-.greeting { position: absolute; left: clamp(16px, 7vw, 120px); bottom: clamp(56px, 12vh, 140px); max-width: 34rem; z-index: 2; }
-.greeting > * { opacity: 0; transform: translateY(8px); clip-path: inset(0 100% 0 0); transition: opacity 1.2s ease, transform 1.2s ease, clip-path 1.6s cubic-bezier(.6,.1,.2,1); }
-.greeting.is-revealed > * { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
-.greeting.is-revealed > :nth-child(2) { transition-delay: .25s; }
-.greeting.is-revealed > :nth-child(3) { transition-delay: .7s; }
-.greeting.is-revealed > :nth-child(4) { transition-delay: 1.1s; }
-.greeting.is-revealed > :nth-child(5) { transition-delay: 1.5s; }
-.eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
-.eyebrow b { font: 400 1.1rem var(--brush); color: var(--bone); letter-spacing: 0.1em; margin-right: 8px; }
-h1 { font: 300 clamp(2.6rem, 5.8vw, 4.4rem)/1 var(--display); letter-spacing: -0.01em; margin: 10px 0 16px; }
-h1 em { font-weight: 300; color: var(--star); }
-.lead { font-size: 1.1rem; margin-bottom: 10px; }
-.body { color: var(--dim); font-size: 0.95rem; }
-.cue { margin-top: 18px; font-size: 0.8rem; color: var(--dim); }
-.cue b { font: 400 1rem var(--brush); color: var(--bone); }
-.cue a:hover { color: var(--bone); }
+/* Backdrop: two photo layers that take turns, a veil for legibility, and the sky gradient as fallback. */
+.backdrop { position: fixed; inset: 0; z-index: -1; background: var(--sky); }
+.scene { position: absolute; inset: 0; background: center / cover no-repeat; opacity: 0; transition: opacity 1.2s ease; }
+.scene.is-shown { opacity: 1; }
+.veil { position: absolute; inset: 0; background: var(--veil); }
 
-/* Seam: the chart rises under the arrival's bottom edge, which fades out, so one sky dissolves into the next. */
-:root { --blend: 34vh; }
-@supports (height: 1svh) { :root { --blend: 34svh; } }
-#arrival { z-index: 1; }
-#arrival canvas, #arrival .veil {
-  -webkit-mask-image: linear-gradient(#000 calc(100% - var(--blend)), transparent);
-  mask-image: linear-gradient(#000 calc(100% - var(--blend)), transparent);
+/* Home: one screen. The greeting sits at the top, the cards and links at the bottom. */
+.home {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 2rem;
+  padding: clamp(1.25rem, 4vw, 3.5rem);
 }
-.chart-screen {
-  height: calc(100vh + var(--blend)); height: calc(100svh + var(--blend));
-  margin-top: calc(-1 * var(--blend));
-  /* Anchor links land on the full chart screen, past the shared blend zone. */
-  scroll-margin-top: calc(-1 * var(--blend));
+.greeting { align-self: start; max-width: 42rem; color: #fff; text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35); }
+.greeting h1 { margin: 0 0 1rem; font-size: clamp(2.6rem, 7vw, 5.5rem); font-weight: 700; line-height: 0.98; letter-spacing: -0.02em; }
+.greeting h1 span { display: block; }
+.intro { margin: 0; max-width: 30rem; font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.5; }
+
+.dock { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.5rem; }
+.cards { display: flex; flex-wrap: wrap; gap: 1rem; }
+.card {
+  display: flex; flex-direction: column; gap: 0.6rem;
+  width: 13.5rem; padding: 1rem 1.1rem 1.2rem;
+  background: var(--paper); color: var(--ink); text-decoration: none;
+  border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-/* The chart's own screen, below the blend zone; labels are placed in its coordinates. */
-.chart-frame { position: absolute; left: 0; right: 0; top: var(--blend); bottom: 0; pointer-events: none; }
-.chart-head { position: absolute; top: clamp(96px, 14vh, 150px); left: clamp(16px, 7vw, 120px); }
-.chart-head .cue { font-weight: 400; margin-top: 8px; }
+.card:hover, .card:focus-visible { transform: translateY(-4px) rotate(-0.6deg); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24); }
+.card-title { font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
+.label { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
-/* Galaxy labels: hidden until the chart script has placed them beside their galaxies. */
-.worlds { list-style: none; padding: 0; visibility: hidden; }
-.worlds.is-placed { visibility: visible; }
-.world-label {
-  position: absolute; pointer-events: auto; text-align: center; white-space: nowrap;
-  background: none; border: 0; padding: 4px 8px; cursor: pointer;
-  color: var(--bone); opacity: 0.8; font: italic 400 1.3rem/1.15 var(--display);
-  text-shadow: 0 0 12px rgba(5, 4, 10, 0.9);
-  transition: opacity .2s ease, color .2s ease;
+.corner { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.8rem; }
+.corner a { color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4); }
+.corner svg { display: block; width: 20px; height: 20px; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.4)); }
+
+a:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+/* Static source for about/archive: hidden when JS runs, a plain readable block when it doesn't. */
+.js .nojs-only { display: none; }
+.nojs-only { max-width: 40rem; margin: 2rem auto; padding: 1.5rem; background: var(--paper); border-radius: 14px; line-height: 1.6; }
+
+/* The panel. */
+.panel {
+  width: min(40rem, 92vw); max-height: 82dvh; padding: 0; border: 0;
+  border-radius: 18px; background: var(--paper); color: var(--ink);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); backdrop-filter: blur(14px);
 }
-.world-label small { display: block; font: 400 0.62rem Inter, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
-.world-label:hover, .world-label.is-near, .world-label:focus-visible { opacity: 1; color: var(--star); }
-.world-label:focus-visible { outline: 1px solid var(--star); outline-offset: 4px; }
-/* Leader hairlines from each galaxy's rim to its label, star-atlas style. */
-.leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.leaders line { stroke: var(--bone); stroke-width: 1; stroke-opacity: 0.3; vector-effect: non-scaling-stroke; transition: stroke .2s ease, stroke-opacity .2s ease; }
-.leaders line.is-near { stroke: var(--star); stroke-opacity: 0.8; }
-
-/* Transmission: one pulsar beating in the dark, and the ways to reach me beside it. */
-.transmission { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(30rem, calc(100% - 2 * var(--gutter))); }
-.transmission h2 { font: 300 clamp(2.6rem, 5.4vw, 4.2rem)/1 var(--display); letter-spacing: -0.01em; margin: 10px 0 18px; }
-.transmission h2 em { color: var(--star); }
-.transmission .body { max-width: 26rem; }
-/* Ways to reach me: two quiet icons in hairline rings, like stars ringed on a chart. */
-.channels { list-style: none; padding: 0; margin-top: 32px; display: flex; gap: 14px; }
-.channels a {
-  display: grid; place-items: center; width: 52px; height: 52px;
-  border: 1px solid var(--line); border-radius: 50%; color: var(--bone);
-  transition: color .2s ease, border-color .2s ease, transform .2s ease;
+.panel[open] { animation: rise 0.25s ease-out; }
+.panel::backdrop { background: rgba(5, 12, 20, 0.2); backdrop-filter: blur(6px); }
+@keyframes rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+.panel-inner { display: flex; flex-direction: column; max-height: 82dvh; }
+.panel-head {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 1rem;
+  padding: 1.4rem 1.6rem 1rem; border-bottom: 1px solid var(--line);
 }
-.channels svg { width: 20px; height: 20px; }
-.channels li:last-child svg { width: 17px; height: 17px; }
-.channels a:hover, .channels a:focus-visible { color: var(--star); border-color: var(--star); transform: translateY(-2px); }
-.channels a:focus-visible { outline: 1px solid var(--star); outline-offset: 3px; }
-.colophon { position: absolute; left: var(--gutter); bottom: 22px; font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); opacity: 0.7; }
-.colophon span { font-family: var(--brush); }
-
-/* Visiting a world: the chart flies into the galaxy and its story floats beside it in open sky.
-   Still a native modal dialog (focus, Esc, screen readers), just with no box. */
-html { scrollbar-gutter: stable; }
-.is-visiting { overflow: hidden; }
-.masthead, .chart-head, .worlds, .leaders { transition: opacity .5s ease; }
-.is-visiting :is(.masthead, .masthead > *, .chart-head, .worlds, .leaders) { opacity: 0; pointer-events: none; }
-.is-visiting .worlds .world-label { pointer-events: none; }
-.world {
-  position: fixed; inset: auto; margin: 0;
-  top: 50%; right: clamp(16px, 7vw, 120px); transform: translateY(-50%);
-  width: min(26rem, 34vw); max-height: 86vh; max-height: 86svh; overflow: auto;
-  padding: 8px 4px; background: none; border: 0; color: var(--bone);
-  text-shadow: 0 0 18px rgba(5, 4, 10, 0.95), 0 0 3px rgba(5, 4, 10, 0.8);
+.panel-title { grid-column: 1; margin: 0; font-size: 1.7rem; line-height: 1.15; }
+.panel-close {
+  grid-column: 2; grid-row: 1 / span 2; align-self: start;
+  width: 2.25rem; height: 2.25rem; border: 0; border-radius: 50%;
+  background: var(--line); color: var(--ink); font: inherit; font-size: 1.3rem; cursor: pointer;
 }
-.world::backdrop { background: transparent; }
-.world:focus { outline: none; }
-/* The words arrive as the flight lands, one after another. */
-.world[open] > * { animation: world-in .8s ease both; animation-delay: .6s; }
-.world[open] > :nth-child(2) { animation-delay: .72s; }
-.world[open] > :nth-child(3) { animation-delay: .86s; }
-.world[open] > :nth-child(4) { animation-delay: 1s; }
-.world[open] > :nth-child(5) { animation-delay: 1.14s; }
-.world[open] > :nth-child(6) { animation-delay: 1.28s; }
-.world h3 { font: 300 clamp(2.8rem, 4.6vw, 3.9rem)/1 var(--display); margin: 10px 0 16px; }
-.world .lead { font: italic 400 1.45rem/1.3 var(--display); margin-bottom: 14px; }
-.world .body { line-height: 1.7; }
-.world-links { display: flex; gap: 22px; margin-top: 22px; font-size: 0.85rem; }
-.world-links a { color: var(--star); }
-.world-links a:hover { color: var(--bone); }
-.world-links span { color: var(--dim); font-style: italic; }
-.world-links a:focus-visible, .world-back:focus-visible { outline: 1px solid var(--star); outline-offset: 4px; }
-.world-back {
-  margin-top: 30px; padding: 6px 0; background: none; border: 0; cursor: pointer;
-  color: var(--dim); font: 0.75rem Inter, sans-serif; letter-spacing: 0.2em; text-transform: uppercase;
+.panel-body { overflow: auto; padding: 1.2rem 1.6rem 1.6rem; line-height: 1.6; }
+.panel-body a { color: inherit; }
+
+/* Lists inside panels. */
+.entries, .questions { margin: 0; padding: 0; list-style: none; }
+.entries a, .entries .row {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 1rem;
+  padding: 0.8rem 0; border-bottom: 1px solid var(--line); text-decoration: none;
 }
-.world-back:hover { color: var(--bone); }
-.world-back:focus:not(:focus-visible) { outline: none; }
-@keyframes world-in { from { opacity: 0; transform: translateY(6px); } }
+.entries .label, .entries .aside { grid-column: 1 / -1; }
+.entries .title { font-weight: 600; }
+.entries time, .meta { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.meta { margin: 0 0 1rem; }
+.questions li { padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+.questions p { margin: 0.25rem 0 0; }
+.questions .is-dropped p:first-of-type { color: var(--muted); text-decoration: line-through; }
+.status { font-family: var(--mono); font-size: 0.72rem; }
+.status-open { color: var(--open); }
+.status-chasing { color: var(--chasing); }
+.status-dropped { color: var(--dropped); }
+.aside { color: var(--muted); font-size: 0.92rem; }
+.empty { color: var(--muted); }
+.prose h2, .prose h3 { margin: 1.4em 0 0.4em; line-height: 1.2; }
+.prose code { padding: 0.1em 0.35em; border-radius: 4px; background: var(--line); font-family: var(--mono); font-size: 0.88em; }
+.back { font-family: var(--mono); font-size: 0.8rem; }
 
-.seal:focus-visible, .nav a:focus-visible { outline: 2px solid var(--star); outline-offset: 3px; }
-
-/* The lower skies build after load (when-needed.js) and fade in once painted, so they never pop. */
-#chart, #transmission-sky { opacity: 0; transition: opacity 1.2s ease; }
-#chart.is-built, #transmission-sky.is-built { opacity: 1; }
-
-/* The comet cursor (comet.js) replaces the system pointer on mouse-driven screens. */
-.comet { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 60; pointer-events: none; }
-.has-comet, .has-comet * { cursor: none !important; }
-
-@media (max-width: 700px) {
-  .nav { display: none; }
-  .greeting { right: 16px; left: 16px; bottom: 64px; }
-  .chart-head { top: 92px; right: 16px; left: 16px; }
-  .world-label { font-size: 1.12rem; }
-  .masthead { padding: 16px 16px; }
-  /* The pulsar beats in the top third; the words sit below it. */
-  .transmission { top: auto; bottom: 64px; left: 16px; right: 16px; width: auto; transform: none; }
-  .colophon { left: 16px; }
-  .seal svg { width: 40px; height: 40px; }
-  .seal-name { font-size: 1.25rem; }
-  /* The galaxy lands in the top half; the story fills the lower half. */
-  .world { top: auto; bottom: 0; left: 16px; right: 16px; transform: none; width: auto; max-height: 56vh; max-height: 56svh; padding: 8px 0 24px; }
-  .world h3 { margin: 6px 0 10px; }
-  .world .lead { font-size: 1.25rem; margin-bottom: 10px; }
-  .world .body { font-size: 0.9rem; line-height: 1.6; }
-  .world-back { margin-top: 18px; }
-  /* Text spans the full width here, so darken the whole lower band, not just the left corner. */
-  .veil { background: linear-gradient(to top, rgba(5,4,10,0.9) 0%, rgba(5,4,10,0.6) 40%, rgba(5,4,10,0) 65%); }
+/* Phones: cards stack into slim rows so the home screen still fits without scrolling. */
+@media (max-width: 600px) {
+  .dock { flex-direction: column; align-items: stretch; }
+  .cards { flex-direction: column; gap: 0.6rem; }
+  .card { width: 100%; flex-direction: row; align-items: baseline; justify-content: space-between; padding: 0.8rem 1rem; }
+  .card-title { font-size: 1rem; text-align: right; }
+  .corner { justify-content: space-between; }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .greeting > * { transition: none; }
-  .world[open] > * { animation: none; }
-  .masthead, .chart-head, .worlds, .leaders, #chart, #transmission-sky { transition: none; }
+  .scene, .card { transition: none; }
+  .panel[open] { animation: none; }
 }
