@@ -1,6 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { parseHash } from "../js/router.js";
+import { DAY_START_HOUR, NIGHT_START_HOUR } from "../js/time-of-day.js";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 
@@ -27,19 +29,47 @@ test("every module the page runs is preloaded up front, so none waits on a chain
   for (const p of preloaded) assert.ok(seen.has(p), `${p} is preloaded but never used`);
 });
 
-test("the brush font is fetched for just the characters the page writes in it", () => {
-  const link = html.match(/family=Ma\+Shan\+Zheng[^"]*/);
-  assert.ok(link, "no Ma Shan Zheng stylesheet");
-  const text = decodeURIComponent(new URL(`https://x/?${link[0]}`).searchParams.get("text") ?? "");
-  assert.ok(text.length > 0, "Ma Shan Zheng isn't subset with text=");
-  const used = new Set(html.match(/[一-鿿]/g));
-  for (const ch of used) assert.ok(text.includes(ch), `${ch} is on the page but not in the font subset`);
-  // The arrival draws 人皇 from this font too (arrival.js), even before it's in the page text.
-  for (const ch of "人皇") assert.ok(text.includes(ch));
+test("the inline day/night script uses the same hours as time-of-day.js", () => {
+  const m = html.match(/h>=(\d+)&&h<(\d+)/);
+  assert.ok(m, "inline phase script not found in <head>");
+  assert.equal(Number(m[1]), DAY_START_HOUR);
+  assert.equal(Number(m[2]), NIGHT_START_HOUR);
 });
 
-test("the brush font isn't also requested in full alongside the subset", () => {
-  const sheets = [...html.matchAll(/fonts\.googleapis\.com\/css2\?([^"]+)"/g)].map((m) => m[1]);
-  const full = sheets.filter((q) => q.includes("Ma+Shan+Zheng") && !q.includes("text="));
-  assert.deepEqual(full, []);
+test("the greeting says Greetings", () => {
+  assert.match(html, /<h1[^>]*>Greetings\./);
+});
+
+test("every in-page link goes somewhere real", () => {
+  const hashes = [...html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)].map((m) => m[1]);
+  assert.ok(hashes.length >= 4);
+  for (const h of hashes) assert.notEqual(parseHash(h).view, "missing", h);
+});
+
+test("about and archive exist as static sections the panel can show", () => {
+  assert.match(html, /<section id="about"/);
+  assert.match(html, /<section id="archive"/);
+});
+
+test("each notebook card carries its own illustration, hidden from screen readers", () => {
+  const cards = [...html.matchAll(/<a class="card card-(\w+)" href="#(\w+)">([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(cards.map((m) => m[1]), ["notes", "questions", "about"]);
+  for (const [, name, hash, inner] of cards) {
+    assert.equal(name, hash);
+    assert.match(inner, /<svg class="card-art"[^>]*aria-hidden="true"/, name);
+    assert.match(inner, /<span class="card-title">/, name);
+  }
+});
+
+test("every gradient, filter and shape the card art paints with exists exactly once", () => {
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  const refs = [...html.matchAll(/url\(#([^)]+)\)|<use href="#([^"]+)"/g)].map((m) => m[1] ?? m[2]);
+  assert.ok(refs.length > 0, "the card art should paint with shared gradients and filters");
+  for (const ref of new Set(refs)) {
+    assert.equal(ids.filter((id) => id === ref).length, 1, `#${ref} should be defined exactly once`);
+  }
+});
+
+test("card styles are loaded", () => {
+  assert.match(html, /<link rel="stylesheet" href="cards\.css">/);
 });

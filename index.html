@@ -1,144 +1,345 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Davis Dey · 人皇</title>
-  <meta name="theme-color" content="#05040a">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Davis Dey · research notebook</title>
+  <meta name="description" content="Davis Dey's research notebook: notes, open questions, and the work so far.">
+  <!-- Mirrors phaseAt() in js/time-of-day.js (a test keeps the hours equal) so night visitors never see a day flash before the modules load. -->
+  <script>(function(h){var d=document.documentElement;d.classList.add("js");d.dataset.phase=h>=6&&h<18?"day":"night";})(new Date().getHours());</script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- The brush face is a full CJK font; ask only for the characters the page writes in it. -->
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&text=%E4%BA%BA%E7%9A%87%E9%99%8D%E4%B8%B4%E6%98%9F%E5%9B%BE%E4%BC%A0%E9%9F%B3&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <!-- Every module the scripts import, fetched in parallel now instead of discovered one import at a time. -->
-  <link rel="modulepreload" href="js/annotations.js">
-  <link rel="modulepreload" href="js/chart-warp.js">
-  <link rel="modulepreload" href="js/frame-budget.js">
-  <link rel="modulepreload" href="js/galaxies.js">
-  <link rel="modulepreload" href="js/galaxy-stars.js">
-  <link rel="modulepreload" href="js/glyph-points.js">
-  <link rel="modulepreload" href="js/nebula.js">
-  <link rel="modulepreload" href="js/pulsar.js">
-  <link rel="modulepreload" href="js/sky.js">
-  <link rel="modulepreload" href="js/sprites.js">
-  <link rel="modulepreload" href="js/star-layers.js">
-  <link rel="modulepreload" href="js/timeline.js">
-  <link rel="modulepreload" href="js/trail.js">
-  <link rel="modulepreload" href="js/visit.js">
-  <link rel="modulepreload" href="js/warp.js">
-  <link rel="modulepreload" href="js/when-needed.js">
-  <link rel="modulepreload" href="js/worlds.js">
-  <link rel="modulepreload" href="js/zoomed-sky.js">
+  <link rel="stylesheet" href="cards.css">
+  <link rel="modulepreload" href="js/router.js">
+  <link rel="modulepreload" href="js/time-of-day.js">
+  <link rel="modulepreload" href="js/scenes.js">
+  <link rel="modulepreload" href="js/views.js">
+  <link rel="modulepreload" href="js/notes.js">
+  <link rel="modulepreload" href="js/questions.js">
+  <link rel="modulepreload" href="js/markdown.js">
+  <link rel="modulepreload" href="js/dates.js">
+  <link rel="modulepreload" href="js/backdrop.js">
+  <link rel="modulepreload" href="js/panel.js">
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <header class="masthead">
-    <button class="seal" id="seal" aria-label="Renhuang 人皇, replay arrival">
-      <svg viewBox="0 0 56 56" aria-hidden="true">
-        <rect x="0.5" y="0.5" width="55" height="55" fill="none" stroke="currentColor" stroke-width="1"/>
-        <g fill="currentColor" font-family="'Ma Shan Zheng', KaiTi, serif" font-size="20" text-anchor="middle" dominant-baseline="central">
-          <text x="28" y="18">人</text>
-          <text x="28" y="38">皇</text>
-        </g>
-      </svg>
-      <span class="seal-name" aria-hidden="true">Renhuang</span>
-    </button>
-    <nav class="nav" aria-label="Sections">
-      <a href="#arrival"><b>降临</b>arrival</a>
-      <a href="#chart-page"><b>星图</b>star chart</a>
-      <a href="#transmission"><b>传音</b>transmission</a>
-    </nav>
-  </header>
+  <div class="backdrop" aria-hidden="true">
+    <div class="scene"></div>
+    <div class="scene"></div>
+    <div class="veil"></div>
+  </div>
 
-  <section class="screen" id="arrival" aria-labelledby="greet-title">
-    <canvas id="sky" aria-hidden="true"></canvas>
-    <div class="veil" aria-hidden="true"></div>
-    <div class="greeting" id="greeting">
-      <p class="eyebrow"><b>降临</b>arrival</p>
-      <h1 id="greet-title">Welcome to <em>my domain.</em></h1>
-      <p class="lead">Greetings, I'm Davis. Every question I couldn't put down became a world, and this is the sky they hang in.</p>
-      <p class="body">One watches rivers from orbit. One lets founders fail before it costs them. One waits in silence and calls you back when the work is done. They all turn around the same sun: this planet, and what we can still make of it.</p>
-      <p class="cue"><a href="#chart-page"><b>星图</b> look up ↓</a></p>
+  <main class="home">
+    <header class="greeting">
+      <h1>Greetings. <span>I'm Davis.</span></h1>
+      <p class="intro">Right now, the world pays more for nature once it's destroyed. I'm a graduate student looking for ways to flip that, with AI, carbon markets and whatever else works.</p>
+    </header>
+
+    <div class="dock">
+      <nav class="cards" aria-label="Notebook">
+        <!-- Shared by all three prints: a print filter (cut-paper edges, ink wash, grain), a stipple, and a pine. -->
+        <svg class="ill-defs" width="0" height="0" aria-hidden="true" focusable="false">
+          <filter id="ill-print" x="-10" y="-10" width="260" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="wobble"/>
+            <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="cut"/>
+            <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="9" result="mottle"/>
+            <feColorMatrix in="mottle" values="-.2 0 0 0 1.08  -.2 0 0 0 1.08  -.2 0 0 0 1.08  0 0 0 0 1" result="density"/>
+            <feBlend in="cut" in2="density" mode="multiply" result="inked"/>
+            <feTurbulence type="fractalNoise" baseFrequency=".9" seed="2" result="grain"/>
+            <feColorMatrix in="grain" values="0 0 0 0 1  0 0 0 0 .98  0 0 0 0 .92  2.4 0 0 0 -1.68" result="specks"/>
+            <feMerge><feMergeNode in="inked"/><feMergeNode in="specks"/></feMerge>
+          </filter>
+          <pattern id="ill-dots" width="3" height="3" patternUnits="userSpaceOnUse"><g fill="var(--ill-ink)"><circle cx=".8" cy=".8" r=".55"/><circle cx="2.3" cy="2.3" r=".55"/></g></pattern>
+          <g id="ill-pine"><path d="M0-1L.32-.66H.2L.42-.34H.28L.5 0H-.5L-.28-.34H-.42L-.2-.66H-.32Z"/><path d="M0-1L.32-.66H.2L.42-.34H.28L.5 0H0Z" fill="var(--ill-ink)" fill-opacity=".2"/></g>
+        </svg>
+        <a class="card card-notes" href="#notes">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="n-sky" x2="0" y2="1"><stop offset=".1" stop-color="var(--ill-sky-top)"/><stop offset="1" stop-color="var(--ill-sky-low)"/></linearGradient>
+              <linearGradient id="n-lake" x2="0" y2="1"><stop offset="0" stop-color="var(--ill-water)"/><stop offset="1" stop-color="var(--ill-water-deep)"/></linearGradient>
+              <linearGradient id="n-land" x2="0" y2="1"><stop offset="0" stop-color="var(--ill-land)"/><stop offset="1" stop-color="var(--ill-land-deep)"/></linearGradient>
+              <radialGradient id="n-sun"><stop offset=".3" stop-color="var(--ill-sun)" stop-opacity=".45"/><stop offset="1" stop-color="var(--ill-sun)" stop-opacity="0"/></radialGradient>
+              <radialGradient id="n-lamp"><stop offset="0" stop-color="var(--ill-glow)" stop-opacity=".6"/><stop offset="1" stop-color="var(--ill-glow)" stop-opacity="0"/></radialGradient>
+            </defs>
+            <g filter="url(#ill-print)">
+              <rect x="-10" y="-10" width="260" height="120" fill="url(#n-sky)"/>
+              <path class="ill-streak" fill="var(--ill-paper)" d="M20 28c22-3.5 48-3.5 70 0-22-1.2-48-1.2-70 0ZM104 20c18-3 42-3 60 0-18-1-42-1-60 0ZM48 44c16-2.5 36-2.5 52 0-16-.9-36-.9-52 0Z"/>
+              <g class="ill-stars" fill="var(--ill-paper)">
+                <circle cx="20" cy="14" r=".9"/><circle cx="48" cy="34" r=".7"/><circle cx="84" cy="12" r="1"/><circle cx="66" cy="24" r=".6"/><circle cx="118" cy="30" r=".7"/><circle cx="140" cy="10" r=".9"/><circle cx="150" cy="36" r=".6"/><circle cx="214" cy="12" r="1"/><circle cx="230" cy="34" r=".7"/>
+                <path d="M100 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1ZM32 26l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>
+              </g>
+              <circle cx="178" cy="40" r="38" fill="url(#n-sun)"/>
+              <circle cx="178" cy="40" r="13" fill="var(--ill-sun)"/>
+              <g class="ill-stars" fill="var(--ill-sky-low)" fill-opacity=".3"><circle cx="173" cy="36" r="3"/><circle cx="183" cy="45" r="2"/><circle cx="182.5" cy="34" r="1.3"/></g>
+              <path class="ill-day" d="M92 54q2.5-2.5 5 0 2.5-2.5 5 0M106 47q2-2 4 0 2-2 4 0M84 45q1.6-1.6 3.2 0 1.6-1.6 3.2 0" fill="none" stroke="var(--ill-ink)" stroke-width=".9" stroke-linecap="round"/>
+              <path d="M-10 92L18 70 34 78 60 52 84 74 104 62 124 80 150 58 170 72 196 50 220 70 250 62V104H-10Z" fill="var(--ill-far)"/>
+              <path d="M60 52l8.7 8-3.7-1.5-3 2.5-3.5-2.2-3.5 2.2-3-1ZM196 50l9.6 8-3.6-1-3 3-4-2.5-4 2.5-4.5-2ZM150 58l10 7-3.5-1.5-3.5 2.5-3.5-2.5-3.5 2.5-4.3-1Z" fill="var(--ill-snow)"/>
+              <path d="M60 52L84 74 66 96ZM150 58L170 72 156 96ZM196 50L220 70 204 96ZM104 62L124 80 110 96ZM18 70L34 78 22 96Z" fill="var(--ill-ink)" fill-opacity=".13"/>
+              <path d="M-10 100L14 86 30 91 50 78 72 92 92 83 112 95 136 86 160 96 186 81 206 92 226 85 250 94V104H-10Z" fill="var(--ill-mid)"/>
+              <path d="M50 78L72 92 58 100ZM136 86L160 96 144 100ZM186 81L206 92 192 100ZM14 86L30 91 20 100ZM92 83L112 95 98 100Z" fill="url(#ill-dots)" fill-opacity=".35"/>
+              <rect x="-10" y="98" width="260" height="72" fill="url(#n-lake)"/>
+              <path d="M-10 98L14 112 30 107 50 120 72 106 92 115 112 103 136 112 160 102 186 117 206 106 226 113 250 104V98Z" fill="var(--ill-mid)" fill-opacity=".3"/>
+              <path d="M165 105h26M168 110h20M171 115h14M174 120h8M176.5 125h3" stroke="var(--ill-sun)" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M14 108h20M44 116h12M96 106h22M122 118h14M206 112h18M30 124h14M140 110h10" stroke="var(--ill-paper)" stroke-opacity=".4" stroke-linecap="round"/>
+              <path d="M-10 97Q60 95 120 98T250 97V101H-10Z" fill="var(--ill-near)"/>
+              <g fill="var(--ill-near)">
+                <use href="#ill-pine" transform="translate(2 100) scale(7 14)"/><use href="#ill-pine" transform="translate(9 100) scale(6 10)"/><use href="#ill-pine" transform="translate(15 100) scale(8 17)"/><use href="#ill-pine" transform="translate(22 100) scale(6 11)"/><use href="#ill-pine" transform="translate(28 100) scale(5 8)"/>
+                <use href="#ill-pine" transform="translate(204 100) scale(6 10)"/><use href="#ill-pine" transform="translate(211 100) scale(8 16)"/><use href="#ill-pine" transform="translate(218 100) scale(6 12)"/><use href="#ill-pine" transform="translate(225 100) scale(8 19)"/><use href="#ill-pine" transform="translate(232 100) scale(6 13)"/><use href="#ill-pine" transform="translate(239 100) scale(7 15)"/>
+              </g>
+              <g transform="translate(76 105)">
+                <path d="M-8 0h17l-3 3H-5Z" fill="var(--ill-ink)"/>
+                <path d="M1-1V-15L9-1Z" fill="var(--ill-paper)"/>
+                <path d="M0-1V-11L-6-1Z" fill="var(--ill-paper)" fill-opacity=".75"/>
+                <path d="M-6 6h12M-3 9h6" stroke="var(--ill-paper)" stroke-opacity=".35" stroke-linecap="round"/>
+              </g>
+              <path d="M8 132q-1-14 2-24M13 132q0-16-2-28M18 132q1-12 4-20M24 132q-1-10-3-16" fill="none" stroke="var(--ill-land-deep)" stroke-width="1.1" stroke-linecap="round"/>
+              <g fill="var(--ill-wood)"><rect x="8.6" y="109" width="2.4" height="7" rx="1.2"/><rect x="10" y="105" width="2.4" height="7" rx="1.2"/><rect x="20.8" y="113" width="2.2" height="6" rx="1.1"/></g>
+              <path d="M-10 126C30 118 76 116 120 122S206 130 250 120V170H-10Z" fill="url(#n-land)"/>
+              <path d="M-10 150C60 143 160 146 250 138V170H-10Z" fill="url(#ill-dots)" fill-opacity=".2"/>
+              <path d="M4 150l-2-8M7 150v-10M10 150l2-7M30 140l-2-7M33 140l1-9M36 140l3-6M184 146l-2-8M187 146v-10M190 146l3-7M222 136l-2-7M225 136l1-9M228 136l3-6M208 158l-1-8M211 158l2-7" stroke="var(--ill-land-deep)" stroke-width=".9" stroke-linecap="round"/>
+              <path d="M18 156q1-6-1-12M24 150q-1-6 1-11M196 140q1-6-1-11M232 150q-1-6 0-12M214 150q1-5 0-10M44 158q1-5 0-9" fill="none" stroke="var(--ill-land-deep)" stroke-width=".8"/>
+              <g fill="var(--ill-bloom-1)"><circle cx="17" cy="144" r="2"/><circle cx="214" cy="140" r="1.8"/><circle cx="44" cy="149" r="1.6"/></g>
+              <g fill="var(--ill-bloom-2)"><circle cx="25" cy="139" r="1.7"/><circle cx="232" cy="138" r="2"/></g>
+              <g fill="var(--ill-bloom-3)"><circle cx="195" cy="129" r="1.7"/><circle cx="203" cy="152" r="1.2"/><circle cx="36" cy="154" r="1.1"/></g>
+              <path d="M56 133L150 128 166 151 42 157Z" fill="var(--ill-red)"/>
+              <path d="M74.8 132L66.8 155.8M93.6 131L91.6 154.6M112.4 130L116.4 153.4M131.2 129L141.2 152.2M51.3 141L155.3 135.7M46.7 149L160.7 143.3" stroke="var(--ill-paper)" stroke-width="2.2" stroke-opacity=".3"/>
+              <path d="M42 157L166 151 167 153.5 43 159.5Z" fill="var(--ill-red-dark)"/>
+              <circle class="ill-halo" cx="62" cy="128" r="34" fill="url(#n-lamp)"/>
+              <g transform="translate(62 141)">
+                <ellipse cy=".6" rx="7" ry="1.6" fill="var(--ill-ink)" fill-opacity=".25"/>
+                <path d="M-5 0h10v-2H-5ZM-5.5-13h11l-2.5-3h-6Z" fill="var(--ill-ink)"/>
+                <path d="M-4-2h8v-11h-8Z" fill="var(--ill-lamp)"/>
+                <path d="M-4-2v-11M4-2v-11" stroke="var(--ill-ink)" stroke-width=".8"/>
+                <path d="M-2.5-16q2.5-5 5 0" fill="none" stroke="var(--ill-ink)" stroke-width=".9"/>
+                <path class="ill-halo" d="M0-4.5c-1.8-1.5-1.2-3.6 0-5.5 1.2 1.9 1.8 4 0 5.5Z" fill="var(--ill-flame)"/>
+              </g>
+              <ellipse cx="105" cy="152" rx="30" ry="3" fill="var(--ill-ink)" fill-opacity=".25"/>
+              <g transform="rotate(-4 104 141)">
+                <path d="M74 134C86 131 96 132 104 136 112 132 122 131 134 134L133 152C122 149 112 149 104 153 96 149 86 149 75 152Z" fill="var(--ill-cover)"/>
+                <path d="M104 133C96 129 86 129 77 132L78 149C87 146 96 146 104 150Z" fill="var(--ill-paper)"/>
+                <path d="M104 133C112 129 122 129 131 132L130 149C121 146 112 146 104 150Z" fill="var(--ill-paper)"/>
+                <path d="M104 134C101 132.4 99 132 97 132L97.5 147C100 147 102 148 104 149Z" fill="var(--ill-ink)" fill-opacity=".1"/>
+                <path d="M104 133V150" stroke="var(--ill-ink)" stroke-width=".7" stroke-opacity=".5"/>
+                <path d="M81 135.5C87 134 94 134 100 136M81 139C87 137.5 94 137.5 100 139.5M81 142.5C87 141 94 141 100 143M81 146C85 145 89 145 92 145.6M108 136C114 134 121 134 127 135.5M108 139.5C114 137.5 121 137.5 127 139M108 143C112 141.6 116 141.4 119 141.6" fill="none" stroke="var(--ill-ink)" stroke-width=".7" stroke-opacity=".45" stroke-linecap="round"/>
+                <path d="M105 150c1.6 3-1.4 5 .6 8" fill="none" stroke="var(--ill-accent)" stroke-width="1.3" stroke-linecap="round"/>
+              </g>
+              <g transform="translate(110 148) rotate(-30)">
+                <path d="M0 0h24v3.4H0Z" fill="var(--ill-accent)"/>
+                <path d="M0 2.3h24v1.1H0Z" fill="var(--ill-ink)" fill-opacity=".18"/>
+                <path d="M24 0l6 1.7-6 1.7Z" fill="var(--ill-wood-light)"/>
+                <path d="M28 1.1l2 .6-2 .6Z" fill="var(--ill-ink)"/>
+                <path d="M-1.4 0h1.4v3.4h-1.4Z" fill="var(--ill-stone)"/>
+                <path d="M-5 0h3.6v3.4H-5Z" fill="var(--ill-bloom-2)"/>
+              </g>
+              <ellipse cx="152" cy="136.5" rx="7.5" ry="1.6" fill="var(--ill-ink)" fill-opacity=".25"/>
+              <g transform="translate(146 122)">
+                <path d="M12 3h1.5a3 3 0 0 1 0 6H12" fill="none" stroke="var(--ill-paper)" stroke-width="1.6"/>
+                <path d="M0 0h12v9a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5Z" fill="var(--ill-paper)"/>
+                <path d="M0 4h12" stroke="var(--ill-cover)" stroke-width="1.6"/>
+                <ellipse cx="6" cy=".6" rx="5.6" ry="1.2" fill="var(--ill-wood)"/>
+                <g class="ill-steam" fill="none" stroke="var(--ill-paper)" stroke-linecap="round" stroke-opacity=".75"><path d="M3.5-3c-2-3 2-5 0-8"/><path d="M8-4c-2-3 2-5 0-8"/></g>
+              </g>
+              <g class="ill-stars" fill="var(--ill-glow)">
+                <circle cx="30" cy="114" r=".9"/><circle cx="46" cy="106" r=".8"/><circle cx="192" cy="120" r=".9"/><circle cx="214" cy="110" r=".8"/><circle cx="176" cy="132" r=".8"/>
+                <g fill-opacity=".3"><circle cx="30" cy="114" r="2.6"/><circle cx="46" cy="106" r="2.4"/><circle cx="192" cy="120" r="2.6"/><circle cx="214" cy="110" r="2.4"/><circle cx="176" cy="132" r="2.4"/></g>
+              </g>
+            </g>
+          </svg>
+          <span class="card-band"><span class="label">notes</span><span class="card-title">What I'm reading and thinking</span></span>
+        </a>
+        <a class="card card-questions" href="#questions">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="q-sky" x2="0" y2="1"><stop offset=".1" stop-color="var(--ill-sky-top)"/><stop offset="1" stop-color="var(--ill-sky-low)"/></linearGradient>
+              <linearGradient id="q-land" x2="0" y2="1"><stop offset="0" stop-color="var(--ill-land)"/><stop offset="1" stop-color="var(--ill-land-deep)"/></linearGradient>
+              <radialGradient id="q-sun"><stop offset=".3" stop-color="var(--ill-sun)" stop-opacity=".45"/><stop offset="1" stop-color="var(--ill-sun)" stop-opacity="0"/></radialGradient>
+              <linearGradient id="q-trail" x1="70" x2="160" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--ill-paper)" stop-opacity="0"/><stop offset=".6" stop-color="var(--ill-paper)"/></linearGradient>
+              <clipPath id="q-hill-a"><path d="M-10 104C20 94 56 92 92 98 116 102 136 110 156 124V140H-10Z"/></clipPath>
+              <clipPath id="q-hill-b"><path d="M64 126C96 106 140 96 180 96 210 96 232 100 250 102V140H64Z"/></clipPath>
+            </defs>
+            <g filter="url(#ill-print)">
+              <rect x="-10" y="-10" width="260" height="140" fill="url(#q-sky)"/>
+              <path class="ill-streak" fill="var(--ill-paper)" d="M4 54c16-2.6 34-2.6 50 0-16-.9-34-.9-50 0ZM150 62c18-3 40-3 58 0-18-1-40-1-58 0Z"/>
+              <g class="ill-stars" fill="var(--ill-paper)">
+                <circle cx="96" cy="14" r="1"/><circle cx="126" cy="30" r=".7"/><circle cx="150" cy="12" r=".8"/><circle cx="228" cy="24" r="1"/><circle cx="14" cy="18" r=".8"/><circle cx="72" cy="28" r=".6"/><circle cx="236" cy="74" r=".6"/><circle cx="190" cy="66" r=".7"/>
+                <path d="M212 56l1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/>
+                <path d="M108 22L130 13" stroke="var(--ill-paper)" stroke-width=".8" stroke-linecap="round" stroke-opacity=".7"/>
+              </g>
+              <circle cx="40" cy="34" r="34" fill="url(#q-sun)"/>
+              <circle cx="40" cy="34" r="12" fill="var(--ill-sun)"/>
+              <g class="ill-stars" fill="var(--ill-sky-low)" fill-opacity=".3"><circle cx="36" cy="31" r="2.6"/><circle cx="44" cy="39" r="1.8"/><circle cx="44.5" cy="29.5" r="1.1"/></g>
+              <g class="ill-cloud">
+                <path d="M172 46C170 40 176 36 181 38 182 31 192 28 197 33 200 28 210 29 211 36 217 35 221 41 218 46Z" fill="var(--ill-paper)"/>
+                <path d="M174 46C186 42.5 206 42.5 218 46Z" fill="var(--ill-ink)" fill-opacity=".07"/>
+                <path d="M10 70C9 66 13 63 17 65 19 60 27 59 30 64 34 62 39 65 37 70Z" fill="var(--ill-paper)"/>
+              </g>
+              <path class="ill-day" d="M104 24q2.5-2.5 5 0 2.5-2.5 5 0M118 18q2-2 4 0 2-2 4 0M96 16q1.6-1.6 3.2 0 1.6-1.6 3.2 0" fill="none" stroke="var(--ill-ink)" stroke-width=".9" stroke-linecap="round"/>
+              <path class="ill-trail" d="M156 54C140 62 126 66 116 62 102 56 104 36 118 34 132 32 136 50 124 58 110 66 86 64 72 58" fill="none" stroke="url(#q-trail)" stroke-width="2.6" stroke-linecap="round"/>
+              <path d="M-10 94C16 84 44 82 76 88 104 93 128 80 160 80 190 80 220 88 250 84V130H-10Z" fill="var(--ill-far)"/>
+              <path d="M160 80v-5M168 81v-3" stroke="var(--ill-land-deep)"/>
+              <g fill="var(--ill-near)"><circle cx="160" cy="72.5" r="3.6"/><circle cx="168" cy="76.5" r="2.4"/></g>
+              <path d="M-10 104C20 94 56 92 92 98 116 102 136 110 156 124V140H-10Z" fill="var(--ill-field)"/>
+              <path clip-path="url(#q-hill-a)" d="M-10 109C20 99 56 97 92 103 116 107 136 115 156 129M-10 114C20 104 56 102 92 108 116 112 136 120 156 134M-10 119C20 109 56 107 92 113 116 117 136 125 156 139M-10 124C20 114 56 112 92 118 116 122 136 130 156 144" fill="none" stroke="var(--ill-ink)" stroke-opacity=".13" stroke-width=".8"/>
+              <path d="M24 96v3M31 95v3" stroke="var(--ill-land-deep)"/>
+              <g fill="var(--ill-near)"><circle cx="24" cy="94" r="2.6"/><circle cx="31" cy="93.4" r="2.1"/></g>
+              <path d="M64 126C96 106 140 96 180 96 210 96 232 100 250 102V140H64Z" fill="var(--ill-field-2)"/>
+              <path clip-path="url(#q-hill-b)" d="M64 131C96 111 140 101 180 101 210 101 232 105 250 107M64 136C96 116 140 106 180 106 210 106 232 110 250 112M64 141C96 121 140 111 180 111 210 111 232 115 250 117M64 146C96 126 140 116 180 116 210 116 232 120 250 122" fill="none" stroke="var(--ill-land-deep)" stroke-opacity=".3" stroke-width=".8"/>
+              <path d="M168 97v3M176 96.5v3M184 97v3" stroke="var(--ill-land-deep)"/>
+              <g fill="var(--ill-near)"><circle cx="168" cy="94.6" r="2.8"/><circle cx="176" cy="94" r="2.4"/><circle cx="184" cy="94.8" r="2.7"/></g>
+              <path d="M-10 120C14 110 40 108 66 114 96 121 124 134 160 138 196 142 226 136 250 134V170H-10Z" fill="url(#q-land)"/>
+              <path d="M150 138C190 141 222 136 250 134V170H140Z" fill="url(#ill-dots)" fill-opacity=".2"/>
+              <path d="M47 92Q118 96 166.8 53.9" fill="none" stroke="var(--ill-ink)" stroke-width=".7" stroke-opacity=".8"/>
+              <g transform="translate(40 111)">
+                <ellipse cy=".6" rx="5" ry="1.2" fill="var(--ill-ink)" fill-opacity=".2"/>
+                <path d="M-1.8 0l.5-7M1.8 0l-.5-7" stroke="var(--ill-ink)" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M-2.2-12l-2.3 4.5" stroke="var(--ill-red)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M-3.2-6l.6-7q2.6-2 5.2 0l.6 7Z" fill="var(--ill-red)"/>
+                <path d="M2-12.5l5-6.5" stroke="var(--ill-red)" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M.5-14q4 1 6.5 3.5" fill="none" stroke="var(--ill-accent)" stroke-width="1.4" stroke-linecap="round"/>
+                <circle cy="-16.6" r="2.4" fill="var(--ill-skin)"/>
+                <path d="M-2.4-16.8a2.4 2.4 0 0 1 4.8 0Z" fill="var(--ill-ink)"/>
+              </g>
+              <g transform="translate(168 48) rotate(12)">
+                <g class="ill-kite">
+                  <path d="M0 24C-6 32 7 38 1 46-5 54 6 58 1 66" fill="none" stroke="var(--ill-ink)" stroke-width=".8"/>
+                  <path d="M-2.5 33.2l6 3.6v-3.6l-6 3.6ZM-2.4 54.2l6 3.6v-3.6l-6 3.6Z" fill="var(--ill-red)"/>
+                  <path d="M-2 44.2l6 3.6v-3.6l-6 3.6Z" fill="var(--ill-cover)"/>
+                  <path d="M0-20L14 0 0 24-14 0Z" fill="var(--ill-accent)"/>
+                  <path d="M0-20L14 0H0ZM0 0H-14L0 24Z" fill="var(--ill-red)"/>
+                  <path d="M0-20L-14 0H0Z" fill="var(--ill-paper)" fill-opacity=".3"/>
+                  <path d="M0-20V24M-14 0H14" stroke="var(--ill-ink)" stroke-width=".9"/>
+                </g>
+              </g>
+              <path d="M-10 146C30 140 80 142 130 146S210 140 250 142V170H-10Z" fill="var(--ill-land-deep)"/>
+              <path d="M2 145l-1-6M5 144l1-7M8 145l2-5M60 142l-1-6M63 142l1-7M66 142l2-5M112 145l-1-6M115 145l1-7M118 146l2-5M168 145l-1-6M171 145l1-7M174 145l2-5M222 141l-1-6M225 141l1-7M228 141l2-5" stroke="var(--ill-land-deep)" stroke-width=".9" stroke-linecap="round"/>
+              <path d="M12 160v-9M30 160v-5M58 160v-13M82 160v-9M94 160v-15M104 160v-7M126 160v-13M140 160v-5M150 160v-11M176 160v-5M188 160v-15M198 160v-9M210 160v-13M220 160v-7M236 160v-13" stroke="var(--ill-land)" stroke-width=".8"/>
+              <g fill="var(--ill-bloom-1)"><circle cx="12" cy="151" r="2"/><circle cx="58" cy="147" r="2"/><circle cx="104" cy="153" r="1.8"/><circle cx="150" cy="149" r="1.8"/><circle cx="198" cy="151" r="2"/><circle cx="236" cy="147" r="1.8"/></g>
+              <g fill="var(--ill-bloom-2)"><circle cx="30" cy="155" r="1.8"/><circle cx="82" cy="151" r="2"/><circle cx="126" cy="147" r="1.7"/><circle cx="176" cy="155" r="2"/><circle cx="220" cy="153" r="1.8"/></g>
+              <g fill="var(--ill-bloom-3)"><circle cx="94" cy="145" r="1.5"/><circle cx="140" cy="155" r="1.6"/><circle cx="188" cy="145" r="1.5"/><circle cx="210" cy="147" r="1.4"/><circle cx="20" cy="146" r=".8"/><circle cx="23" cy="148" r=".7"/><circle cx="70" cy="150" r=".8"/><circle cx="73" cy="152" r=".7"/><circle cx="164" cy="146" r=".8"/><circle cx="167" cy="148" r=".7"/></g>
+            </g>
+          </svg>
+          <span class="card-band"><span class="label">questions</span><span class="card-title">What I'm circling</span></span>
+        </a>
+        <a class="card card-about" href="#about">
+          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="a-sky" x2="0" y2="1"><stop offset=".1" stop-color="var(--ill-sky-top)"/><stop offset="1" stop-color="var(--ill-sky-low)"/></linearGradient>
+              <linearGradient id="a-land" x2="0" y2="1"><stop offset="0" stop-color="var(--ill-land)"/><stop offset="1" stop-color="var(--ill-land-deep)"/></linearGradient>
+              <radialGradient id="a-sun"><stop offset=".3" stop-color="var(--ill-sun)" stop-opacity=".5"/><stop offset="1" stop-color="var(--ill-sun)" stop-opacity="0"/></radialGradient>
+              <radialGradient id="a-glow"><stop offset="0" stop-color="var(--ill-glow)" stop-opacity=".6"/><stop offset="1" stop-color="var(--ill-glow)" stop-opacity="0"/></radialGradient>
+              <radialGradient id="a-milky"><stop offset="0" stop-color="var(--ill-paper)" stop-opacity=".28"/><stop offset="1" stop-color="var(--ill-paper)" stop-opacity="0"/></radialGradient>
+            </defs>
+            <g filter="url(#ill-print)">
+              <rect x="-10" y="-10" width="260" height="130" fill="url(#a-sky)"/>
+              <g class="ill-stars">
+                <ellipse cx="110" cy="36" rx="150" ry="15" transform="rotate(-16 110 36)" fill="url(#a-milky)"/>
+                <g fill="var(--ill-paper)">
+                  <circle cx="14" cy="60" r=".7"/><circle cx="20" cy="66" r=".5"/><circle cx="33" cy="55" r=".8"/><circle cx="40" cy="61" r=".5"/><circle cx="52" cy="49" r=".6"/><circle cx="58" cy="56" r=".9"/><circle cx="71" cy="44" r=".5"/><circle cx="78" cy="50" r=".7"/><circle cx="90" cy="38" r="1"/><circle cx="96" cy="46" r=".5"/><circle cx="110" cy="33" r=".6"/><circle cx="116" cy="40" r=".8"/><circle cx="129" cy="27" r=".5"/><circle cx="136" cy="33" r=".9"/><circle cx="148" cy="22" r=".6"/><circle cx="154" cy="28" r=".5"/><circle cx="167" cy="16" r=".8"/><circle cx="174" cy="22" r=".5"/><circle cx="187" cy="11" r=".6"/><circle cx="192" cy="18" r=".9"/><circle cx="206" cy="6" r=".5"/>
+                  <circle cx="24" cy="20" r="1"/><circle cx="60" cy="14" r=".8"/><circle cx="200" cy="40" r=".7"/><circle cx="226" cy="30" r="1"/><circle cx="140" cy="52" r=".6"/><circle cx="40" cy="34" r=".7"/>
+                  <path d="M84 18l1 3 3 1-3 1-1 3-1-3-3-1 3-1ZM222 48l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>
+                </g>
+              </g>
+              <path class="ill-streak" fill="var(--ill-paper)" d="M-4 46c30-4 70-4 100 0-30-1.4-70-1.4-100 0ZM120 40c24-3.4 56-3.4 80 0-24-1.2-56-1.2-80 0ZM70 60c18-2.6 40-2.6 58 0-18-.9-40-.9-58 0Z"/>
+              <circle cx="176" cy="72" r="48" fill="url(#a-sun)"/>
+              <circle cx="176" cy="72" r="15" fill="var(--ill-sun)"/>
+              <g class="ill-stars" fill="var(--ill-sky-low)" fill-opacity=".3"><circle cx="171" cy="66" r="3.2"/><circle cx="182" cy="64" r="1.6"/></g>
+              <path d="M-10 84L20 64 40 74 66 48 92 72 110 62 132 78 150 66 168 76 196 54 222 72 250 60V112H-10Z" fill="var(--ill-far)"/>
+              <path d="M66 48l8.7 8-3.7-1.5-3 2.5-3.5-2.2-3.5 2.2-3-1ZM196 54l10.1 7-3.6-1.4-3 2.4-4-2.2-4 2.2-4.4-1Z" fill="var(--ill-snow)"/>
+              <path d="M66 48L92 72 72 100ZM196 54L222 72 202 100ZM110 62L132 78 114 100ZM20 64L40 74 24 100ZM150 66L168 76 154 100Z" fill="var(--ill-ink)" fill-opacity=".13"/>
+              <path d="M-10 100C30 88 70 90 110 96 150 102 190 86 250 94V130H-10Z" fill="var(--ill-mid)"/>
+              <g fill="var(--ill-near)">
+                <use href="#ill-pine" transform="translate(4 110) scale(16 36)"/><use href="#ill-pine" transform="translate(17 107) scale(14 30)"/><use href="#ill-pine" transform="translate(30 110) scale(16 40)"/><use href="#ill-pine" transform="translate(44 108) scale(12 26)"/><use href="#ill-pine" transform="translate(56 110) scale(12 22)"/>
+                <use href="#ill-pine" transform="translate(174 108) scale(12 24)"/><use href="#ill-pine" transform="translate(186 110) scale(14 32)"/><use href="#ill-pine" transform="translate(200 108) scale(16 40)"/><use href="#ill-pine" transform="translate(214 110) scale(14 30)"/><use href="#ill-pine" transform="translate(228 108) scale(16 38)"/><use href="#ill-pine" transform="translate(242 110) scale(14 32)"/>
+              </g>
+              <path d="M-10 116C40 108 90 110 130 114S210 110 250 114V170H-10Z" fill="url(#a-land)"/>
+              <path d="M-10 150C60 144 170 148 250 140V170H-10Z" fill="url(#ill-dots)" fill-opacity=".2"/>
+              <g fill="var(--ill-pine)">
+                <use href="#ill-pine" transform="translate(6 148) scale(30 80)"/><use href="#ill-pine" transform="translate(28 140) scale(22 52)"/>
+                <use href="#ill-pine" transform="translate(214 138) scale(20 46)"/><use href="#ill-pine" transform="translate(234 146) scale(30 76)"/>
+              </g>
+              <circle class="ill-halo" cx="100" cy="126" r="34" fill="url(#a-glow)"/>
+              <path d="M100 100Q66 118 31 101" fill="none" stroke="var(--ill-ink)" stroke-width=".6" stroke-opacity=".7"/>
+              <g class="ill-halo" fill="var(--ill-glow)" fill-opacity=".35"><circle cx="89.8" cy="106.2" r="3"/><circle cx="78.1" cy="109.5" r="3"/><circle cx="65.8" cy="110.9" r="3"/><circle cx="53.3" cy="109.9" r="3"/><circle cx="41.5" cy="106.9" r="3"/></g>
+              <g fill="var(--ill-lamp)"><circle cx="89.8" cy="106.2" r="1.3"/><circle cx="78.1" cy="109.5" r="1.3"/><circle cx="65.8" cy="110.9" r="1.3"/><circle cx="53.3" cy="109.9" r="1.3"/><circle cx="41.5" cy="106.9" r="1.3"/></g>
+              <ellipse cx="112" cy="138" rx="38" ry="3.6" fill="var(--ill-ink)" fill-opacity=".22"/>
+              <path d="M100 100L68 141" stroke="var(--ill-ink)" stroke-width=".5" stroke-opacity=".6"/>
+              <path d="M100 100L128 96 146 132 120 138Z" fill="var(--ill-red-dark)"/>
+              <path d="M114 98L133 135" stroke="var(--ill-ink)" stroke-width=".6" stroke-opacity=".2"/>
+              <path d="M100 100L80 138H120Z" fill="var(--ill-red)"/>
+              <path d="M100 104L91 138H109Z" fill="var(--ill-door)"/>
+              <path d="M100 104L91 138H86.5Q93 120 100 104ZM100 104L109 138H113.5Q107 120 100 104Z" fill="var(--ill-red-dark)"/>
+              <path d="M100 100L128 96" stroke="var(--ill-ink)" stroke-width=".8" stroke-opacity=".35"/>
+              <path d="M100 100l-3-5M100 100l3-5M128 96l1.5-4.5" stroke="var(--ill-ink)" stroke-width="1.1" stroke-linecap="round"/>
+              <ellipse class="ill-halo" cx="100" cy="140" rx="18" ry="4" fill="url(#a-glow)"/>
+              <circle class="ill-halo" cx="166" cy="134" r="42" fill="url(#a-glow)"/>
+              <g transform="translate(166 142)">
+                <ellipse cy="3" rx="15" ry="3" fill="var(--ill-ink)" fill-opacity=".2"/>
+                <g class="ill-day" fill="var(--ill-paper)"><circle cx="3" cy="-34" r="2.6" fill-opacity=".45"/><circle cx="6.5" cy="-41" r="3.4" fill-opacity=".3"/><circle cx="11" cy="-50" r="4.2" fill-opacity=".18"/></g>
+                <path d="M-10 0L9-5M-9-5L10 0" stroke="var(--ill-wood)" stroke-width="3.2" stroke-linecap="round"/>
+                <g class="ill-flame">
+                  <path d="M0-2C-8-6-6-14-2-19-2-15 0-14 1-16 3-21 0-25 2-29 7-23 10-16 8-9 7-5 4-3 0-2Z" fill="var(--ill-red)"/>
+                  <path d="M0-3C-5-6-4-11-1-14 0-11 2-11 2-13 5-10 6-6 4-4 3-3 1-3 0-3Z" fill="var(--ill-accent)"/>
+                  <path d="M.5-3.5C-2-5-1.5-8 .5-9.5 2.5-8 3-5 .5-3.5Z" fill="var(--ill-flame-core)"/>
+                </g>
+                <g fill="var(--ill-stone)"><ellipse cx="-12" cy="1" rx="3.2" ry="2.2"/><ellipse cx="-6" cy="3.2" rx="3.4" ry="2.2"/><ellipse cx="1" cy="3.8" rx="3.4" ry="2.2"/><ellipse cx="8" cy="3" rx="3.2" ry="2.2"/><ellipse cx="13" cy=".6" rx="2.8" ry="2"/></g>
+                <g class="ill-stars" fill="var(--ill-glow)"><circle cx="-3" cy="-33" r=".8"/><circle cx="4" cy="-38" r=".6"/><circle cx="-6" cy="-42" r=".5"/><circle cx="6" cy="-28" r=".6"/></g>
+              </g>
+              <g transform="translate(186 146)">
+                <ellipse cx="12" cy="6.5" rx="13" ry="1.4" fill="var(--ill-ink)" fill-opacity=".2"/>
+                <rect width="24" height="6" rx="3" fill="var(--ill-wood)"/>
+                <ellipse cx="22" cy="3" rx="2.2" ry="3" fill="var(--ill-wood-light)"/>
+                <path d="M4 2h12" stroke="var(--ill-ink)" stroke-opacity=".2" stroke-linecap="round"/>
+              </g>
+              <path d="M44 156l-2-8M47 156v-10M50 156l2-7M120 154l-2-7M123 154l1-8M126 154l3-6M150 158l-2-7M153 158v-9" stroke="var(--ill-land-deep)" stroke-width=".9" stroke-linecap="round"/>
+              <path d="M58 158v-8M64 158v-4M70 158v-9M136 160v-4M110 160v-8" stroke="var(--ill-land-deep)" stroke-width=".8"/>
+              <g fill="var(--ill-bloom-1)"><circle cx="58" cy="150" r="1.8"/><circle cx="136" cy="156" r="1.6"/></g>
+              <g fill="var(--ill-bloom-2)"><circle cx="70" cy="149" r="1.5"/></g>
+              <g fill="var(--ill-bloom-3)"><circle cx="64" cy="154" r="1.3"/><circle cx="110" cy="152" r="1.2"/></g>
+              <g class="ill-stars" fill="var(--ill-glow)"><circle cx="60" cy="124" r=".9"/><circle cx="46" cy="118" r=".8"/><circle cx="198" cy="122" r=".9"/><circle cx="150" cy="110" r=".7"/></g>
+            </g>
+          </svg>
+          <span class="card-band"><span class="label">about</span><span class="card-title">Who I am</span></span>
+        </a>
+      </nav>
+      <footer class="corner">
+        <a href="#archive">archive</a>
+        <a href="mailto:davisdey001@gmail.com" aria-label="Email Davis"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></a>
+        <a href="https://github.com/davissekai" target="_blank" rel="noopener noreferrer" aria-label="Davis on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+        <a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer" aria-label="Davis on X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z"/></svg></a>
+      </footer>
     </div>
-  </section>
+  </main>
 
-  <section class="screen chart-screen" id="chart-page" aria-labelledby="chart-title">
-    <canvas id="chart" aria-hidden="true"></canvas>
-    <div class="chart-frame" id="chart-frame">
-      <div class="chart-head">
-        <p class="eyebrow"><b>星图</b>star chart</p>
-        <h2 class="cue" id="chart-title">Each galaxy is a world I made. Tap one to visit.</h2>
-      </div>
-      <ul class="worlds" id="worlds" aria-label="Worlds">
-        <li><button class="world-label" type="button" data-world="two-eyes" aria-haspopup="dialog">Two Eyes<small>remote sensing</small></button></li>
-        <li><button class="world-label" type="button" data-world="atmo" aria-haspopup="dialog">Atmo<small>climate ai</small></button></li>
-        <li><button class="world-label" type="button" data-world="venturequest" aria-haspopup="dialog">VentureQuest<small>climate game</small></button></li>
-        <li><button class="world-label" type="button" data-world="notify-crossx" aria-haspopup="dialog">notify-crossx<small>developer tool</small></button></li>
-        <li><button class="world-label" type="button" data-world="carbon-markets" aria-haspopup="dialog">Carbon Markets for SMEs<small>still forming</small></button></li>
-      </ul>
+  <!-- Source for the About and Archive panels. Hidden when JS runs; readable as a plain page when it doesn't. -->
+  <div class="nojs-only">
+    <section id="about">
+      <p>I'm Davis Dey. I build at the meeting point of climate and AI: rivers watched from orbit, carbon markets that let small players in, and tools for people who usually get left out of both.</p>
+      <p>I've just started a master's. I don't have a research topic yet, and that's the point of this notebook: the reading, the half-formed questions, and the narrowing-down, done where anyone can watch.</p>
+      <p>Have a question you think I should chase? <a href="mailto:davisdey001@gmail.com">Write to me</a>, or find me on <a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer">X</a> and <a href="https://github.com/davissekai" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+    </section>
+    <section id="archive">
+      <ol class="entries">
+        <li><a href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">remote sensing</span><span class="title">Two Eyes</span><span class="aside">A phone video of a muddy river, matched to the mining scar upstream in Sentinel-2.</span></a></li>
+        <li><a href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">climate ai</span><span class="title">Atmo</span><span class="aside">Ask the climate anything: Article 6, loss and damage, adaptation finance, answered plainly.</span></a></li>
+        <li><a href="https://mvp-six-vert.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="label">climate game</span><span class="title">VentureQuest</span><span class="aside">Run a climate startup and live with every trade-off.</span></a></li>
+        <li><a href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer"><span class="label">developer tool</span><span class="title">notify-crossx</span><span class="aside">Pings your desktop when your AI coding agent is done or needs you.</span></a></li>
+        <li><span class="row"><span class="label">research in progress</span><span class="title">Carbon Markets for SMEs</span><span class="aside">What it would take for small Ghanaian businesses to enter carbon markets on their own terms.</span></span></li>
+      </ol>
+    </section>
+  </div>
+
+  <dialog id="panel" class="panel" aria-labelledby="panel-title">
+    <div class="panel-inner">
+      <header class="panel-head">
+        <span class="panel-label label"></span>
+        <h2 id="panel-title" class="panel-title" tabindex="-1"></h2>
+        <button class="panel-close" type="button" aria-label="Close">×</button>
+      </header>
+      <div class="panel-body"></div>
     </div>
-  </section>
-
-  <section class="screen transmission-screen" id="transmission" aria-labelledby="transmission-title">
-    <canvas id="transmission-sky" aria-hidden="true"></canvas>
-    <div class="transmission">
-      <p class="eyebrow"><b>传音</b>transmission</p>
-      <h2 id="transmission-title">Send word across <em>the dark.</em></h2>
-      <p class="body">Every world up there began as a question someone couldn't put down. If you have one, a project to build together, or a river you think I should look at, send it my way.</p>
-      <ul class="channels" aria-label="Ways to reach me">
-        <li><a href="mailto:davisdey001@gmail.com" aria-label="Email Davis"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg></a></li>
-        <li><a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer" aria-label="Davis on X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3Z"/></svg></a></li>
-      </ul>
-    </div>
-    <footer class="colophon">Davis Dey · <span lang="zh">人皇</span> · 2026</footer>
-  </section>
-
-  <dialog class="world" id="world-two-eyes" aria-labelledby="world-two-eyes-title">
-    <p class="eyebrow">computer vision · remote sensing · climate</p>
-    <h3 id="world-two-eyes-title">Two Eyes</h3>
-    <p class="lead">A river turns brown. One eye on the ground, one in orbit, and the mud finally has an address.</p>
-    <p class="body">Someone films a muddy river on their phone. Two Eyes looks upstream through Sentinel-2, finds the fresh mining scar, and folds both into a dated evidence card anyone can share. Made for the Meta Global AI Developer Hackathon, 2026.</p>
-    <p class="world-links"><a href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer">live ↗</a><a href="https://github.com/davissekai/two-eyes" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
   </dialog>
-  <dialog class="world" id="world-atmo" aria-labelledby="world-atmo-title">
-    <p class="eyebrow">climate · ai · typescript</p>
-    <h3 id="world-atmo-title">Atmo</h3>
-    <p class="lead">Ask the climate anything.</p>
-    <p class="body">Article 6, loss and damage, adaptation finance: the questions that usually need a policy brief and an afternoon. Atmo answers them plainly and keeps its answers grounded.</p>
-    <p class="world-links"><a href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">live ↗</a><a href="https://github.com/davissekai/atmo-v2" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-venturequest" aria-labelledby="world-venturequest-title">
-    <p class="eyebrow">game · entrepreneurship · climate</p>
-    <h3 id="world-venturequest-title">VentureQuest</h3>
-    <p class="lead">Run a climate startup. Survive your own decisions.</p>
-    <p class="body">A game where you found a climate venture and live with every trade-off real founders face, one decision at a time.</p>
-    <p class="world-links"><a href="https://mvp-six-vert.vercel.app/" target="_blank" rel="noopener noreferrer">view project ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-notify-crossx" aria-labelledby="world-notify-crossx-title">
-    <p class="eyebrow">developer tools · ai agents · node</p>
-    <h3 id="world-notify-crossx-title">notify-crossx</h3>
-    <p class="lead">Step away. It'll call you back.</p>
-    <p class="body">Your AI coding agent works while you make tea. notify-crossx pings your desktop when it's done or needs you, and stays quiet while you're watching. Free for OpenCode, with a Claude Code edition.</p>
-    <p class="world-links"><a href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer">source ↗</a></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-  <dialog class="world" id="world-carbon-markets" aria-labelledby="world-carbon-markets-title">
-    <p class="eyebrow">climate · carbon markets · ai</p>
-    <h3 id="world-carbon-markets-title">Carbon Markets for SMEs</h3>
-    <p class="lead">Who gets a seat at the carbon table?</p>
-    <p class="body">Ongoing research into what it would take for small Ghanaian businesses and communities to enter carbon markets on their own terms, not someone else's.</p>
-    <p class="world-links"><span>research in progress</span></p>
-    <form method="dialog"><button class="world-back" autofocus>← star chart</button></form>
-  </dialog>
-
-  <script type="module" src="js/arrival.js"></script>
-  <script type="module" src="js/chart.js"></script>
-  <script type="module" src="js/transmission.js"></script>
-  <script type="module" src="js/nav.js"></script>
-  <script type="module" src="js/comet.js"></script>
 </body>
 </html>
