@@ -1,53 +1,114 @@
 /*
  * The illustrated print cards on the home screen. Their art is inline SVG painted with
  * these tokens, so switching data-phase repaints every illustration for night with no extra files.
+ * Props and ink are shared on :root; each print keeps its own sky and land, like a set of prints.
  */
 :root {
-  --ill-sky: #f4dcae;
-  --ill-sun: #e8603c;
-  --ill-far: #7fa7c9;
-  --ill-water: #4f86b5;
-  --ill-green: #6aa253;
-  --ill-deep: #2f5d3a;
   --ill-paper: #fbf3e2;
   --ill-ink: #2a2f3a;
-  --ill-accent: #e8a23c;
+  --ill-snow: #fbf3e2;
+  --ill-accent: #f0a83c;
   --ill-red: #d2553f;
+  --ill-red-dark: #a43f2f;
   --ill-wood: #7a4a2a;
+  --ill-wood-light: #c58e5c;
+  --ill-stone: #a29b8f;
+  --ill-skin: #8a5a3c;
+  --ill-cover: #2f5a7a;
   --ill-door: #3a2a20;
+  --ill-lamp: #f3e6c0;
+  --ill-flame: #f08a3c;
+  --ill-flame-core: #fff1c0;
   --ill-glow: #ffcf6b;
+  --ill-bloom-1: #f6c453;
+  --ill-bloom-2: #e8735a;
+  --ill-bloom-3: #fbf3e2;
   --ill-stars: 0;
   --ill-halo: 0;
+  --ill-day: 1;
   --ill-cloud: 0.95;
+  --ill-streak: 0.55;
+  --ill-trail: 0.85;
   --band-notes: #dcebf5;
   --band-questions: #e3efd6;
   --band-about: #f6e6cf;
   --band-ink: #1c2731;
 }
 :root[data-phase="night"] {
-  --ill-sky: #1c2747;
-  --ill-sun: #f1e6c8;
-  --ill-far: #34466f;
-  --ill-water: #223a63;
-  --ill-green: #2f4c3b;
-  --ill-deep: #1a2e25;
   --ill-paper: #e9e1cc;
   --ill-ink: #0d1220;
+  --ill-snow: #b6c0da;
   --ill-accent: #e0a24a;
   --ill-red: #b4553f;
+  --ill-red-dark: #873a2e;
   --ill-wood: #4a3020;
+  --ill-wood-light: #7a5a3e;
+  --ill-stone: #4c4d57;
+  --ill-skin: #5e4030;
+  --ill-cover: #2a4566;
   --ill-door: #ffcf6b;
+  --ill-lamp: #ffdd8e;
+  --ill-bloom-1: #9c8a4c;
+  --ill-bloom-2: #8e5548;
+  --ill-bloom-3: #9e9a8e;
   --ill-stars: 1;
-  --ill-halo: 0.22;
-  --ill-cloud: 0.25;
+  --ill-halo: 1;
+  --ill-day: 0;
+  --ill-cloud: 0.28;
+  --ill-streak: 0.08;
+  --ill-trail: 0.3;
   --band-notes: #1f2c40;
   --band-questions: #1f2f28;
   --band-about: #33291f;
   --band-ink: #eef1f4;
 }
+
+/* Notes: a mountain lake in golden morning light; moonlit at night. */
+.card-notes {
+  --ill-sky-top: #f4b98f; --ill-sky-low: #fbe5bf; --ill-sun: #e8603c;
+  --ill-far: #a9bfd3; --ill-mid: #6f93b6; --ill-near: #3f6b55;
+  --ill-water: #6a9cc6; --ill-water-deep: #2f5f8c;
+  --ill-land: #86b45e; --ill-land-deep: #4a7a3f;
+}
+:root[data-phase="night"] .card-notes {
+  --ill-sky-top: #0d1531; --ill-sky-low: #2b3f70; --ill-sun: #f1e6c8;
+  --ill-far: #34476f; --ill-mid: #26375c; --ill-near: #14231d;
+  --ill-water: #213c66; --ill-water-deep: #0e1b35;
+  --ill-land: #2b4737; --ill-land-deep: #16291f;
+}
+/* Questions: breezy blue sky over patchwork fields. */
+.card-questions {
+  --ill-sky-top: #8ec3dc; --ill-sky-low: #f6ecd4; --ill-sun: #f7c95a;
+  --ill-far: #b4cfa4; --ill-near: #4f7f4a;
+  --ill-field: #e6c36a; --ill-field-2: #9cc56e;
+  --ill-land: #73a957; --ill-land-deep: #3f7442;
+}
+:root[data-phase="night"] .card-questions {
+  --ill-sky-top: #0b1430; --ill-sky-low: #23395f; --ill-sun: #f1e6c8;
+  --ill-far: #2a4356; --ill-near: #1b2e24;
+  --ill-field: #4b4a33; --ill-field-2: #2f4a38;
+  --ill-land: #2a4636; --ill-land-deep: #15261d;
+}
+/* About: a campsite under a rose sunset; the milky way and a lit tent at night. */
+.card-about {
+  --ill-sky-top: #ec9576; --ill-sky-low: #f9d49c; --ill-sun: #fff0c4;
+  --ill-far: #c98e95; --ill-mid: #8d6d8c; --ill-near: #5b6e5c; --ill-pine: #34503f;
+  --ill-land: #7e9a55; --ill-land-deep: #46623a;
+}
+:root[data-phase="night"] .card-about {
+  --ill-sky-top: #090e24; --ill-sky-low: #2a2855; --ill-sun: #f1e6c8;
+  --ill-far: #2f3560; --ill-mid: #222848; --ill-near: #1a2a2b; --ill-pine: #101c1a;
+  --ill-land: #22362b; --ill-land-deep: #121f19;
+}
+
 .ill-stars { opacity: var(--ill-stars); }
 .ill-halo { opacity: var(--ill-halo); }
+.ill-day { opacity: var(--ill-day); }
 .ill-cloud { opacity: var(--ill-cloud); }
+.ill-streak { opacity: var(--ill-streak); }
+.ill-trail { opacity: var(--ill-trail); }
+/* Holds the shared filter, stipple and pine. Zero-sized rather than display:none, which would stop them painting. */
+.ill-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 .cards { display: flex; align-items: end; gap: 1.1rem; }
 .card {
@@ -68,6 +129,28 @@
 .cards .card:focus-visible { box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32), 0 0 0 5px rgba(255, 255, 255, 0.6); }
 
 .card-art { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; }
+
+/*
+ * Picking a print up wakes it a little: the kite tugs, the fire flickers, the tea steams.
+ * Each moving part is drawn around its own origin (kite bridle, fire base, mug rim), so it turns or scales from there.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .ill-kite, .ill-flame, .ill-steam { transform-origin: 0 0; }
+  .card:hover .ill-kite, .card:focus-visible .ill-kite { animation: ill-tug 2.8s ease-in-out infinite; }
+  .card:hover .ill-flame, .card:focus-visible .ill-flame { animation: ill-flicker 0.6s ease-in-out infinite alternate; }
+  .card:hover .ill-steam, .card:focus-visible .ill-steam { animation: ill-steam 2.4s ease-out infinite; }
+}
+@keyframes ill-tug {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-6deg) translate(-1px, 1px); }
+  70% { transform: rotate(5deg) translate(1px, -2px); }
+}
+@keyframes ill-flicker { to { transform: scale(0.9, 1.12) skewX(3deg); } }
+@keyframes ill-steam {
+  0%, 100% { opacity: 1; transform: none; }
+  60% { opacity: 0; transform: translateY(-5px); }
+  61% { opacity: 0; transform: translateY(2px); }
+}
 
 /* Paper grain over the whole card, so flat vector shapes read as a printed illustration. */
 .card::after {

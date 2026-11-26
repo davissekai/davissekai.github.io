@@ -41,7 +41,7 @@ test("the greeting says Greetings", () => {
 });
 
 test("every in-page link goes somewhere real", () => {
-  const hashes = [...html.matchAll(/href="(#[^"]*)"/g)].map((m) => m[1]);
+  const hashes = [...html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)].map((m) => m[1]);
   assert.ok(hashes.length >= 4);
   for (const h of hashes) assert.notEqual(parseHash(h).view, "missing", h);
 });
@@ -58,6 +58,15 @@ test("each notebook card carries its own illustration, hidden from screen reader
     assert.equal(name, hash);
     assert.match(inner, /<svg class="card-art"[^>]*aria-hidden="true"/, name);
     assert.match(inner, /<span class="card-title">/, name);
+  }
+});
+
+test("every gradient, filter and shape the card art paints with exists exactly once", () => {
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  const refs = [...html.matchAll(/url\(#([^)]+)\)|<use href="#([^"]+)"/g)].map((m) => m[1] ?? m[2]);
+  assert.ok(refs.length > 0, "the card art should paint with shared gradients and filters");
+  for (const ref of new Set(refs)) {
+    assert.equal(ids.filter((id) => id === ref).length, 1, `#${ref} should be defined exactly once`);
   }
 });
 

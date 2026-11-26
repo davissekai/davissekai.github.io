@@ -13,10 +13,11 @@ Davis has started a master's and now presents as a researcher, though the topic 
 
 - A full-bleed nature photo with a soft veil so the text stays readable.
 - Top left: **"Greetings. I'm Davis."** in large type, followed by a two-line intro: a master's student working out what to research, thinking in public.
-- Below that are three paper-like cards with small monospace labels:
-  - `notes`: what I'm reading and thinking
-  - `questions`: what I'm circling
-  - `about`: who I am
+- Below that are three paper-like cards with small monospace labels, each topped with a textured print illustration (inline SVG) that has its own day and night palette:
+  - `notes`: what I'm reading and thinking (a book on a picnic blanket by a mountain lake)
+  - `questions`: what I'm circling (a kite looping over ploughed hills)
+  - `about`: who I am (a tent and campfire under the mountains)
+- Hovering or focusing a card wakes its print a little: the kite tugs, the fire flickers, the tea steams.
 - A small `archive` link to past projects.
 - Social links in a corner.
 - The page never scrolls at any viewport size. On small phones the cards stack and shrink, and only the inside of a panel scrolls.
@@ -48,7 +49,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 - The visitor's local time picks the version. **Day runs from 06:00 to 17:59; night runs from 18:00 to 05:59.**
 - The time is checked again every minute. If the clock crosses a boundary while the page is open, the scene crossfades to the other version.
 - At night the veil darkens, and the panels and cards switch to dark paper with light text. These are colour tokens on the page root, not a second stylesheet.
-- When `prefers-reduced-motion` is on, scenes swap instantly with no crossfade.
+- When `prefers-reduced-motion` is on, scenes swap instantly with no crossfade, and the card prints stay still.
 
 ### Photos
 
