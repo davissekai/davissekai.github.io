@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { offsetFromMiddle, coverflowTransform, nearest, wrap } from "../js/coverflow.js";
+import { offsetFromMiddle, coverflowTransform, nearest, step } from "../js/coverflow.js";
 
 test("a print's offset is how many print widths it sits from the middle, positive on the left", () => {
   assert.equal(offsetFromMiddle(500, 500, 200), 0);
@@ -32,8 +32,14 @@ test("nearest picks the print closest to the middle, the first on a tie, and -1 
   assert.equal(nearest([]), -1);
 });
 
-test("wrap steps past either end of the shelf round to the other", () => {
-  assert.equal(wrap(-1, 3), 2);
-  assert.equal(wrap(3, 3), 0);
-  assert.equal(wrap(1, 3), 1);
+test("stepping along the shelf stops at either end instead of going round", () => {
+  assert.equal(step(0, 1, 2), 1);
+  assert.equal(step(1, 1, 2), 1);
+  assert.equal(step(0, -1, 2), 0);
+  assert.equal(step(1, -1, 3), 0);
+});
+
+test("stepping from nothing in focus lands on the first print, and an empty shelf has none", () => {
+  assert.equal(step(-1, 1, 2), 0);
+  assert.equal(step(0, 1, 0), -1);
 });

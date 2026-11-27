@@ -15,7 +15,7 @@ test("the home screen sits in the about forest, by day and by night", () => {
 });
 
 test("views without their own scene borrow home's", () => {
-  assert.equal(sceneFor("archive", "day"), SCENES.home.day);
+  assert.equal(sceneFor("about", "day"), SCENES.home.day);
   assert.equal(sceneFor("missing", "night"), SCENES.home.night);
 });
 
@@ -31,12 +31,12 @@ test("every photo is listed exactly once for preloading", () => {
 
 test("closing a panel keeps that panel's photo up instead of going back to home's", () => {
   assert.equal(backdropView("home", "notes"), "notes");
-  assert.equal(backdropView("home", "archive"), "archive");
+  assert.equal(backdropView("home", "about"), "about");
 });
 
 test("opening a panel shows that panel's photo, whatever was up before", () => {
   assert.equal(backdropView("about", "notes"), "about");
-  assert.equal(backdropView("archive", "notes"), "archive");
+  assert.equal(backdropView("notes", "about"), "notes");
 });
 
 test("arriving on home with nothing shown yet gets home's photo", () => {

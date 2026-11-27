@@ -1,6 +1,6 @@
 import { cleanNotes, noteListHtml, noteHtml } from "./notes.js";
 
-const TITLES = { notes: "Notes", about: "About", archive: "The project shelf" };
+const TITLES = { notes: "Notes", about: "About" };
 
 /** Shown for any route that doesn't lead anywhere. */
 export const MISSING = {
@@ -10,7 +10,7 @@ export const MISSING = {
 };
 
 /**
- * Builds the panel content ({ label, title, html, wide? }) for a route. I/O comes in through `io`
+ * Builds the panel content ({ label, title, html }) for a route. I/O comes in through `io`
  * so this runs the same in the browser and in tests, and a failed fetch becomes a retry
  * message instead of an exception.
  */
@@ -19,12 +19,10 @@ export async function viewFor(route, io) {
     switch (route.view) {
       case "notes":
         return route.slug ? await noteView(route.slug, io) : await notesView(io);
-      case "about":
-      case "archive": {
-        const html = io.staticHtml(route.view);
+      case "about": {
+        const html = io.staticHtml("about");
         if (html === null) return MISSING;
-        // The shelf slides sideways, so the archive gets a wide panel.
-        return { label: route.view, title: TITLES[route.view], html, wide: route.view === "archive" };
+        return { label: "about", title: TITLES.about, html };
       }
       default:
         return MISSING;

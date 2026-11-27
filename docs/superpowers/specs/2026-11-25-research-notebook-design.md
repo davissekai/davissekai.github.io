@@ -13,24 +13,19 @@ Davis has started a master's and now presents as a researcher, though the topic 
 
 - A full-bleed nature photo with a soft veil so the text stays readable.
 - Top left: **"Greetings. I'm Davis."** in large type, followed by a two-line intro: a master's student working out what to research, thinking in public.
-- Below that are three paper-like cards with small monospace labels, each topped with a textured print illustration (inline SVG) that has its own day and night palette:
-  - `notes`: what I'm reading and thinking (a book on a picnic blanket by a mountain lake)
-  - `about`: who I am (a tent and campfire under the mountains)
-- Hovering or focusing a card wakes its print a little: the kite tugs, the fire flickers, the tea steams.
-- A small `archive` link to past projects.
-- Social links in a corner.
-- The page never scrolls at any viewport size. On small phones the cards stack and shrink, and only the inside of a panel scrolls.
+- Under the intro, two plain underlined links, as on itsdavis.com: "What I'm reading and thinking" (`#notes`) and "Who I am" (`#about`).
+- The project shelf, a full-width band under the greeting, after the shelf on itsdavis.com: "The project shelf" heading, a hint, and a "Print index" pill (thumbnails, title, one line each). Current projects (Tally, notify-crossx) stand as big illustrated paper prints on a wooden ledge, side by side. The print under the mouse is in focus: it faces you and the other turns away, and a click opens it. On phones the shelf scrolls and the print in the middle is in focus; tapping the other brings it over. Tab and the ←/→ buttons (which stop at either end, no loop) move focus too; under the ledge a dark pill opens the print in focus and names what it does. The prints are painted after Van Gogh in inline SVG (short dashed brushstrokes, swirling skies, a paint filter for brush edges and thick impasto): Tally is a cypress and wheatfield by day and a starry night after dark, and notify-crossx a blue room in the manner of his bedroom in Arles. Email, GitHub and X sit top right.
+- The page fits one screen when it can; when the shelf doesn't fit under the greeting, the home page scrolls. Only the inside of a panel scrolls when a panel is open.
 
 ### Panels: tap something and it pops up
 
 - One reusable panel floats in the centre of the screen.
 - Opening a panel blurs the backdrop slightly and crossfades it to that section's scene.
-- Esc, the close button, tapping outside the panel, or the browser back button all close it. Focus moves into the panel when it opens and returns to the card that opened it when it closes.
+- Esc, the close button, tapping outside the panel, or the browser back button all close it. Focus moves into the panel when it opens and returns to the link that opened it when it closes.
 - Each panel has its own URL hash, so links can point straight at it:
   - `#notes`: a dated list of notes, newest first. Each item shows its label, title and date.
   - `#notes/<slug>`: a single note, shown inside the same panel with a "← all notes" link.
   - `#about`: a short bio, the master's program, and contact details.
-  - `#archive`: "The project shelf", a wide panel laid out like the shelf on itsdavis.com. The projects (Two Eyes, Atmo, notify-crossx) stand as illustrated paper prints on a wooden ledge, in a coverflow: the middle print faces you and its neighbours turn away. Wheel, trackpad, touch, Tab and the ←/→ buttons slide it (the buttons wrap round), and clicking a side print brings it to the middle. Under the ledge, a dark pill opens the middle print and names what it does. Each print has its own day and night palette, a type label and a title. A "Print index" pill lists the prints with thumbnails and jumps to any of them.
 - An unknown hash or slug shows a short "nothing here" message in the panel. It does not break the page.
 
 ## Scenes and time of day
@@ -45,8 +40,8 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 - The visitor's local time picks the version. **Day runs from 06:00 to 17:59; night runs from 18:00 to 05:59.**
 - The time is checked again every minute. If the clock crosses a boundary while the page is open, the scene crossfades to the other version.
-- At night the veil darkens, and the panels and cards switch to dark paper with light text. These are colour tokens on the page root, not a second stylesheet.
-- When `prefers-reduced-motion` is on, scenes swap instantly with no crossfade, and the card prints stay still.
+- At night the veil darkens, and the panels and prints switch to dark paper with light text. These are colour tokens on the page root, not a second stylesheet.
+- When `prefers-reduced-motion` is on, scenes swap instantly with no crossfade, and the shelf jumps between prints instead of sliding.
 
 ### Photos
 
@@ -67,7 +62,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 ## Tech
 
 - Plain HTML, CSS and ES modules on GitHub Pages, as now. No frameworks and no new dependencies.
-- The space theme is retired: its `js/` modules, tests, styles and fonts are removed. The project list moves into the archive panel. Git history keeps the old site.
+- The space theme is retired: its `js/` modules, tests, styles and fonts are removed. The project list moves onto the home page as the project shelf. Git history keeps the old site.
 - New modules, grouped by feature:
   - `js/time-of-day.js`: maps a `Date` to `day` or `night`.
   - `js/scenes.js`: maps a view and time to a photo.
@@ -83,7 +78,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 - If a data file fails to load, the panel shows "couldn't load this right now" with a retry link. The home screen still works.
 - If a photo fails to load, the veil colour shows on its own (a sky-blue gradient by day, deep navy by night), so the page is never blank.
-- With JavaScript off, the home screen and the cards still render. The cards fall back to anchor links into a plain no-JS section listing the about text and archive links. Notes need JS.
+- With JavaScript off, the home screen and the shelf still render (the prints sit side by side as plain links). The notebook links fall back to anchor links into a plain no-JS section with the about text. Notes need JS.
 
 ## Testing
 

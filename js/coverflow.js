@@ -30,9 +30,10 @@ export function nearest(offsets) {
   return best;
 }
 
-/** Steps past either end of a shelf of `count` prints come round to the other end. */
-export function wrap(index, count) {
-  return ((index % count) + count) % count;
+/** Moves focus `delta` prints along a shelf of `count`, stopping at either end; -1 if the shelf is empty. */
+export function step(index, delta, count) {
+  if (count <= 0) return -1;
+  return Math.max(0, Math.min(count - 1, index + delta));
 }
 
 /** Two decimals keep the transform strings short; -0 is written as 0. */
