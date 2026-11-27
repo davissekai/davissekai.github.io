@@ -15,7 +15,6 @@ Davis has started a master's and now presents as a researcher, though the topic 
 - Top left: **"Greetings. I'm Davis."** in large type, followed by a two-line intro: a master's student working out what to research, thinking in public.
 - Below that are three paper-like cards with small monospace labels, each topped with a textured print illustration (inline SVG) that has its own day and night palette:
   - `notes`: what I'm reading and thinking (a book on a picnic blanket by a mountain lake)
-  - `questions`: what I'm circling (a kite looping over ploughed hills)
   - `about`: who I am (a tent and campfire under the mountains)
 - Hovering or focusing a card wakes its print a little: the kite tugs, the fire flickers, the tea steams.
 - A small `archive` link to past projects.
@@ -30,7 +29,6 @@ Davis has started a master's and now presents as a researcher, though the topic 
 - Each panel has its own URL hash, so links can point straight at it:
   - `#notes`: a dated list of notes, newest first. Each item shows its label, title and date.
   - `#notes/<slug>`: a single note, shown inside the same panel with a "← all notes" link.
-  - `#questions`: a list of research questions, each with a status of `open`, `chasing` or `dropped`, plus an optional one-line comment.
   - `#about`: a short bio, the master's program, and contact details.
   - `#archive`: "The project shelf", a wide panel laid out like the shelf on itsdavis.com. The projects (Two Eyes, Atmo, notify-crossx) stand as illustrated paper prints on a wooden ledge, in a coverflow: the middle print faces you and its neighbours turn away. Wheel, trackpad, touch, Tab and the ←/→ buttons slide it (the buttons wrap round), and clicking a side print brings it to the middle. Under the ledge, a dark pill opens the middle print and names what it does. Each print has its own day and night palette, a type label and a title. A "Print index" pill lists the prints with thumbnails and jumps to any of them.
 - An unknown hash or slug shows a short "nothing here" message in the panel. It does not break the page.
@@ -43,7 +41,6 @@ Each view has a scene, and each scene comes in a day version and a night version
 |-----------|------------------------|-----------------------------|
 | home      | forest light (shared with about) | forest at night (shared with about) |
 | notes     | still water, lake      | moonlit water               |
-| questions | grassy hills, green    | dark field under the stars  |
 | about     | forest light           | forest at dusk or night     |
 
 - The visitor's local time picks the version. **Day runs from 06:00 to 17:59; night runs from 18:00 to 05:59.**
@@ -63,10 +60,9 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 - `data/notes/index.json` lists the notes. Each entry has `slug`, `title`, `date` (YYYY-MM-DD) and `label` (e.g. `reading`, `field note`, `idea`).
 - `data/notes/<slug>.md` holds the body of each note.
-- `data/questions.json` lists the questions. Each entry has `id`, `text`, `status` (`open` | `chasing` | `dropped`), `added` (date) and an optional `note`.
 - A small built-in Markdown renderer covers paragraphs, `##`/`###` headings, links, emphasis, inline code and lists. Raw HTML in notes is escaped, so it never runs.
 - GitHub Pages can't list folders, which is why notes need the index file. Adding a note means writing the `.md` file and adding one line to the index.
-- The site launches with one real first note ("Starting the master's") and a few seed questions that Davis writes or approves.
+- The site launches with one real first note ("Starting the master's").
 
 ## Tech
 
@@ -81,7 +77,6 @@ Each view has a scene, and each scene comes in a day version and a night version
   - `js/main.js`: wires everything together and syncs the hash with the browser history.
   - `js/notes.js`: loads the index and note files and renders them.
   - `js/markdown.js`: the small, escaping Markdown renderer.
-  - `js/questions.js`: loads and renders the questions.
 - Fonts: one display face for the greeting and one monospace face for labels, both from Google Fonts: Bricolage Grotesque and DM Mono.
 
 ## Errors and edge cases
@@ -97,7 +92,7 @@ Unit tests run with `node --test`, as now, and are written before the code:
 - `time-of-day`: the boundaries at 05:59, 06:00, 17:59 and 18:00.
 - `router`: `#notes/slug` parses correctly; empty, unknown and malformed hashes fall back safely.
 - `markdown`: each supported construct renders; HTML and `javascript:` links are escaped or stripped.
-- `notes` and `questions`: newest-first sorting, the status filter, and malformed entries skipped without crashing.
+- `notes`: newest-first sorting and malformed entries skipped without crashing.
 - `scenes`: every view has both a day and a night photo.
 
 Then a browser check: open and close each panel, the back button, focus, day vs night (with a mocked clock), a mobile viewport, and screenshots for review.

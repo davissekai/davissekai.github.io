@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Davis Dey · research notebook</title>
-  <meta name="description" content="Davis Dey's research notebook: notes, open questions, and the work so far.">
+  <meta name="description" content="Davis Dey's research notebook: notes, reading, and the work so far.">
   <!-- Mirrors phaseAt() in js/time-of-day.js (a test keeps the hours equal) so night visitors never see a day flash before the modules load. -->
   <script>(function(h){var d=document.documentElement;d.classList.add("js");d.dataset.phase=h>=6&&h<18?"day":"night";})(new Date().getHours());</script>
   <link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
@@ -19,7 +19,6 @@
   <link rel="modulepreload" href="js/scenes.js">
   <link rel="modulepreload" href="js/views.js">
   <link rel="modulepreload" href="js/notes.js">
-  <link rel="modulepreload" href="js/questions.js">
   <link rel="modulepreload" href="js/markdown.js">
   <link rel="modulepreload" href="js/dates.js">
   <link rel="modulepreload" href="js/backdrop.js">
@@ -163,79 +162,6 @@
             </g>
           </svg>
           <span class="card-band"><span class="label">notes</span><span class="card-title">What I'm reading and thinking</span></span>
-        </a>
-        <a class="card card-questions" href="#questions">
-          <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-            <defs>
-              <linearGradient id="q-sky" x2="0" y2="1"><stop offset=".1" stop-color="var(--ill-sky-top)"/><stop offset="1" stop-color="var(--ill-sky-low)"/></linearGradient>
-              <linearGradient id="q-land" x2="0" y2="1"><stop offset="0" stop-color="var(--ill-land)"/><stop offset="1" stop-color="var(--ill-land-deep)"/></linearGradient>
-              <radialGradient id="q-sun"><stop offset=".3" stop-color="var(--ill-sun)" stop-opacity=".45"/><stop offset="1" stop-color="var(--ill-sun)" stop-opacity="0"/></radialGradient>
-              <linearGradient id="q-trail" x1="70" x2="160" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--ill-paper)" stop-opacity="0"/><stop offset=".6" stop-color="var(--ill-paper)"/></linearGradient>
-              <clipPath id="q-hill-a"><path d="M-10 104C20 94 56 92 92 98 116 102 136 110 156 124V140H-10Z"/></clipPath>
-              <clipPath id="q-hill-b"><path d="M64 126C96 106 140 96 180 96 210 96 232 100 250 102V140H64Z"/></clipPath>
-            </defs>
-            <g filter="url(#ill-print)">
-              <rect x="-10" y="-10" width="260" height="140" fill="url(#q-sky)"/>
-              <path class="ill-streak" fill="var(--ill-paper)" d="M4 54c16-2.6 34-2.6 50 0-16-.9-34-.9-50 0ZM150 62c18-3 40-3 58 0-18-1-40-1-58 0Z"/>
-              <g class="ill-stars" fill="var(--ill-paper)">
-                <circle cx="96" cy="14" r="1"/><circle cx="126" cy="30" r=".7"/><circle cx="150" cy="12" r=".8"/><circle cx="228" cy="24" r="1"/><circle cx="14" cy="18" r=".8"/><circle cx="72" cy="28" r=".6"/><circle cx="236" cy="74" r=".6"/><circle cx="190" cy="66" r=".7"/>
-                <path d="M212 56l1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/>
-                <path d="M108 22L130 13" stroke="var(--ill-paper)" stroke-width=".8" stroke-linecap="round" stroke-opacity=".7"/>
-              </g>
-              <circle cx="40" cy="34" r="34" fill="url(#q-sun)"/>
-              <circle cx="40" cy="34" r="12" fill="var(--ill-sun)"/>
-              <g class="ill-stars" fill="var(--ill-sky-low)" fill-opacity=".3"><circle cx="36" cy="31" r="2.6"/><circle cx="44" cy="39" r="1.8"/><circle cx="44.5" cy="29.5" r="1.1"/></g>
-              <g class="ill-cloud">
-                <path d="M172 46C170 40 176 36 181 38 182 31 192 28 197 33 200 28 210 29 211 36 217 35 221 41 218 46Z" fill="var(--ill-paper)"/>
-                <path d="M174 46C186 42.5 206 42.5 218 46Z" fill="var(--ill-ink)" fill-opacity=".07"/>
-                <path d="M10 70C9 66 13 63 17 65 19 60 27 59 30 64 34 62 39 65 37 70Z" fill="var(--ill-paper)"/>
-              </g>
-              <path class="ill-day" d="M104 24q2.5-2.5 5 0 2.5-2.5 5 0M118 18q2-2 4 0 2-2 4 0M96 16q1.6-1.6 3.2 0 1.6-1.6 3.2 0" fill="none" stroke="var(--ill-ink)" stroke-width=".9" stroke-linecap="round"/>
-              <path class="ill-trail" d="M156 54C140 62 126 66 116 62 102 56 104 36 118 34 132 32 136 50 124 58 110 66 86 64 72 58" fill="none" stroke="url(#q-trail)" stroke-width="2.6" stroke-linecap="round"/>
-              <path d="M-10 94C16 84 44 82 76 88 104 93 128 80 160 80 190 80 220 88 250 84V130H-10Z" fill="var(--ill-far)"/>
-              <path d="M160 80v-5M168 81v-3" stroke="var(--ill-land-deep)"/>
-              <g fill="var(--ill-near)"><circle cx="160" cy="72.5" r="3.6"/><circle cx="168" cy="76.5" r="2.4"/></g>
-              <path d="M-10 104C20 94 56 92 92 98 116 102 136 110 156 124V140H-10Z" fill="var(--ill-field)"/>
-              <path clip-path="url(#q-hill-a)" d="M-10 109C20 99 56 97 92 103 116 107 136 115 156 129M-10 114C20 104 56 102 92 108 116 112 136 120 156 134M-10 119C20 109 56 107 92 113 116 117 136 125 156 139M-10 124C20 114 56 112 92 118 116 122 136 130 156 144" fill="none" stroke="var(--ill-ink)" stroke-opacity=".13" stroke-width=".8"/>
-              <path d="M24 96v3M31 95v3" stroke="var(--ill-land-deep)"/>
-              <g fill="var(--ill-near)"><circle cx="24" cy="94" r="2.6"/><circle cx="31" cy="93.4" r="2.1"/></g>
-              <path d="M64 126C96 106 140 96 180 96 210 96 232 100 250 102V140H64Z" fill="var(--ill-field-2)"/>
-              <path clip-path="url(#q-hill-b)" d="M64 131C96 111 140 101 180 101 210 101 232 105 250 107M64 136C96 116 140 106 180 106 210 106 232 110 250 112M64 141C96 121 140 111 180 111 210 111 232 115 250 117M64 146C96 126 140 116 180 116 210 116 232 120 250 122" fill="none" stroke="var(--ill-land-deep)" stroke-opacity=".3" stroke-width=".8"/>
-              <path d="M168 97v3M176 96.5v3M184 97v3" stroke="var(--ill-land-deep)"/>
-              <g fill="var(--ill-near)"><circle cx="168" cy="94.6" r="2.8"/><circle cx="176" cy="94" r="2.4"/><circle cx="184" cy="94.8" r="2.7"/></g>
-              <path d="M-10 120C14 110 40 108 66 114 96 121 124 134 160 138 196 142 226 136 250 134V170H-10Z" fill="url(#q-land)"/>
-              <path d="M150 138C190 141 222 136 250 134V170H140Z" fill="url(#ill-dots)" fill-opacity=".2"/>
-              <path d="M47 92Q118 96 166.8 53.9" fill="none" stroke="var(--ill-ink)" stroke-width=".7" stroke-opacity=".8"/>
-              <g transform="translate(40 111)">
-                <ellipse cy=".6" rx="5" ry="1.2" fill="var(--ill-ink)" fill-opacity=".2"/>
-                <path d="M-1.8 0l.5-7M1.8 0l-.5-7" stroke="var(--ill-ink)" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M-2.2-12l-2.3 4.5" stroke="var(--ill-red)" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M-3.2-6l.6-7q2.6-2 5.2 0l.6 7Z" fill="var(--ill-red)"/>
-                <path d="M2-12.5l5-6.5" stroke="var(--ill-red)" stroke-width="1.8" stroke-linecap="round"/>
-                <path d="M.5-14q4 1 6.5 3.5" fill="none" stroke="var(--ill-accent)" stroke-width="1.4" stroke-linecap="round"/>
-                <circle cy="-16.6" r="2.4" fill="var(--ill-skin)"/>
-                <path d="M-2.4-16.8a2.4 2.4 0 0 1 4.8 0Z" fill="var(--ill-ink)"/>
-              </g>
-              <g transform="translate(168 48) rotate(12)">
-                <g class="ill-kite">
-                  <path d="M0 24C-6 32 7 38 1 46-5 54 6 58 1 66" fill="none" stroke="var(--ill-ink)" stroke-width=".8"/>
-                  <path d="M-2.5 33.2l6 3.6v-3.6l-6 3.6ZM-2.4 54.2l6 3.6v-3.6l-6 3.6Z" fill="var(--ill-red)"/>
-                  <path d="M-2 44.2l6 3.6v-3.6l-6 3.6Z" fill="var(--ill-cover)"/>
-                  <path d="M0-20L14 0 0 24-14 0Z" fill="var(--ill-accent)"/>
-                  <path d="M0-20L14 0H0ZM0 0H-14L0 24Z" fill="var(--ill-red)"/>
-                  <path d="M0-20L-14 0H0Z" fill="var(--ill-paper)" fill-opacity=".3"/>
-                  <path d="M0-20V24M-14 0H14" stroke="var(--ill-ink)" stroke-width=".9"/>
-                </g>
-              </g>
-              <path d="M-10 146C30 140 80 142 130 146S210 140 250 142V170H-10Z" fill="var(--ill-land-deep)"/>
-              <path d="M2 145l-1-6M5 144l1-7M8 145l2-5M60 142l-1-6M63 142l1-7M66 142l2-5M112 145l-1-6M115 145l1-7M118 146l2-5M168 145l-1-6M171 145l1-7M174 145l2-5M222 141l-1-6M225 141l1-7M228 141l2-5" stroke="var(--ill-land-deep)" stroke-width=".9" stroke-linecap="round"/>
-              <path d="M12 160v-9M30 160v-5M58 160v-13M82 160v-9M94 160v-15M104 160v-7M126 160v-13M140 160v-5M150 160v-11M176 160v-5M188 160v-15M198 160v-9M210 160v-13M220 160v-7M236 160v-13" stroke="var(--ill-land)" stroke-width=".8"/>
-              <g fill="var(--ill-bloom-1)"><circle cx="12" cy="151" r="2"/><circle cx="58" cy="147" r="2"/><circle cx="104" cy="153" r="1.8"/><circle cx="150" cy="149" r="1.8"/><circle cx="198" cy="151" r="2"/><circle cx="236" cy="147" r="1.8"/></g>
-              <g fill="var(--ill-bloom-2)"><circle cx="30" cy="155" r="1.8"/><circle cx="82" cy="151" r="2"/><circle cx="126" cy="147" r="1.7"/><circle cx="176" cy="155" r="2"/><circle cx="220" cy="153" r="1.8"/></g>
-              <g fill="var(--ill-bloom-3)"><circle cx="94" cy="145" r="1.5"/><circle cx="140" cy="155" r="1.6"/><circle cx="188" cy="145" r="1.5"/><circle cx="210" cy="147" r="1.4"/><circle cx="20" cy="146" r=".8"/><circle cx="23" cy="148" r=".7"/><circle cx="70" cy="150" r=".8"/><circle cx="73" cy="152" r=".7"/><circle cx="164" cy="146" r=".8"/><circle cx="167" cy="148" r=".7"/></g>
-            </g>
-          </svg>
-          <span class="card-band"><span class="label">questions</span><span class="card-title">What I'm circling</span></span>
         </a>
         <a class="card card-about" href="#about">
           <svg class="card-art" viewBox="0 0 240 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">

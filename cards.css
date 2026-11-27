@@ -30,7 +30,6 @@
   --ill-streak: 0.55;
   --ill-trail: 0.85;
   --band-notes: #dcebf5;
-  --band-questions: #e3efd6;
   --band-about: #f6e6cf;
   --band-ink: #1c2731;
 }
@@ -58,7 +57,6 @@
   --ill-streak: 0.08;
   --ill-trail: 0.3;
   --band-notes: #1f2c40;
-  --band-questions: #1f2f28;
   --band-about: #33291f;
   --band-ink: #eef1f4;
 }
@@ -75,19 +73,6 @@
   --ill-far: #34476f; --ill-mid: #26375c; --ill-near: #14231d;
   --ill-water: #213c66; --ill-water-deep: #0e1b35;
   --ill-land: #2b4737; --ill-land-deep: #16291f;
-}
-/* Questions: breezy blue sky over patchwork fields. */
-.card-questions {
-  --ill-sky-top: #8ec3dc; --ill-sky-low: #f6ecd4; --ill-sun: #f7c95a;
-  --ill-far: #b4cfa4; --ill-near: #4f7f4a;
-  --ill-field: #e6c36a; --ill-field-2: #9cc56e;
-  --ill-land: #73a957; --ill-land-deep: #3f7442;
-}
-:root[data-phase="night"] .card-questions {
-  --ill-sky-top: #0b1430; --ill-sky-low: #23395f; --ill-sun: #f1e6c8;
-  --ill-far: #2a4356; --ill-near: #1b2e24;
-  --ill-field: #4b4a33; --ill-field-2: #2f4a38;
-  --ill-land: #2a4636; --ill-land-deep: #15261d;
 }
 /* About: a campsite under a rose sunset; the milky way and a lit tent at night. */
 .card-about {
@@ -123,7 +108,6 @@
 }
 /* A slight, different lean on each print, like cards propped up by hand. */
 .card-notes { --tilt: -1.2deg; }
-.card-questions { --tilt: 0.8deg; }
 .card-about { --tilt: -0.5deg; }
 .card:hover, .card:focus-visible { transform: translateY(-6px) rotate(0deg); box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32); }
 .cards .card:focus-visible { box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32), 0 0 0 5px rgba(255, 255, 255, 0.6); }
@@ -168,14 +152,13 @@
   text-align: center;
 }
 .card-notes .card-band { background: var(--band-notes); }
-.card-questions .card-band { background: var(--band-questions); }
 .card-about .card-band { background: var(--band-about); }
 .card .label { color: inherit; opacity: 0.7; }
 .card-title { font-size: 1.1rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
 
-/* Phones: three small prints side by side; the one-word label stands in for the longer title. */
+/* Phones: two small prints side by side; the one-word label stands in for the longer title. */
 @media (max-width: 600px) {
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
   .card { width: auto; }
   .card-band { padding: 0.45rem 0.3rem 0.55rem; }
   .card .label { font-size: 0.78rem; opacity: 1; }

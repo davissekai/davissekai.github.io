@@ -3,11 +3,10 @@ import assert from "node:assert/strict";
 import { viewFor, MISSING } from "../js/views.js";
 
 const NOTES = [{ slug: "first", title: "First", date: "2026-11-25", label: "field note" }];
-const QUESTIONS = [{ id: "q", text: "Why rivers?", status: "open", added: "2026-11-25" }];
 
 /** Fake I/O so views can be tested without a browser or network. */
 function io({ fail = false, fetched = [] } = {}) {
-  const files = { "data/notes/index.json": NOTES, "data/questions.json": QUESTIONS, "data/notes/first.md": "Hello." };
+  const files = { "data/notes/index.json": NOTES, "data/notes/first.md": "Hello." };
   return {
     fetchJson: async (url) => {
       if (fail) throw new Error("offline");
@@ -39,11 +38,6 @@ test("a slug that isn't in the index is 'nothing here'", async () => {
   assert.deepEqual(await viewFor({ view: "notes", slug: "nope" }, io()), MISSING);
 });
 
-test("#questions renders the questions", async () => {
-  const v = await viewFor({ view: "questions", slug: null }, io());
-  assert.match(v.html, /Why rivers\?/);
-});
-
 test("about and archive show their static page content", async () => {
   assert.equal((await viewFor({ view: "about", slug: null }, io())).html, "<p>me</p>");
   const archive = await viewFor({ view: "archive", slug: null }, io());
@@ -54,7 +48,7 @@ test("about and archive show their static page content", async () => {
 
 test("only the archive opens a wide panel, so the shelf has room to slide", async () => {
   assert.equal((await viewFor({ view: "archive", slug: null }, io())).wide, true);
-  for (const view of ["notes", "questions", "about"]) {
+  for (const view of ["notes", "about"]) {
     assert.ok(!(await viewFor({ view, slug: null }, io())).wide, view);
   }
   assert.ok(!MISSING.wide);

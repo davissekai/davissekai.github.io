@@ -1,7 +1,6 @@
 import { cleanNotes, noteListHtml, noteHtml } from "./notes.js";
-import { cleanQuestions, questionsHtml } from "./questions.js";
 
-const TITLES = { notes: "Notes", questions: "Open questions", about: "About", archive: "The project shelf" };
+const TITLES = { notes: "Notes", about: "About", archive: "The project shelf" };
 
 /** Shown for any route that doesn't lead anywhere. */
 export const MISSING = {
@@ -20,10 +19,6 @@ export async function viewFor(route, io) {
     switch (route.view) {
       case "notes":
         return route.slug ? await noteView(route.slug, io) : await notesView(io);
-      case "questions": {
-        const questions = cleanQuestions(await io.fetchJson("data/questions.json"));
-        return { label: "questions", title: TITLES.questions, html: questionsHtml(questions) };
-      }
       case "about":
       case "archive": {
         const html = io.staticHtml(route.view);

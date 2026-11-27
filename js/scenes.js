@@ -5,7 +5,6 @@ export const SCENES = {
   // Home shares the about forest, so the first thing a visitor sees is the woods.
   home: ABOUT,
   notes: { day: "img/scenes/notes-day.webp", night: "img/scenes/notes-night.webp" },
-  questions: { day: "img/scenes/questions-day.webp", night: "img/scenes/questions-night.webp" },
   about: ABOUT,
 };
 

@@ -2,8 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { SCENES, sceneFor, allScenes, backdropView } from "../js/scenes.js";
 
-test("home, notes, questions and about each have a day and a night photo", () => {
-  for (const view of ["home", "notes", "questions", "about"]) {
+test("home, notes and about each have a day and a night photo", () => {
+  for (const view of ["home", "notes", "about"]) {
     assert.match(SCENES[view].day, /^img\/scenes\/[a-z]+-day\.webp$/, view);
     assert.match(SCENES[view].night, /^img\/scenes\/[a-z]+-night\.webp$/, view);
   }
@@ -25,17 +25,17 @@ test("a view's scene follows the phase", () => {
 
 test("every photo is listed exactly once for preloading", () => {
   const all = allScenes();
-  assert.equal(all.length, 6);
-  assert.equal(new Set(all).size, 6);
+  assert.equal(all.length, 4);
+  assert.equal(new Set(all).size, 4);
 });
 
 test("closing a panel keeps that panel's photo up instead of going back to home's", () => {
   assert.equal(backdropView("home", "notes"), "notes");
-  assert.equal(backdropView("home", "questions"), "questions");
+  assert.equal(backdropView("home", "archive"), "archive");
 });
 
 test("opening a panel shows that panel's photo, whatever was up before", () => {
-  assert.equal(backdropView("questions", "notes"), "questions");
+  assert.equal(backdropView("about", "notes"), "about");
   assert.equal(backdropView("archive", "notes"), "archive");
 });
 

@@ -42,7 +42,7 @@ test("the greeting says Greetings", () => {
 
 test("every in-page link goes somewhere real", () => {
   const hashes = [...html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)].map((m) => m[1]);
-  assert.ok(hashes.length >= 4);
+  assert.ok(hashes.length >= 3);
   for (const h of hashes) assert.notEqual(parseHash(h).view, "missing", h);
 });
 
@@ -53,7 +53,7 @@ test("about and archive exist as static sections the panel can show", () => {
 
 test("each notebook card carries its own illustration, hidden from screen readers", () => {
   const cards = [...html.matchAll(/<a class="card card-(\w+)" href="#(\w+)">([\s\S]*?)<\/a>/g)];
-  assert.deepEqual(cards.map((m) => m[1]), ["notes", "questions", "about"]);
+  assert.deepEqual(cards.map((m) => m[1]), ["notes", "about"]);
   for (const [, name, hash, inner] of cards) {
     assert.equal(name, hash);
     assert.match(inner, /<svg class="card-art"[^>]*aria-hidden="true"/, name);
