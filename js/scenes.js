@@ -8,7 +8,7 @@ export const SCENES = {
   about: ABOUT,
 };
 
-/** The photo for a view at a phase. Archive and "missing" share home's scene, so every route has one. */
+/** The photo for a view at a phase. Views without their own (like "missing") share home's scene, so every route has one. */
 export function sceneFor(view, phase) {
   return (SCENES[view] ?? SCENES.home)[phase];
 }

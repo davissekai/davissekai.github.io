@@ -42,23 +42,25 @@ test("the greeting says Greetings", () => {
 
 test("every in-page link goes somewhere real", () => {
   const hashes = [...html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)].map((m) => m[1]);
-  assert.ok(hashes.length >= 3);
+  assert.ok(hashes.length >= 2);
   for (const h of hashes) assert.notEqual(parseHash(h).view, "missing", h);
 });
 
-test("about and archive exist as static sections the panel can show", () => {
+test("about exists as a static section the panel can show", () => {
   assert.match(html, /<section id="about"/);
-  assert.match(html, /<section id="archive"/);
 });
 
-test("each notebook card carries its own illustration, hidden from screen readers", () => {
-  const cards = [...html.matchAll(/<a class="card card-(\w+)" href="#(\w+)">([\s\S]*?)<\/a>/g)];
-  assert.deepEqual(cards.map((m) => m[1]), ["notes", "about"]);
-  for (const [, name, hash, inner] of cards) {
-    assert.equal(name, hash);
-    assert.match(inner, /<svg class="card-art"[^>]*aria-hidden="true"/, name);
-    assert.match(inner, /<span class="card-title">/, name);
-  }
+test("there is no archive: no section, and nothing links to it", () => {
+  assert.doesNotMatch(html, /id="archive"/);
+  assert.doesNotMatch(html, /href="#archive"/);
+});
+
+test("notes and about are plain text links under the intro, not illustrated cards", () => {
+  const greeting = html.match(/<header class="greeting">([\s\S]*?)<\/header>/)[1];
+  const links = greeting.match(/<nav class="notebook" aria-label="Notebook">([\s\S]*?)<\/nav>/);
+  assert.ok(links, "notebook links not found under the intro");
+  assert.deepEqual([...links[1].matchAll(/<a href="(#\w+)">[^<]+<\/a>/g)].map((m) => m[1]), ["#notes", "#about"]);
+  assert.doesNotMatch(html, /class="card[ "]/);
 });
 
 test("every gradient, filter and shape the card art paints with exists exactly once", () => {
@@ -70,30 +72,41 @@ test("every gradient, filter and shape the card art paints with exists exactly o
   }
 });
 
-test("card and shelf styles are loaded", () => {
-  assert.match(html, /<link rel="stylesheet" href="cards\.css">/);
+test("the shelf's styles are loaded, and the old card styles are gone", () => {
   assert.match(html, /<link rel="stylesheet" href="shelf\.css">/);
+  assert.doesNotMatch(html, /cards\.css/);
 });
 
-/** The archive section's markup, which the panel copies in when #archive opens. */
-const archive = html.match(/<section id="archive">([\s\S]*?)<\/section>/)[1];
+/** The project shelf, which stands on the home page itself rather than behind a link. */
+const shelf = html.match(/<main class="home">[\s\S]*?(<section class="shelf"[\s\S]*?<\/section>)[\s\S]*?<\/main>/)?.[1] ?? "";
 
-test("the archive is a shelf with an illustrated print for every project", () => {
-  const prints = [...archive.matchAll(/<a class="print print-([\w-]+)"[^>]*>([\s\S]*?)<\/a>/g)];
-  assert.deepEqual(prints.map((m) => m[1]), ["two-eyes", "atmo", "notify"]);
-  for (const [whole, name, inner] of prints) {
-    assert.match(whole, /data-action="[^"]+"/, `${name} needs the words for the open button`);
-    assert.match(whole, /aria-label="[^"]+"/, name);
+test("the project shelf sits on the home page, headed like Cinna's", () => {
+  assert.match(shelf, /<section class="shelf" aria-labelledby="shelf-title">/);
+  assert.match(shelf, /<h2 id="shelf-title">The project shelf<\/h2>/);
+  assert.match(shelf, /<p class="shelf-hint">[^<]+<\/p>/);
+  assert.match(shelf, /<div class="shelf-board" aria-hidden="true"><\/div>/);
+});
+
+test("the shelf holds an illustrated print for Tally and notify-crossx, each linking out", () => {
+  const prints = [...shelf.matchAll(/<a class="print print-([\w-]+)"([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(prints.map((m) => m[1]), ["tally", "notify"]);
+  for (const [, name, attrs, inner] of prints) {
+    assert.match(attrs, new RegExp(`data-print="${name}"`), name);
+    assert.match(attrs, /data-action="[^"]+"/, `${name} needs the words for the open button`);
+    assert.match(attrs, /aria-label="[^"]+"/, name);
+    assert.match(attrs, /href="https:\/\/github\.com\/davissekai\/[\w-]+"/, name);
+    assert.match(attrs, /target="_blank" rel="noopener noreferrer"/, name);
     assert.match(inner, /<svg class="print-art"[^>]*aria-hidden="true"/, name);
     assert.match(inner, /<span class="print-type">[^<]+<\/span>/, name);
     assert.match(inner, /<strong class="print-title">[^<]+<\/strong>/, name);
   }
+  assert.match(prints[0][3], /<strong class="print-title">Tally<\/strong>/);
 });
 
-test("the print index lists every print on the shelf, each with a thumbnail, title and what it does", () => {
-  const onShelf = [...archive.matchAll(/class="print print-[\w-]+"[^>]*data-print="([\w-]+)"/g)].map((m) => m[1]);
-  const entries = [...archive.matchAll(/<button type="button" data-goto="([\w-]+)">([\s\S]*?)<\/button>/g)];
-  assert.equal(onShelf.length, 3);
+test("the print index lists every print, each with a thumbnail, title and what it does", () => {
+  const onShelf = [...shelf.matchAll(/class="print print-[\w-]+"[^>]*data-print="([\w-]+)"/g)].map((m) => m[1]);
+  const entries = [...shelf.matchAll(/<button type="button" data-goto="([\w-]+)">([\s\S]*?)<\/button>/g)];
+  assert.equal(onShelf.length, 2);
   assert.deepEqual(entries.map((m) => m[1]), onShelf);
   for (const [, name, inner] of entries) {
     assert.match(inner, /<span class="index-thumb" aria-hidden="true">/, name);
@@ -102,15 +115,11 @@ test("the print index lists every print on the shelf, each with a thumbnail, tit
 });
 
 test("the shelf has previous, open and next controls, hidden until the script wakes them", () => {
-  const controls = archive.match(/<div class="shelf-controls"([^>]*)>([\s\S]*?)<\/div>/);
+  const controls = shelf.match(/<div class="shelf-controls"([^>]*)>([\s\S]*?)<\/div>/);
   assert.ok(controls, "shelf controls not found");
   assert.match(controls[1], /\shidden/);
   assert.match(controls[2], /<button type="button" data-step="-1" aria-label="Previous print">/);
   assert.match(controls[2], /<a class="shelf-open"/);
   assert.match(controls[2], /<button type="button" data-step="1" aria-label="Next print">/);
   assert.match(controls[2], /class="shelf-status[^"]*"[^>]*aria-live="polite"/);
-});
-
-test("nothing in the archive carries an id, since the panel copies it and ids must stay unique", () => {
-  assert.doesNotMatch(archive, /\sid="/);
 });

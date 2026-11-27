@@ -1,5 +1,5 @@
 /** Panels that can be opened from the URL. */
-export const VIEWS = ["notes", "about", "archive"];
+export const VIEWS = ["notes", "about"];
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

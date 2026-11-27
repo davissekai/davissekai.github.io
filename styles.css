@@ -41,24 +41,36 @@ body { font-family: var(--font); color: var(--ink); background: var(--sky) fixed
 .scene.is-shown { opacity: 1; }
 .veil { position: absolute; inset: 0; background: var(--veil); }
 
-/* Home: one screen. The greeting sits at the top, the cards and links at the bottom. */
+/* Home: the greeting, with the notebook links under it, sits top left and the links top right;
+   the project shelf (shelf.css) runs along the bottom. The page scrolls when they don't all fit. */
 .home {
+  --pad: clamp(1.25rem, 4vw, 3.5rem);
   height: 100dvh;
+  overflow-x: hidden;
   overflow-y: auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 1fr auto;
+  grid-template-areas: "greeting corner" "shelf shelf";
   gap: 2rem;
-  padding: clamp(1.25rem, 4vw, 3.5rem);
+  padding: var(--pad);
 }
-.greeting { align-self: start; max-width: 42rem; color: #fff; text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35); }
+.greeting { grid-area: greeting; align-self: start; max-width: 42rem; color: #fff; text-shadow: 0 1px 18px rgba(0, 0, 0, 0.35); }
 .greeting h1 { margin: 0 0 1rem; font-size: clamp(2.6rem, 7vw, 5.5rem); font-weight: 700; line-height: 0.98; letter-spacing: -0.02em; }
 .greeting h1 span { display: block; }
 .intro { margin: 0; max-width: 30rem; font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.5; }
+/* Notes and About: plain underlined links under the intro, as on itsdavis.com. */
+.notebook { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.2rem; }
+.notebook a {
+  color: #fff; font-size: clamp(1rem, 1.4vw, 1.1rem); font-weight: 600;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+  text-decoration-color: rgba(255, 255, 255, 0.55);
+}
+.notebook a:hover { text-decoration-color: #fff; }
 
-.dock { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.5rem; }
 .label { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
-.corner { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.8rem; }
+.corner { grid-area: corner; align-self: start; justify-self: end; display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.8rem; }
 .corner a { color: #fff; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4); }
 .corner svg { display: block; width: 20px; height: 20px; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.4)); }
 
@@ -68,7 +80,7 @@ a:focus-visible, button:focus-visible {
 /* The title only takes focus from script, so it needs no ring. */
 .panel-title:focus { outline: none; }
 
-/* Static source for about/archive: hidden when JS runs, a plain readable block when it doesn't. */
+/* Static source for about: hidden when JS runs, a plain readable block when it doesn't. */
 .js .nojs-only { display: none; }
 .nojs-only { max-width: 40rem; margin: 2rem auto; padding: 1.5rem; background: var(--paper); border-radius: 14px; line-height: 1.6; }
 
@@ -118,13 +130,13 @@ a:focus-visible, button:focus-visible {
 .prose code { padding: 0.1em 0.35em; border-radius: 4px; background: var(--line); font-family: var(--mono); font-size: 0.88em; }
 .back { font-family: var(--mono); font-size: 0.8rem; }
 
-/* Phones: the dock stacks the cards above the links (card layout itself lives in cards.css). */
+/* Phones: one column. Greeting, shelf, then the links. */
 @media (max-width: 600px) {
-  .dock { flex-direction: column; align-items: stretch; }
-  .corner { justify-content: space-between; }
+  .home { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; grid-template-areas: "greeting" "shelf" "corner"; }
+  .corner { justify-self: stretch; justify-content: space-between; }
 }
 
-/* Short viewports (landscape phones, big fonts): shrink the greeting so the cards still fit. */
+/* Short viewports (landscape phones, big fonts): shrink the greeting so more of the shelf shows. */
 @media (max-height: 560px) {
   .home { gap: 1rem; padding: 1rem 1.25rem; }
   .greeting h1 { margin-bottom: 0; font-size: 2.2rem; }

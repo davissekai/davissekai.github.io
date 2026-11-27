@@ -4,12 +4,12 @@ import { sceneFor, allScenes, backdropView } from "./scenes.js";
 import { viewFor } from "./views.js";
 import { createBackdrop } from "./backdrop.js";
 import { createPanel } from "./panel.js";
-import { wireShelf } from "./shelf.js";
+import { mountShelf } from "./shelf.js";
 
 const root = document.documentElement;
 const backdrop = createBackdrop(document.querySelector(".backdrop"));
 const panel = createPanel(document.getElementById("panel"), { onDismiss: dismiss });
-wireShelf(document.getElementById("panel"));
+mountShelf(document.querySelector(".shelf"));
 
 /** Real network I/O for views.js. A non-2xx response counts as a failure, so views show the retry. */
 const io = {

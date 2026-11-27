@@ -17,7 +17,7 @@ function io({ fail = false, fetched = [] } = {}) {
       if (fail) throw new Error("offline");
       return files[url];
     },
-    staticHtml: (id) => ({ about: "<p>me</p>", archive: "<p>old stuff</p>" })[id] ?? null,
+    staticHtml: (id) => ({ about: "<p>me</p>" })[id] ?? null,
   };
 }
 
@@ -38,25 +38,15 @@ test("a slug that isn't in the index is 'nothing here'", async () => {
   assert.deepEqual(await viewFor({ view: "notes", slug: "nope" }, io()), MISSING);
 });
 
-test("about and archive show their static page content", async () => {
-  assert.equal((await viewFor({ view: "about", slug: null }, io())).html, "<p>me</p>");
-  const archive = await viewFor({ view: "archive", slug: null }, io());
-  assert.equal(archive.label, "archive");
-  assert.equal(archive.title, "The project shelf");
-  assert.equal(archive.html, "<p>old stuff</p>");
-});
-
-test("only the archive opens a wide panel, so the shelf has room to slide", async () => {
-  assert.equal((await viewFor({ view: "archive", slug: null }, io())).wide, true);
-  for (const view of ["notes", "about"]) {
-    assert.ok(!(await viewFor({ view, slug: null }, io())).wide, view);
-  }
-  assert.ok(!MISSING.wide);
+test("about shows its static page content", async () => {
+  const about = await viewFor({ view: "about", slug: null }, io());
+  assert.equal(about.title, "About");
+  assert.equal(about.html, "<p>me</p>");
 });
 
 test("a page with no static content is 'nothing here'", async () => {
   const noStatic = { ...io(), staticHtml: () => null };
-  assert.deepEqual(await viewFor({ view: "archive", slug: null }, noStatic), MISSING);
+  assert.deepEqual(await viewFor({ view: "about", slug: null }, noStatic), MISSING);
 });
 
 test("a slug missing from the index is never fetched", async () => {

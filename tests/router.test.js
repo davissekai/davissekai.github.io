@@ -12,9 +12,11 @@ test("each panel has its own hash", () => {
   for (const view of VIEWS) assert.deepEqual(parseHash(`#${view}`), { view, slug: null });
 });
 
-test("the questions section is gone, so #questions is 'missing'", () => {
-  assert.ok(!VIEWS.includes("questions"));
-  assert.deepEqual(parseHash("#questions"), { view: "missing", slug: null });
+test("questions and the archive are gone, so their hashes are 'missing'", () => {
+  for (const gone of ["questions", "archive"]) {
+    assert.ok(!VIEWS.includes(gone), gone);
+    assert.deepEqual(parseHash(`#${gone}`), { view: "missing", slug: null }, gone);
+  }
 });
 
 test("a single note is #notes/<slug>", () => {

@@ -39,7 +39,6 @@ export function createPanel(dialog, { onDismiss }) {
       title.textContent = content.title;
       body.innerHTML = content.html;
       body.scrollTop = 0;
-      dialog.classList.toggle("panel-wide", Boolean(content.wide));
       meantToBeOpen = true;
       if (!dialog.open) {
         dialog.showModal();
