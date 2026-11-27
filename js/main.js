@@ -1,6 +1,6 @@
 import { parseHash } from "./router.js";
 import { phaseAt } from "./time-of-day.js";
-import { sceneFor, allScenes } from "./scenes.js";
+import { sceneFor, allScenes, backdropView } from "./scenes.js";
 import { viewFor } from "./views.js";
 import { createBackdrop } from "./backdrop.js";
 import { createPanel } from "./panel.js";
@@ -20,6 +20,8 @@ const io = {
 
 let phase = phaseAt(new Date());
 let route = parseHash(location.hash);
+// The view whose photo is up. A fresh visit starts on home's; closing a panel keeps that panel's.
+let shownView = "home";
 let renderToken = 0;
 let closing = false;
 
@@ -30,10 +32,11 @@ async function fetchOk(url) {
   return response;
 }
 
-/** Points the page and the backdrop at the current phase and view, without touching the panel. */
+/** Points the page and the backdrop at the current phase and view (or the last panel's, on home), without touching the panel. */
 function applyScene() {
   root.dataset.phase = phase;
-  backdrop.show(sceneFor(route.view, phase));
+  shownView = backdropView(route.view, shownView);
+  backdrop.show(sceneFor(shownView, phase));
 }
 
 /** Brings the scene and the panel in line with the current route and phase. */

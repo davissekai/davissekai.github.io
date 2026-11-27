@@ -14,6 +14,14 @@ export function sceneFor(view, phase) {
   return (SCENES[view] ?? SCENES.home)[phase];
 }
 
+/**
+ * Which view's photo the backdrop shows for `view`, given the one `shown` now. Going home (closing
+ * a panel) leaves the last panel's photo up rather than jumping back, so the page stays where it was.
+ */
+export function backdropView(view, shown) {
+  return view === "home" ? shown : view;
+}
+
 /** Every distinct photo, for quiet preloading once the page is idle. */
 export function allScenes() {
   return [...new Set(Object.values(SCENES).flatMap((s) => [s.day, s.night]))];
