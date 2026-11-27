@@ -2,8 +2,6 @@
 
 All from Unsplash (free to use under the Unsplash License, no attribution required). Not shown on the site; kept so each original can be found again.
 
-- home-day.webp: https://unsplash.com/photos/white-clouds-and-blue-sky-during-daytime-MSrUdvVrKEE
-- home-night.webp: https://unsplash.com/photos/a-view-of-the-night-sky-with-the-milky-in-the-distance-JB3b2F3mjgQ
 - notes-day.webp: https://unsplash.com/photos/a-lake-with-trees-and-mountains-in-the-background-trfdwIbSFGw
 - notes-night.webp: https://unsplash.com/photos/a-full-moon-over-a-body-of-water-with-mountains-in-the-background-c9wNU5dFCYk
 - questions-day.webp: https://unsplash.com/photos/a-grassy-hill-with-a-blue-sky-in-the-background-K-hzIFI9KM0

@@ -3,7 +3,7 @@
 /* Day tokens. Night overrides them below; the phase is set on <html> before first paint. */
 :root {
   --font: "Bricolage Grotesque", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --mono: "DM Mono", ui-monospace, monospace;
   --paper: rgba(255, 253, 247, 0.86);
   --ink: #1c2731;
   --muted: #5b6b76;
@@ -24,7 +24,7 @@
   --line: rgba(232, 237, 242, 0.14);
   --veil: linear-gradient(180deg, rgba(3, 8, 18, 0.35), rgba(3, 8, 18, 0.6));
   --sky: linear-gradient(180deg, #040a18, #16233d);
-  --open: #7fd1a4;
+  --open: #9cc4f0;
   --chasing: #f0a868;
   --dropped: #8d949b;
   --focus: #ffd166;
@@ -94,6 +94,9 @@ a:focus-visible, button:focus-visible {
 }
 .panel-body { overflow: auto; padding: 1.2rem 1.6rem 1.6rem; line-height: 1.6; }
 .panel-body a { color: inherit; }
+
+/* Read out by screen readers, never seen. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* Lists inside panels. */
 .entries, .questions { margin: 0; padding: 0; list-style: none; }

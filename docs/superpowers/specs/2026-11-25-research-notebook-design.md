@@ -32,7 +32,7 @@ Davis has started a master's and now presents as a researcher, though the topic 
   - `#notes/<slug>`: a single note, shown inside the same panel with a "← all notes" link.
   - `#questions`: a list of research questions, each with a status of `open`, `chasing` or `dropped`, plus an optional one-line comment.
   - `#about`: a short bio, the master's program, and contact details.
-  - `#archive`: the old projects (Two Eyes, Atmo, VentureQuest, notify-crossx, Carbon Markets for SMEs), each with a one-line description and a link.
+  - `#archive`: "The project shelf", a wide panel laid out like the shelf on itsdavis.com. The projects (Two Eyes, Atmo, notify-crossx) stand as illustrated paper prints on a wooden ledge, in a coverflow: the middle print faces you and its neighbours turn away. Wheel, trackpad, touch, Tab and the ←/→ buttons slide it (the buttons wrap round), and clicking a side print brings it to the middle. Under the ledge, a dark pill opens the middle print and names what it does. Each print has its own day and night palette, a type label and a title. A "Print index" pill lists the prints with thumbnails and jumps to any of them.
 - An unknown hash or slug shows a short "nothing here" message in the panel. It does not break the page.
 
 ## Scenes and time of day
@@ -41,7 +41,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 | View      | Day                    | Night                       |
 |-----------|------------------------|-----------------------------|
-| home      | cumulus sky, blue      | clear starry sky            |
+| home      | forest light (shared with about) | forest at night (shared with about) |
 | notes     | still water, lake      | moonlit water               |
 | questions | grassy hills, green    | dark field under the stars  |
 | about     | forest light           | forest at dusk or night     |
@@ -55,7 +55,7 @@ Each view has a scene, and each scene comes in a day version and a night version
 
 - The photos come from Unsplash or Pexels, whose free licenses allow this use. Pinterest is ruled out because its images are usually reposted with no license.
 - No on-page photo credits. Neither license requires attribution, and the source URL for each photo is recorded in `img/scenes/SOURCES.md` in the repo.
-- The photos are self-hosted in `img/scenes/` as WebP, about 2400px wide, at most about 400 KB each. That makes 8 photos in all.
+- The photos are self-hosted in `img/scenes/` as WebP, about 2400px wide, at most about 400 KB each. Home reuses the about photos, so that makes 6 photos in all.
 - Only the current scene loads at first. The other scenes load quietly after the page is idle, so the first crossfade has no blank frame.
 - Davis can replace any photo with their own by overwriting the file of the same name.
 
@@ -82,7 +82,7 @@ Each view has a scene, and each scene comes in a day version and a night version
   - `js/notes.js`: loads the index and note files and renders them.
   - `js/markdown.js`: the small, escaping Markdown renderer.
   - `js/questions.js`: loads and renders the questions.
-- Fonts: one display face for the greeting and one monospace face for labels, both from Google Fonts. The exact faces are chosen during the build.
+- Fonts: one display face for the greeting and one monospace face for labels, both from Google Fonts: Bricolage Grotesque and DM Mono.
 
 ## Errors and edge cases
 

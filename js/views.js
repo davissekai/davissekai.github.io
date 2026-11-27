@@ -1,7 +1,7 @@
 import { cleanNotes, noteListHtml, noteHtml } from "./notes.js";
 import { cleanQuestions, questionsHtml } from "./questions.js";
 
-const TITLES = { notes: "Notes", questions: "Open questions", about: "About", archive: "Archive" };
+const TITLES = { notes: "Notes", questions: "Open questions", about: "About", archive: "The project shelf" };
 
 /** Shown for any route that doesn't lead anywhere. */
 export const MISSING = {
@@ -11,7 +11,7 @@ export const MISSING = {
 };
 
 /**
- * Builds the panel content ({ label, title, html }) for a route. I/O comes in through `io`
+ * Builds the panel content ({ label, title, html, wide? }) for a route. I/O comes in through `io`
  * so this runs the same in the browser and in tests, and a failed fetch becomes a retry
  * message instead of an exception.
  */
@@ -27,7 +27,9 @@ export async function viewFor(route, io) {
       case "about":
       case "archive": {
         const html = io.staticHtml(route.view);
-        return html === null ? MISSING : { label: route.view, title: TITLES[route.view], html };
+        if (html === null) return MISSING;
+        // The shelf slides sideways, so the archive gets a wide panel.
+        return { label: route.view, title: TITLES[route.view], html, wide: route.view === "archive" };
       }
       default:
         return MISSING;
