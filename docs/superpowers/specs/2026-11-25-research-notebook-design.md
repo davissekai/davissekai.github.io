@@ -32,7 +32,7 @@ Davis has started a master's and now presents as a researcher, though the topic 
   - `#notes/<slug>`: a single note, shown inside the same panel with a "← all notes" link.
   - `#questions`: a list of research questions, each with a status of `open`, `chasing` or `dropped`, plus an optional one-line comment.
   - `#about`: a short bio, the master's program, and contact details.
-  - `#archive`: "The project shelf", a wide panel where the projects (Two Eyes, Atmo, notify-crossx) stand as illustrated prints on a wooden shelf that slides sideways (wheel, trackpad or touch). Each print has its own day and night palette, a label, a title, a one-line description and a link. A "Print index" pill jumps to any print.
+  - `#archive`: "The project shelf", a wide panel laid out like the shelf on itsdavis.com. The projects (Two Eyes, Atmo, notify-crossx) stand as illustrated paper prints on a wooden ledge, in a coverflow: the middle print faces you and its neighbours turn away. Wheel, trackpad, touch, Tab and the ←/→ buttons slide it (the buttons wrap round), and clicking a side print brings it to the middle. Under the ledge, a dark pill opens the middle print and names what it does. Each print has its own day and night palette, a type label and a title. A "Print index" pill lists the prints with thumbnails and jumps to any of them.
 - An unknown hash or slug shows a short "nothing here" message in the panel. It does not break the page.
 
 ## Scenes and time of day

@@ -79,19 +79,36 @@ test("card and shelf styles are loaded", () => {
 const archive = html.match(/<section id="archive">([\s\S]*?)<\/section>/)[1];
 
 test("the archive is a shelf with an illustrated print for every project", () => {
-  const prints = [...archive.matchAll(/<(a|div) class="print print-([\w-]+)"[^>]*>([\s\S]*?)<\/\1>/g)];
-  assert.deepEqual(prints.map((m) => m[2]), ["two-eyes", "atmo", "notify"]);
-  for (const [, , name, inner] of prints) {
+  const prints = [...archive.matchAll(/<a class="print print-([\w-]+)"[^>]*>([\s\S]*?)<\/a>/g)];
+  assert.deepEqual(prints.map((m) => m[1]), ["two-eyes", "atmo", "notify"]);
+  for (const [whole, name, inner] of prints) {
+    assert.match(whole, /data-action="[^"]+"/, `${name} needs the words for the open button`);
+    assert.match(whole, /aria-label="[^"]+"/, name);
     assert.match(inner, /<svg class="print-art"[^>]*aria-hidden="true"/, name);
-    assert.match(inner, /<span class="print-title">[^<]+<\/span>/, name);
+    assert.match(inner, /<span class="print-type">[^<]+<\/span>/, name);
+    assert.match(inner, /<strong class="print-title">[^<]+<\/strong>/, name);
   }
 });
 
-test("the print index lists every print on the shelf, and nothing else", () => {
+test("the print index lists every print on the shelf, each with a thumbnail, title and what it does", () => {
   const onShelf = [...archive.matchAll(/class="print print-[\w-]+"[^>]*data-print="([\w-]+)"/g)].map((m) => m[1]);
-  const inIndex = [...archive.matchAll(/<button type="button" data-goto="([\w-]+)">/g)].map((m) => m[1]);
+  const entries = [...archive.matchAll(/<button type="button" data-goto="([\w-]+)">([\s\S]*?)<\/button>/g)];
   assert.equal(onShelf.length, 3);
-  assert.deepEqual(inIndex, onShelf);
+  assert.deepEqual(entries.map((m) => m[1]), onShelf);
+  for (const [, name, inner] of entries) {
+    assert.match(inner, /<span class="index-thumb" aria-hidden="true">/, name);
+    assert.match(inner, /<strong>[^<]+<\/strong><small>[^<]+<\/small>/, name);
+  }
+});
+
+test("the shelf has previous, open and next controls, hidden until the script wakes them", () => {
+  const controls = archive.match(/<div class="shelf-controls"([^>]*)>([\s\S]*?)<\/div>/);
+  assert.ok(controls, "shelf controls not found");
+  assert.match(controls[1], /\shidden/);
+  assert.match(controls[2], /<button type="button" data-step="-1" aria-label="Previous print">/);
+  assert.match(controls[2], /<a class="shelf-open"/);
+  assert.match(controls[2], /<button type="button" data-step="1" aria-label="Next print">/);
+  assert.match(controls[2], /class="shelf-status[^"]*"[^>]*aria-live="polite"/);
 });
 
 test("nothing in the archive carries an id, since the panel copies it and ids must stay unique", () => {

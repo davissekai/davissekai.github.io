@@ -1,94 +1,122 @@
 /*
- * The project shelf in the archive panel: one print per project, standing on a wooden shelf
- * that slides sideways. The prints share the home cards' ink tokens (cards.css) and keep their
+ * The project shelf in the archive panel, after the one on itsdavis.com: paper prints standing
+ * on a wooden ledge, the middle one facing you and its neighbours turned away (js/shelf.js sets
+ * each print's transform). The prints share the home cards' ink tokens (cards.css) and keep their
  * own palettes here, each with a night version.
  */
 
 /* The archive panel opens wide so several prints show at once. */
 .panel.panel-wide { width: min(70rem, 96vw); }
 
+.shelf { --print-w: clamp(13rem, 22vw, 16.5rem); }
+
 .shelf-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
 .shelf-hint { margin: 0; color: var(--muted); }
 
-/* The print index: a small pill that folds out a list of the prints. */
-.shelf-index { position: relative; z-index: 2; }
+/* The print index: a pill that folds out a list of the prints, each with a thumbnail. */
+.shelf-index { position: relative; z-index: 3; }
 .shelf-index summary {
-  list-style: none; cursor: pointer;
-  padding: 0.45rem 0.95rem; border: 1px solid var(--line); border-radius: 999px;
-  font-size: 0.92rem;
+  list-style: none; cursor: pointer; white-space: nowrap;
+  padding: 0.45rem 0.95rem; border: 1px solid color-mix(in srgb, var(--ink) 32%, transparent); border-radius: 999px;
+  background: var(--paper); font-size: 0.82rem;
 }
 .shelf-index summary::-webkit-details-marker { display: none; }
-.shelf-index summary::after { content: "⌄"; margin-left: 0.5rem; font-size: 0.8em; }
+.shelf-index summary::after { content: "⌄"; margin-left: 0.5rem; }
 .shelf-index[open] summary::after { content: "⌃"; }
+.shelf-index summary:hover { background: color-mix(in srgb, var(--open) 12%, var(--paper)); }
 .shelf-index ol {
   position: absolute; right: 0; top: calc(100% + 0.4rem);
-  min-width: 15rem; margin: 0; padding: 0.35rem; list-style: none;
-  border-radius: 12px; background: var(--paper); box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  min-width: 16rem; margin: 0; padding: 0.4rem; list-style: none;
+  border: 1px solid var(--line); border-radius: 4px;
+  background: var(--paper); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.14);
   backdrop-filter: blur(14px);
 }
+.shelf-index li + li { border-top: 1px solid var(--line); }
 .shelf-index button {
-  display: block; width: 100%; padding: 0.5rem 0.7rem; border: 0; border-radius: 8px;
-  background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+  display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.45rem 0.6rem;
+  border: 0; border-radius: 2px; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
 }
-.shelf-index button:hover { background: var(--line); }
+.shelf-index button:hover { background: color-mix(in srgb, var(--open) 12%, transparent); }
+.shelf-index strong { display: block; font-size: 0.9rem; line-height: 1.25; }
+.shelf-index small { display: block; color: var(--muted); font-size: 0.76rem; line-height: 1.3; }
+.index-thumb {
+  flex: none; width: 2.4rem; aspect-ratio: 8 / 9; overflow: hidden;
+  border-radius: 2px; background: var(--stock); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.index-thumb svg { display: block; width: 100%; height: 100%; }
 
-/* The track scrolls sideways; its top padding leaves room for a print to lift on hover. */
+/* The track scrolls sideways. Once the script runs, its padding lets the end prints reach the middle. */
 .shelf-track {
-  display: flex; align-items: flex-end; justify-content: safe center; gap: clamp(0.8rem, 2vw, 1.4rem);
-  margin: 0 -1.6rem; padding: 1.6rem 1.6rem 0;
+  position: relative; display: flex; align-items: flex-end; justify-content: safe center;
+  gap: clamp(0.6rem, 2vw, 1.75rem);
+  margin: 0 -1.6rem; padding: 1.5rem 1.6rem 0;
   overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.6rem, #000 calc(100% - 1.6rem), transparent);
   mask-image: linear-gradient(90deg, transparent, #000 1.6rem, #000 calc(100% - 1.6rem), transparent);
 }
-.shelf-board {
-  position: relative; height: 1.1rem; margin: 0 -0.6rem;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #c99a6a, #a5734a 45%, #7d5333);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+.shelf[data-mounted] .shelf-track {
+  justify-content: flex-start; scroll-snap-type: x mandatory; scrollbar-width: none;
+  /* Half the track less half a print; the track is 3.2rem wider than the shelf. */
+  padding-inline: calc(50% + 1.6rem - var(--print-w) / 2);
 }
-:root[data-phase="night"] .shelf-board { background: linear-gradient(180deg, #7a5a3e, #5b3f2a 45%, #3e2a1c); }
+.shelf[data-mounted] .shelf-track::-webkit-scrollbar { display: none; }
 
+/* The ledge: light lip, lighter face, then two darker bands, with a faint grain. */
+.shelf-board {
+  position: relative; z-index: 1; height: 16px; margin: -3px -0.6rem 0; border-radius: 2px;
+  background:
+    repeating-linear-gradient(1deg, transparent 0 5px, rgba(117, 78, 46, 0.045) 6px 7px, transparent 8px 16px),
+    linear-gradient(#cfb194 0 3px, #e7cbb0 3px 7px, #caa182 7px 14px, #b58973 14px);
+  box-shadow: 0 5px 8px rgba(86, 58, 61, 0.15);
+}
+:root[data-phase="night"] .shelf-board {
+  background:
+    repeating-linear-gradient(1deg, transparent 0 5px, rgba(0, 0, 0, 0.08) 6px 7px, transparent 8px 16px),
+    linear-gradient(#7a5f48 0 3px, #8d6e54 3px 7px, #5e4433 7px 14px, #4a3427 14px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* A print: a sheet of paper stock with a folded top-right corner, an illustration and a foot. */
 .print {
-  position: relative; flex: 0 0 auto;
-  display: flex; flex-direction: column;
-  width: clamp(12.5rem, 22vw, 15.5rem); overflow: hidden;
-  color: var(--band-ink); text-decoration: none;
-  border-radius: 4px 4px 2px 2px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
-  transform: rotate(var(--tilt, 0deg)); transform-origin: bottom center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  --fold: 11px;
+  position: relative; flex: 0 0 auto; display: block; width: var(--print-w);
+  text-decoration: none; user-select: none; -webkit-tap-highlight-color: transparent;
+  scroll-snap-align: center;
+  /* Turned prints shrink towards their base, so they stay standing on the ledge. */
+  transform-origin: 50% 100%;
+  filter: drop-shadow(2px 4px 4px rgba(67, 43, 52, 0.23));
 }
-/* Each print leans a little differently, like prints propped up by hand. */
-.print:nth-child(5n + 1) { --tilt: -1.4deg; }
-.print:nth-child(5n + 2) { --tilt: 0.9deg; }
-.print:nth-child(5n + 3) { --tilt: -0.4deg; }
-.print:nth-child(5n + 4) { --tilt: 1.3deg; }
-.print:nth-child(5n + 5) { --tilt: -0.8deg; }
-a.print:hover, a.print:focus-visible { transform: translateY(-0.9rem) rotate(0deg); box-shadow: 0 22px 40px rgba(0, 0, 0, 0.3); }
-.print:focus-visible { box-shadow: 0 22px 40px rgba(0, 0, 0, 0.3), 0 0 0 5px rgba(255, 255, 255, 0.6); }
-/* A folded corner, so each one reads as a paper print. */
-.print::before {
-  content: ""; position: absolute; top: 0; right: 0; z-index: 1;
-  width: 0.8rem; height: 0.8rem;
-  background: linear-gradient(225deg, transparent 50%, var(--ill-paper) 50%);
-  filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.25));
+.print:focus-visible { outline: 3px solid var(--open); outline-offset: 5px; }
+.print:active { translate: 0 1px; }
+@media (hover: hover) and (pointer: fine) {
+  .print:hover { filter: drop-shadow(2px 5px 5px rgba(66, 42, 52, 0.35)); }
 }
-.print::after {
+.print-sheet {
+  position: relative; display: block; background: var(--stock);
+  clip-path: polygon(0 0, calc(100% - var(--fold)) 0, 100% var(--fold), 100% 100%, 0 100%);
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--stock), #885849 18%);
+}
+/* Paper grain over the whole sheet. */
+.print-sheet::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .35 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply; opacity: 0.2;
+  mix-blend-mode: multiply; opacity: 0.18;
+}
+/* The folded-over corner. */
+.print-sheet::after {
+  content: ""; position: absolute; top: 0; right: 0; width: var(--fold); height: var(--fold); pointer-events: none;
+  background: linear-gradient(135deg, var(--stock) 35%, color-mix(in srgb, var(--stock) 72%, #83605b));
+  box-shadow: -1px 1px 2px rgba(68, 46, 52, 0.4);
 }
 .print-art { display: block; width: 100%; height: auto; aspect-ratio: 8 / 9; }
-.print-band {
-  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
-  min-height: 7.4rem; padding: 0.65rem 0.8rem 0.85rem;
-  background: var(--p-band); text-align: center;
+.print-foot {
+  display: block; padding: 0.6rem 0.85rem 0.75rem; text-align: center;
+  color: var(--title); border-top: 1px solid rgba(127, 89, 71, 0.15);
 }
-.print .label { color: inherit; opacity: 0.7; }
-.print-title { font-size: 1.3rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.015em; }
-.print-aside {
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
-  margin-top: 0.2rem; font-size: 0.8rem; line-height: 1.35; opacity: 0.78;
+.print-type { display: block; font: 0.72rem/1.5 var(--mono); color: color-mix(in srgb, var(--title) 72%, var(--stock)); }
+.print-title {
+  display: block; margin-top: 0.2rem;
+  font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: 700; line-height: 1.12; letter-spacing: -0.045em;
 }
 
 /* The bell on the notify-crossx print rings when the print is picked up. */
@@ -97,50 +125,70 @@ a.print:hover, a.print:focus-visible { transform: translateY(-0.9rem) rotate(0de
 }
 @keyframes ill-ring { 0% { opacity: 1; } 100% { opacity: 0.15; } }
 
-/* Palettes. */
+/* Under the ledge: step left, open the middle print, step right. */
+.shelf-controls { display: flex; align-items: center; justify-content: center; gap: 0.7rem; margin-top: 1.2rem; }
+.shelf-controls[hidden] { display: none; }
+.shelf-controls button, .shelf .shelf-open {
+  min-height: 2.6rem; display: inline-flex; align-items: center; justify-content: center;
+  font: 600 0.9rem/1.15 var(--font); cursor: pointer;
+  transition: transform 0.12s, background-color 0.16s;
+}
+.shelf-controls button {
+  min-width: 2.6rem; padding: 0; border: 1px solid color-mix(in srgb, var(--ink) 32%, transparent); border-radius: 50%;
+  background: var(--paper); color: var(--ink); font-size: 1.15rem;
+}
+.shelf-controls button:hover { background: color-mix(in srgb, var(--open) 14%, var(--paper)); }
+.shelf .shelf-open {
+  min-width: 12rem; padding: 0.6rem 1.25rem; border-radius: 999px; white-space: nowrap;
+  background: var(--ink); color: #fffaf3; text-decoration: none;
+}
+.shelf .shelf-open::after { content: "↗"; margin-left: 0.45em; font-size: 0.9em; }
+.shelf .shelf-open:hover { background: color-mix(in srgb, var(--ink) 82%, var(--open)); }
+:root[data-phase="night"] .shelf .shelf-open { color: #101620; }
+.shelf-controls button:active, .shelf .shelf-open:active { transform: translateY(2px); }
+
+/* Palettes: the paper stock, the foot's ink, and the colours each illustration paints with. */
 .print-two-eyes {
-  --p-band: #e1efe9;
+  --stock: #e1efe9; --title: #2f5446;
   --p-land: #a7c77f; --p-land-2: #c9d98f; --p-land-deep: #5d8a4a; --p-tree: #4f7f4a;
   --p-river: #a87a4e; --p-bank: #d8c79a; --p-scar: #e09a5a; --p-scar-2: #c4703f; --p-pit: #5aa6a0;
   --p-panel: #3e6f9c;
 }
 .print-atmo {
-  --p-band: #e3ebf6;
+  --stock: #e3ebf6; --title: #2f4466;
   --p-sky-1: #9cc8e6; --p-sky-2: #bcdaee; --p-sky-3: #e4eef0;
   --p-sea: #3f7fb4; --p-continent: #8cbf6a; --p-hill: #8fbf73; --p-hill-2: #6ea05c;
 }
 .print-notify {
-  --p-band: #ece6f4;
+  --stock: #ece6f4; --title: #4b3d66;
   --p-wall: #f0d9b8; --p-frame: #fbf3e2; --p-sky-1: #9cc8e6; --p-sky-2: #c7e0ee; --p-hill: #86b45e; --p-sun: #f7c95a;
   --p-leaf: #5d9a5a; --p-screen: #22303f; --p-code: #8fb7d8; --p-ok: #8fd08a;
 }
 
 :root[data-phase="night"] .print-two-eyes {
-  --p-band: #1f3330;
+  --stock: #1f3330; --title: #cfe6dc;
   --p-land: #2d4a37; --p-land-2: #3a5638; --p-land-deep: #17291f; --p-tree: #142a1f;
   --p-river: #5e4732; --p-bank: #4a4a3a; --p-scar: #7a5236; --p-scar-2: #5e3d2a; --p-pit: #2f5a64;
   --p-panel: #2a4f78;
 }
 :root[data-phase="night"] .print-atmo {
-  --p-band: #1d2a40;
+  --stock: #1d2a40; --title: #d3e0f4;
   --p-sky-1: #0b1430; --p-sky-2: #142246; --p-sky-3: #23395f;
   --p-sea: #1d3e66; --p-continent: #2f4a3a; --p-hill: #1f3529; --p-hill-2: #15261d;
 }
 :root[data-phase="night"] .print-notify {
-  --p-band: #2a2438;
+  --stock: #2a2438; --title: #ded4f0;
   --p-wall: #3a3040; --p-frame: #b8ae98; --p-sky-1: #0b1430; --p-sky-2: #1d2f55; --p-hill: #1f3529; --p-sun: #f1e6c8;
   --p-leaf: #3a6040; --p-screen: #121a26; --p-code: #6f97b8; --p-ok: #8fd08a;
 }
 
-/* Phones: smaller prints, and the description is left to the title. */
+/* Phones: one print fills most of the shelf, with its neighbours peeking in. */
 @media (max-width: 600px) {
-  .print { width: 11rem; }
-  .print-band { min-height: 0; }
-  .print-aside { display: none; }
+  .shelf { --print-w: clamp(11.5rem, 60vw, 15rem); }
+  .print-foot { padding: 0.45rem 0.7rem 0.6rem; }
+  .print-title { font-size: 1.35rem; }
+  .shelf-controls { gap: 0.5rem; }
+  .shelf .shelf-open { min-width: 0; padding-inline: 1rem; font-size: 0.85rem; }
   /* The index pill wraps under the hint on the left, so its list opens rightwards. */
   .shelf-index ol { right: auto; left: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .print { transition: none; }
 }

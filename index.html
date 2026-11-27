@@ -25,6 +25,7 @@
   <link rel="modulepreload" href="js/backdrop.js">
   <link rel="modulepreload" href="js/panel.js">
   <link rel="modulepreload" href="js/shelf.js">
+  <link rel="modulepreload" href="js/coverflow.js">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -340,15 +341,15 @@
           <details class="shelf-index">
             <summary>Print index</summary>
             <ol>
-              <li><button type="button" data-goto="two-eyes">Two Eyes</button></li>
-              <li><button type="button" data-goto="atmo">Atmo</button></li>
-              <li><button type="button" data-goto="notify">notify-crossx</button></li>
+              <li><button type="button" data-goto="two-eyes"><span class="index-thumb" aria-hidden="true"></span><span><strong>Two Eyes</strong><small>Trace a river to its mine</small></span></button></li>
+              <li><button type="button" data-goto="atmo"><span class="index-thumb" aria-hidden="true"></span><span><strong>Atmo</strong><small>Ask the climate a question</small></span></button></li>
+              <li><button type="button" data-goto="notify"><span class="index-thumb" aria-hidden="true"></span><span><strong>notify-crossx</strong><small>Get pinged when it’s done</small></span></button></li>
             </ol>
           </details>
         </div>
         <div class="shelf-track">
-          <a class="print print-two-eyes" data-print="two-eyes" href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer">
-            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <a class="print print-two-eyes" data-print="two-eyes" data-action="Trace a muddy river" aria-label="Two Eyes: Trace a muddy river" href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer">
+            <span class="print-sheet"><svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
               <g filter="url(#ill-print-tall)">
                 <rect x="-10" y="-10" width="260" height="290" fill="var(--p-land)"/>
                 <path d="M120 70l70-18 40 60-80 22ZM-10 150l60-14 22 70-82 20ZM150 160l90-10v70l-70 12Z" fill="var(--p-land-2)"/>
@@ -389,10 +390,10 @@
                 </g>
               </g>
             </svg>
-            <span class="print-band"><span class="label">remote sensing</span><span class="print-title">Two Eyes</span><span class="print-aside">A phone video of a muddy river, matched to the mining scar upstream in Sentinel-2.</span></span>
+            <span class="print-foot"><span class="print-type">Remote sensing</span><strong class="print-title">Two Eyes</strong></span></span>
           </a>
-          <a class="print print-atmo" data-print="atmo" href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">
-            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <a class="print print-atmo" data-print="atmo" data-action="Ask about the climate" aria-label="Atmo: Ask about the climate" href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">
+            <span class="print-sheet"><svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
               <g filter="url(#ill-print-tall)">
                 <rect x="-10" y="-10" width="260" height="290" fill="var(--p-sky-1)"/>
                 <rect x="-10" y="70" width="260" height="210" fill="var(--p-sky-2)"/>
@@ -434,10 +435,10 @@
                 </g>
               </g>
             </svg>
-            <span class="print-band"><span class="label">climate ai</span><span class="print-title">Atmo</span><span class="print-aside">Ask the climate anything: Article 6, loss and damage, adaptation finance, answered plainly.</span></span>
+            <span class="print-foot"><span class="print-type">Climate AI</span><strong class="print-title">Atmo</strong></span></span>
           </a>
-          <a class="print print-notify" data-print="notify" href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer">
-            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <a class="print print-notify" data-print="notify" data-action="Hear when it’s done" aria-label="notify-crossx: Hear when it’s done" href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer">
+            <span class="print-sheet"><svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
               <g filter="url(#ill-print-tall)">
                 <rect x="-10" y="-10" width="260" height="290" fill="var(--p-wall)"/>
                 <rect x="-10" y="-10" width="260" height="290" fill="url(#ill-dots)" fill-opacity=".06"/>
@@ -487,10 +488,16 @@
                 </g>
               </g>
             </svg>
-            <span class="print-band"><span class="label">developer tool</span><span class="print-title">notify-crossx</span><span class="print-aside">Pings your desktop when your AI coding agent is done or needs you.</span></span>
+            <span class="print-foot"><span class="print-type">Developer tool</span><strong class="print-title">notify-crossx</strong></span></span>
           </a>
         </div>
         <div class="shelf-board" aria-hidden="true"></div>
+        <div class="shelf-controls" hidden>
+          <button type="button" data-step="-1" aria-label="Previous print">&larr;</button>
+          <a class="shelf-open" href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">Ask about the climate</a>
+          <button type="button" data-step="1" aria-label="Next print">&rarr;</button>
+          <span class="shelf-status visually-hidden" aria-live="polite"></span>
+        </div>
       </div>
     </section>
   </div>
