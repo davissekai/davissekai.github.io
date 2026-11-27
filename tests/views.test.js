@@ -48,8 +48,16 @@ test("about and archive show their static page content", async () => {
   assert.equal((await viewFor({ view: "about", slug: null }, io())).html, "<p>me</p>");
   const archive = await viewFor({ view: "archive", slug: null }, io());
   assert.equal(archive.label, "archive");
-  assert.equal(archive.title, "Archive");
+  assert.equal(archive.title, "The project shelf");
   assert.equal(archive.html, "<p>old stuff</p>");
+});
+
+test("only the archive opens a wide panel, so the shelf has room to slide", async () => {
+  assert.equal((await viewFor({ view: "archive", slug: null }, io())).wide, true);
+  for (const view of ["notes", "questions", "about"]) {
+    assert.ok(!(await viewFor({ view, slug: null }, io())).wide, view);
+  }
+  assert.ok(!MISSING.wide);
 });
 
 test("a page with no static content is 'nothing here'", async () => {

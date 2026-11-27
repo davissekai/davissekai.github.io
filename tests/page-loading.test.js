@@ -70,6 +70,30 @@ test("every gradient, filter and shape the card art paints with exists exactly o
   }
 });
 
-test("card styles are loaded", () => {
+test("card and shelf styles are loaded", () => {
   assert.match(html, /<link rel="stylesheet" href="cards\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="shelf\.css">/);
+});
+
+/** The archive section's markup, which the panel copies in when #archive opens. */
+const archive = html.match(/<section id="archive">([\s\S]*?)<\/section>/)[1];
+
+test("the archive is a shelf with an illustrated print for every project", () => {
+  const prints = [...archive.matchAll(/<(a|div) class="print print-([\w-]+)"[^>]*>([\s\S]*?)<\/\1>/g)];
+  assert.deepEqual(prints.map((m) => m[2]), ["two-eyes", "atmo", "notify"]);
+  for (const [, , name, inner] of prints) {
+    assert.match(inner, /<svg class="print-art"[^>]*aria-hidden="true"/, name);
+    assert.match(inner, /<span class="print-title">[^<]+<\/span>/, name);
+  }
+});
+
+test("the print index lists every print on the shelf, and nothing else", () => {
+  const onShelf = [...archive.matchAll(/class="print print-[\w-]+"[^>]*data-print="([\w-]+)"/g)].map((m) => m[1]);
+  const inIndex = [...archive.matchAll(/<button type="button" data-goto="([\w-]+)">/g)].map((m) => m[1]);
+  assert.equal(onShelf.length, 3);
+  assert.deepEqual(inIndex, onShelf);
+});
+
+test("nothing in the archive carries an id, since the panel copies it and ids must stay unique", () => {
+  assert.doesNotMatch(archive, /\sid="/);
 });

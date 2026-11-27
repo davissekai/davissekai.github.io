@@ -1,0 +1,146 @@
+/*
+ * The project shelf in the archive panel: one print per project, standing on a wooden shelf
+ * that slides sideways. The prints share the home cards' ink tokens (cards.css) and keep their
+ * own palettes here, each with a night version.
+ */
+
+/* The archive panel opens wide so several prints show at once. */
+.panel.panel-wide { width: min(70rem, 96vw); }
+
+.shelf-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
+.shelf-hint { margin: 0; color: var(--muted); }
+
+/* The print index: a small pill that folds out a list of the prints. */
+.shelf-index { position: relative; z-index: 2; }
+.shelf-index summary {
+  list-style: none; cursor: pointer;
+  padding: 0.45rem 0.95rem; border: 1px solid var(--line); border-radius: 999px;
+  font-size: 0.92rem;
+}
+.shelf-index summary::-webkit-details-marker { display: none; }
+.shelf-index summary::after { content: "⌄"; margin-left: 0.5rem; font-size: 0.8em; }
+.shelf-index[open] summary::after { content: "⌃"; }
+.shelf-index ol {
+  position: absolute; right: 0; top: calc(100% + 0.4rem);
+  min-width: 15rem; margin: 0; padding: 0.35rem; list-style: none;
+  border-radius: 12px; background: var(--paper); box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);
+}
+.shelf-index button {
+  display: block; width: 100%; padding: 0.5rem 0.7rem; border: 0; border-radius: 8px;
+  background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+}
+.shelf-index button:hover { background: var(--line); }
+
+/* The track scrolls sideways; its top padding leaves room for a print to lift on hover. */
+.shelf-track {
+  display: flex; align-items: flex-end; justify-content: safe center; gap: clamp(0.8rem, 2vw, 1.4rem);
+  margin: 0 -1.6rem; padding: 1.6rem 1.6rem 0;
+  overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 1.6rem, #000 calc(100% - 1.6rem), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 1.6rem, #000 calc(100% - 1.6rem), transparent);
+}
+.shelf-board {
+  position: relative; height: 1.1rem; margin: 0 -0.6rem;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #c99a6a, #a5734a 45%, #7d5333);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+:root[data-phase="night"] .shelf-board { background: linear-gradient(180deg, #7a5a3e, #5b3f2a 45%, #3e2a1c); }
+
+.print {
+  position: relative; flex: 0 0 auto;
+  display: flex; flex-direction: column;
+  width: clamp(12.5rem, 22vw, 15.5rem); overflow: hidden;
+  color: var(--band-ink); text-decoration: none;
+  border-radius: 4px 4px 2px 2px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+  transform: rotate(var(--tilt, 0deg)); transform-origin: bottom center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+/* Each print leans a little differently, like prints propped up by hand. */
+.print:nth-child(5n + 1) { --tilt: -1.4deg; }
+.print:nth-child(5n + 2) { --tilt: 0.9deg; }
+.print:nth-child(5n + 3) { --tilt: -0.4deg; }
+.print:nth-child(5n + 4) { --tilt: 1.3deg; }
+.print:nth-child(5n + 5) { --tilt: -0.8deg; }
+a.print:hover, a.print:focus-visible { transform: translateY(-0.9rem) rotate(0deg); box-shadow: 0 22px 40px rgba(0, 0, 0, 0.3); }
+.print:focus-visible { box-shadow: 0 22px 40px rgba(0, 0, 0, 0.3), 0 0 0 5px rgba(255, 255, 255, 0.6); }
+/* A folded corner, so each one reads as a paper print. */
+.print::before {
+  content: ""; position: absolute; top: 0; right: 0; z-index: 1;
+  width: 0.8rem; height: 0.8rem;
+  background: linear-gradient(225deg, transparent 50%, var(--ill-paper) 50%);
+  filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.25));
+}
+.print::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .35 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply; opacity: 0.2;
+}
+.print-art { display: block; width: 100%; height: auto; aspect-ratio: 8 / 9; }
+.print-band {
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  min-height: 7.4rem; padding: 0.65rem 0.8rem 0.85rem;
+  background: var(--p-band); text-align: center;
+}
+.print .label { color: inherit; opacity: 0.7; }
+.print-title { font-size: 1.3rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.015em; }
+.print-aside {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  margin-top: 0.2rem; font-size: 0.8rem; line-height: 1.35; opacity: 0.78;
+}
+
+/* The bell on the notify-crossx print rings when the print is picked up. */
+@media (prefers-reduced-motion: no-preference) {
+  .print:hover .ill-ring, .print:focus-visible .ill-ring { animation: ill-ring 0.9s ease-out infinite; }
+}
+@keyframes ill-ring { 0% { opacity: 1; } 100% { opacity: 0.15; } }
+
+/* Palettes. */
+.print-two-eyes {
+  --p-band: #e1efe9;
+  --p-land: #a7c77f; --p-land-2: #c9d98f; --p-land-deep: #5d8a4a; --p-tree: #4f7f4a;
+  --p-river: #a87a4e; --p-bank: #d8c79a; --p-scar: #e09a5a; --p-scar-2: #c4703f; --p-pit: #5aa6a0;
+  --p-panel: #3e6f9c;
+}
+.print-atmo {
+  --p-band: #e3ebf6;
+  --p-sky-1: #9cc8e6; --p-sky-2: #bcdaee; --p-sky-3: #e4eef0;
+  --p-sea: #3f7fb4; --p-continent: #8cbf6a; --p-hill: #8fbf73; --p-hill-2: #6ea05c;
+}
+.print-notify {
+  --p-band: #ece6f4;
+  --p-wall: #f0d9b8; --p-frame: #fbf3e2; --p-sky-1: #9cc8e6; --p-sky-2: #c7e0ee; --p-hill: #86b45e; --p-sun: #f7c95a;
+  --p-leaf: #5d9a5a; --p-screen: #22303f; --p-code: #8fb7d8; --p-ok: #8fd08a;
+}
+
+:root[data-phase="night"] .print-two-eyes {
+  --p-band: #1f3330;
+  --p-land: #2d4a37; --p-land-2: #3a5638; --p-land-deep: #17291f; --p-tree: #142a1f;
+  --p-river: #5e4732; --p-bank: #4a4a3a; --p-scar: #7a5236; --p-scar-2: #5e3d2a; --p-pit: #2f5a64;
+  --p-panel: #2a4f78;
+}
+:root[data-phase="night"] .print-atmo {
+  --p-band: #1d2a40;
+  --p-sky-1: #0b1430; --p-sky-2: #142246; --p-sky-3: #23395f;
+  --p-sea: #1d3e66; --p-continent: #2f4a3a; --p-hill: #1f3529; --p-hill-2: #15261d;
+}
+:root[data-phase="night"] .print-notify {
+  --p-band: #2a2438;
+  --p-wall: #3a3040; --p-frame: #b8ae98; --p-sky-1: #0b1430; --p-sky-2: #1d2f55; --p-hill: #1f3529; --p-sun: #f1e6c8;
+  --p-leaf: #3a6040; --p-screen: #121a26; --p-code: #6f97b8; --p-ok: #8fd08a;
+}
+
+/* Phones: smaller prints, and the description is left to the title. */
+@media (max-width: 600px) {
+  .print { width: 11rem; }
+  .print-band { min-height: 0; }
+  .print-aside { display: none; }
+  /* The index pill wraps under the hint on the left, so its list opens rightwards. */
+  .shelf-index ol { right: auto; left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .print { transition: none; }
+}

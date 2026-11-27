@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="cards.css">
+  <link rel="stylesheet" href="shelf.css">
   <link rel="modulepreload" href="js/router.js">
   <link rel="modulepreload" href="js/time-of-day.js">
   <link rel="modulepreload" href="js/scenes.js">
@@ -23,6 +24,7 @@
   <link rel="modulepreload" href="js/dates.js">
   <link rel="modulepreload" href="js/backdrop.js">
   <link rel="modulepreload" href="js/panel.js">
+  <link rel="modulepreload" href="js/shelf.js">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -43,6 +45,17 @@
         <!-- Shared by all three prints: a print filter (cut-paper edges, ink wash, grain), a stipple, and a pine. -->
         <svg class="ill-defs" width="0" height="0" aria-hidden="true" focusable="false">
           <filter id="ill-print" x="-10" y="-10" width="260" height="180" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="wobble"/>
+            <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="cut"/>
+            <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="9" result="mottle"/>
+            <feColorMatrix in="mottle" values="-.2 0 0 0 1.08  -.2 0 0 0 1.08  -.2 0 0 0 1.08  0 0 0 0 1" result="density"/>
+            <feBlend in="cut" in2="density" mode="multiply" result="inked"/>
+            <feTurbulence type="fractalNoise" baseFrequency=".9" seed="2" result="grain"/>
+            <feColorMatrix in="grain" values="0 0 0 0 1  0 0 0 0 .98  0 0 0 0 .92  2.4 0 0 0 -1.68" result="specks"/>
+            <feMerge><feMergeNode in="inked"/><feMergeNode in="specks"/></feMerge>
+          </filter>
+          <!-- The same print filter over the taller project prints on the archive shelf. -->
+          <filter id="ill-print-tall" x="-10" y="-10" width="260" height="290" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
             <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="wobble"/>
             <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.2" xChannelSelector="R" yChannelSelector="G" result="cut"/>
             <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="9" result="mottle"/>
@@ -321,13 +334,164 @@
       <p>Have a question you think I should chase? <a href="mailto:davisdey001@gmail.com">Write to me</a>, or find me on <a href="https://x.com/Davis_P1" target="_blank" rel="noopener noreferrer">X</a> and <a href="https://github.com/davissekai" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
     </section>
     <section id="archive">
-      <ol class="entries">
-        <li><a href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">remote sensing</span><span class="title">Two Eyes</span><span class="aside">A phone video of a muddy river, matched to the mining scar upstream in Sentinel-2.</span></a></li>
-        <li><a href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer"><span class="label">climate ai</span><span class="title">Atmo</span><span class="aside">Ask the climate anything: Article 6, loss and damage, adaptation finance, answered plainly.</span></a></li>
-        <li><a href="https://mvp-six-vert.vercel.app/" target="_blank" rel="noopener noreferrer"><span class="label">climate game</span><span class="title">VentureQuest</span><span class="aside">Run a climate startup and live with every trade-off.</span></a></li>
-        <li><a href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer"><span class="label">developer tool</span><span class="title">notify-crossx</span><span class="aside">Pings your desktop when your AI coding agent is done or needs you.</span></a></li>
-        <li><span class="row"><span class="label">research in progress</span><span class="title">Carbon Markets for SMEs</span><span class="aside">What it would take for small Ghanaian businesses to enter carbon markets on their own terms.</span></span></li>
-      </ol>
+      <div class="shelf">
+        <div class="shelf-head">
+          <p class="shelf-hint">Slide along the shelf. Pick a print to try it.</p>
+          <details class="shelf-index">
+            <summary>Print index</summary>
+            <ol>
+              <li><button type="button" data-goto="two-eyes">Two Eyes</button></li>
+              <li><button type="button" data-goto="atmo">Atmo</button></li>
+              <li><button type="button" data-goto="notify">notify-crossx</button></li>
+            </ol>
+          </details>
+        </div>
+        <div class="shelf-track">
+          <a class="print print-two-eyes" data-print="two-eyes" href="https://two-eyes-vert.vercel.app" target="_blank" rel="noopener noreferrer">
+            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+              <g filter="url(#ill-print-tall)">
+                <rect x="-10" y="-10" width="260" height="290" fill="var(--p-land)"/>
+                <path d="M120 70l70-18 40 60-80 22ZM-10 150l60-14 22 70-82 20ZM150 160l90-10v70l-70 12Z" fill="var(--p-land-2)"/>
+                <path d="M120 70l70-18 40 60-80 22Z" fill="url(#ill-dots)" fill-opacity=".14"/>
+                <path d="M126 82l64-16M134 96l66-17M142 110l64-17" stroke="var(--p-land-deep)" stroke-width="1" stroke-opacity=".5"/>
+                <ellipse cx="74" cy="44" rx="40" ry="26" fill="var(--p-scar)"/>
+                <ellipse cx="74" cy="45" rx="29" ry="18" fill="var(--p-scar-2)"/>
+                <ellipse cx="74" cy="46" rx="18" ry="10" fill="var(--p-scar)"/>
+                <ellipse cx="72" cy="47" rx="9" ry="4.5" fill="var(--p-pit)"/>
+                <path d="M50 30q24-12 48 0M42 44q32-18 64 0" fill="none" stroke="var(--ill-paper)" stroke-width=".8" stroke-opacity=".5" stroke-dasharray="3 3"/>
+                <path d="M100 56q10 14 0 30" fill="none" stroke="var(--p-river)" stroke-width="6" stroke-linecap="round"/>
+                <path d="M118 -10C130 30 92 62 102 92S170 130 140 172 70 222 104 290" fill="none" stroke="var(--p-bank)" stroke-width="26" stroke-linecap="round"/>
+                <path d="M118 -10C130 30 92 62 102 92S170 130 140 172 70 222 104 290" fill="none" stroke="var(--p-river)" stroke-width="17" stroke-linecap="round"/>
+                <path d="M110 80c4 8 14 14 24 20M136 160c-8 12-22 22-34 32" fill="none" stroke="var(--ill-paper)" stroke-width="1.4" stroke-opacity=".45" stroke-linecap="round" stroke-dasharray="6 5"/>
+                <g fill="var(--p-tree)">
+                  <circle cx="80" cy="100" r="6"/><circle cx="88" cy="110" r="5"/><circle cx="76" cy="114" r="4.5"/><circle cx="168" cy="140" r="6"/><circle cx="176" cy="150" r="4.5"/><circle cx="60" cy="200" r="6"/><circle cx="70" cy="210" r="5"/><circle cx="20" cy="110" r="5"/><circle cx="30" cy="118" r="4"/><circle cx="208" cy="30" r="5"/><circle cx="218" cy="40" r="4"/>
+                </g>
+                <g fill="var(--ill-ink)" fill-opacity=".18"><circle cx="82" cy="104" r="3"/><circle cx="170" cy="144" r="3"/><circle cx="62" cy="204" r="3"/></g>
+                <path d="M176 54L50 30 100 66Z" fill="var(--ill-glow)" fill-opacity=".22"/>
+                <path d="M176 54L50 30M176 54L100 66" stroke="var(--ill-paper)" stroke-width=".8" stroke-dasharray="2 3"/>
+                <g transform="translate(186 50) rotate(-24)">
+                  <path d="M-36-6h24v12h-24ZM12-6h24v12H12Z" fill="var(--p-panel)"/>
+                  <path d="M-30-6v12M-24-6v12M-18-6v12M18-6v12M24-6v12M30-6v12M-36 0h24M12 0h24" stroke="var(--ill-paper)" stroke-width=".6" stroke-opacity=".6"/>
+                  <path d="M-12 0h24" stroke="var(--ill-ink)" stroke-width="1.4"/>
+                  <rect x="-7" y="-10" width="14" height="20" rx="2" fill="var(--ill-accent)"/>
+                  <path d="M-7-10h14v6H-7Z" fill="var(--ill-paper)" fill-opacity=".35"/>
+                  <circle cy="13" r="3.4" fill="var(--ill-paper)"/>
+                  <circle cy="13" r="1.4" fill="var(--ill-ink)"/>
+                </g>
+                <g transform="translate(170 214) rotate(10)">
+                  <rect x="-26" y="-44" width="52" height="88" rx="8" fill="var(--ill-ink)"/>
+                  <rect x="-21" y="-36" width="42" height="70" rx="2" fill="var(--p-land-2)"/>
+                  <path d="M-21-6C-8-12 6 0 21-8V14C6 22-8 10-21 16Z" fill="var(--p-river)"/>
+                  <path d="M-14 2q6 3 12 0M2 6q6-3 12 0" stroke="var(--ill-paper)" stroke-width="1" stroke-opacity=".5" fill="none"/>
+                  <path d="M-16-30h6M-16-30v6M16-30h-6M16-30v6M-16 28h6M-16 28v-6M16 28h-6M16 28v-6" stroke="var(--ill-paper)" stroke-width="1.2"/>
+                  <circle cx="11" cy="-31" r="2.4" fill="var(--ill-red)"/>
+                  <circle cy="39" r="2.4" fill="var(--ill-paper)" fill-opacity=".4"/>
+                </g>
+              </g>
+            </svg>
+            <span class="print-band"><span class="label">remote sensing</span><span class="print-title">Two Eyes</span><span class="print-aside">A phone video of a muddy river, matched to the mining scar upstream in Sentinel-2.</span></span>
+          </a>
+          <a class="print print-atmo" data-print="atmo" href="https://atmo-v2.vercel.app" target="_blank" rel="noopener noreferrer">
+            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+              <g filter="url(#ill-print-tall)">
+                <rect x="-10" y="-10" width="260" height="290" fill="var(--p-sky-1)"/>
+                <rect x="-10" y="70" width="260" height="210" fill="var(--p-sky-2)"/>
+                <rect x="-10" y="150" width="260" height="130" fill="var(--p-sky-3)"/>
+                <g class="ill-stars" fill="var(--ill-paper)">
+                  <circle cx="20" cy="20" r="1"/><circle cx="40" cy="60" r=".8"/><circle cx="210" cy="24" r="1.1"/><circle cx="224" cy="80" r=".8"/><circle cx="30" cy="130" r=".7"/><circle cx="200" cy="140" r=".9"/><circle cx="110" cy="12" r=".8"/>
+                  <path d="M186 50l1 3 3 1-3 1-1 3-1-3-3-1 3-1ZM54 96l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8Z"/>
+                </g>
+                <circle cx="120" cy="104" r="80" fill="var(--ill-paper)" fill-opacity=".12"/>
+                <circle cx="120" cy="104" r="70" fill="var(--ill-paper)" fill-opacity=".14"/>
+                <ellipse cx="120" cy="104" rx="88" ry="20" fill="none" stroke="var(--ill-paper)" stroke-width="1" stroke-opacity=".6" stroke-dasharray="4 4" transform="rotate(-14 120 104)"/>
+                <circle cx="120" cy="104" r="58" fill="var(--p-sea)"/>
+                <path d="M76 70c10-10 26-12 34-4 6 6-2 14 6 20s20 2 22 12-10 16-20 14-10 10-18 12-16-6-22-16-10-26-2-38ZM140 56c10-4 22 0 26 8s-4 12 2 18 12 2 12 12-8 22-16 26-6-10-12-14-14-2-16-10 4-14 0-22-6-14 4-18Z" fill="var(--p-continent)"/>
+                <path d="M96 140c8-6 18-4 22 2s14 2 18 8-10 10-20 8-24-10-20-18Z" fill="var(--p-continent)"/>
+                <path d="M62 104a58 58 0 0 0 116 0 58 58 0 0 1-116 0Z" fill="var(--ill-ink)" fill-opacity=".14"/>
+                <path d="M120 46a58 58 0 0 1 58 58 58 58 0 0 0-58-58Z" fill="var(--ill-ink)" fill-opacity=".14"/>
+                <path d="M120 104a58 58 0 0 0 58 0V162H62V104a58 58 0 0 0 58 0Z" fill="url(#ill-dots)" fill-opacity=".1"/>
+                <path d="M70 84c20-8 34 4 52-2s26-10 44-2M66 122c18 6 36-6 54 0s30 8 48 2" fill="none" stroke="var(--ill-paper)" stroke-width="3" stroke-linecap="round" stroke-opacity=".85"/>
+                <path d="M100 66c6-2 12 0 16 4M142 136c6 2 12 0 16-4" fill="none" stroke="var(--ill-paper)" stroke-width="2" stroke-linecap="round" stroke-opacity=".7"/>
+                <g class="ill-stars" fill="var(--ill-glow)"><circle cx="96" cy="88" r="1.2"/><circle cx="104" cy="96" r=".9"/><circle cx="150" cy="80" r="1.2"/><circle cx="158" cy="92" r="1"/><circle cx="110" cy="144" r="1"/></g>
+                <path d="M-10 216C40 196 90 198 130 210S210 222 250 208V280H-10Z" fill="var(--p-hill)"/>
+                <path d="M-10 240C50 226 110 232 160 242S220 246 250 240V280H-10Z" fill="var(--p-hill-2)"/>
+                <path d="M-10 240C50 226 110 232 160 242S220 246 250 240V280H-10Z" fill="url(#ill-dots)" fill-opacity=".14"/>
+                <g fill="var(--ill-bloom-1)"><circle cx="30" cy="250" r="1.6"/><circle cx="90" cy="254" r="1.4"/><circle cx="200" cy="256" r="1.6"/></g>
+                <g fill="var(--ill-bloom-2)"><circle cx="54" cy="258" r="1.5"/><circle cx="150" cy="260" r="1.4"/><circle cx="226" cy="252" r="1.3"/></g>
+                <g transform="translate(70 214)">
+                  <ellipse cy=".6" rx="7" ry="1.5" fill="var(--ill-ink)" fill-opacity=".2"/>
+                  <path d="M-4 0q-1-5 2-7M4 0q1-5-2-7" stroke="var(--ill-ink)" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  <path d="M-4-6l.8-9q3.2-2.4 6.4 0l.8 9Z" fill="var(--ill-cover)"/>
+                  <path d="M3-13l5-8" stroke="var(--ill-cover)" stroke-width="2" stroke-linecap="round"/>
+                  <circle cy="-18" r="3" fill="var(--ill-skin)"/>
+                  <path d="M-3-18.3a3 3 0 0 1 6 0Z" fill="var(--ill-ink)"/>
+                </g>
+                <g transform="translate(108 172)">
+                  <path d="M-4 0h56a8 8 0 0 1 8 8v20a8 8 0 0 1-8 8H8l-14 10 4-10h-2a8 8 0 0 1-8-8V8a8 8 0 0 1 8-8Z" fill="var(--ill-paper)"/>
+                  <path d="M18 12a6 6 0 1 1 7 6v4" fill="none" stroke="var(--ill-ink)" stroke-width="2.6" stroke-linecap="round"/>
+                  <circle cx="25" cy="28.5" r="1.7" fill="var(--ill-ink)"/>
+                  <path d="M36 12h12M36 18h9M36 24h11" stroke="var(--p-sea)" stroke-width="1.6" stroke-linecap="round" stroke-opacity=".7"/>
+                </g>
+              </g>
+            </svg>
+            <span class="print-band"><span class="label">climate ai</span><span class="print-title">Atmo</span><span class="print-aside">Ask the climate anything: Article 6, loss and damage, adaptation finance, answered plainly.</span></span>
+          </a>
+          <a class="print print-notify" data-print="notify" href="https://github.com/davissekai/opencode-notify-crossx" target="_blank" rel="noopener noreferrer">
+            <svg class="print-art" viewBox="0 0 240 270" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+              <g filter="url(#ill-print-tall)">
+                <rect x="-10" y="-10" width="260" height="290" fill="var(--p-wall)"/>
+                <rect x="-10" y="-10" width="260" height="290" fill="url(#ill-dots)" fill-opacity=".06"/>
+                <rect x="132" y="18" width="88" height="96" rx="3" fill="var(--p-frame)"/>
+                <rect x="138" y="24" width="76" height="84" fill="var(--p-sky-1)"/>
+                <rect x="138" y="70" width="76" height="38" fill="var(--p-sky-2)"/>
+                <path d="M138 96q18-12 38-4t38-6v22h-76Z" fill="var(--p-hill)"/>
+                <circle cx="190" cy="46" r="9" fill="var(--p-sun)"/>
+                <g class="ill-stars" fill="var(--ill-paper)"><circle cx="150" cy="36" r=".9"/><circle cx="166" cy="52" r=".7"/><circle cx="206" cy="66" r=".8"/><circle cx="160" cy="30" r=".6"/></g>
+                <path d="M176 24v84M138 66h76" stroke="var(--p-frame)" stroke-width="4"/>
+                <rect x="-10" y="170" width="260" height="110" fill="var(--ill-wood-light)"/>
+                <rect x="-10" y="170" width="260" height="6" fill="var(--ill-wood)"/>
+                <path d="M-10 196c60-3 140 3 260-2M-10 226c80 3 160-3 260 2M-10 254c60-2 150 2 260-1" fill="none" stroke="var(--ill-wood)" stroke-opacity=".35" stroke-width="1.2"/>
+                <g transform="translate(36 140)">
+                  <path d="M-10 30h20l-3-14h-14Z" fill="var(--ill-red)"/>
+                  <path d="M0 16c-2-10-12-14-16-24 8 2 14 8 16 16 0-14 4-24 12-30-2 10-6 20-10 30 4-8 12-12 18-12-6 6-12 12-20 20Z" fill="var(--p-leaf)"/>
+                </g>
+                <g transform="translate(110 172)">
+                  <path d="M-62 0l8-82h108l8 82Z" fill="var(--ill-ink)"/>
+                  <path d="M-55-6l7-70h96l7 70Z" fill="var(--p-screen)"/>
+                  <path d="M-46-62h30M-46-52h50M-46-42h22M-46-32h42M-46-22h18" stroke="var(--p-code)" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M-46-12l5 5 10-10" stroke="var(--p-ok)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M-26-10h20" stroke="var(--p-ok)" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M-72 0h144l-6 10h-132Z" fill="var(--ill-stone)"/>
+                  <path d="M-14 4h28" stroke="var(--ill-ink)" stroke-opacity=".3" stroke-width="2" stroke-linecap="round"/>
+                </g>
+                <g transform="translate(136 82) rotate(4)">
+                  <rect x="-2" y="2" width="70" height="30" rx="5" fill="var(--ill-ink)" fill-opacity=".3"/>
+                  <rect width="70" height="30" rx="5" fill="var(--ill-paper)"/>
+                  <circle cx="13" cy="15" r="7" fill="var(--ill-accent)"/>
+                  <path d="M10 15l2.4 2.4 4.6-4.6" stroke="var(--ill-paper)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                  <path d="M26 11h34M26 19h22" stroke="var(--ill-ink)" stroke-opacity=".5" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+                <g transform="translate(196 222)">
+                  <ellipse cy="12" rx="30" ry="5" fill="var(--ill-ink)" fill-opacity=".25"/>
+                  <rect x="-28" y="2" width="56" height="10" rx="2" fill="var(--ill-wood)"/>
+                  <path d="M-22 2a22 22 0 0 1 44 0Z" fill="var(--ill-accent)"/>
+                  <path d="M-14-6a16 16 0 0 1 10-10" fill="none" stroke="var(--ill-paper)" stroke-width="2.4" stroke-linecap="round" stroke-opacity=".6"/>
+                  <path d="M-3-20h6v-4h-6Z" fill="var(--ill-ink)"/>
+                  <ellipse cy="-25" rx="6" ry="2" fill="var(--ill-ink)"/>
+                  <path class="ill-ring" d="M-34-26q-6-8 0-16M34-26q6-8 0-16M-42-20q-10-12 0-28M42-20q10-12 0-28" fill="none" stroke="var(--ill-accent)" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+                <g transform="translate(64 246) rotate(-8)">
+                  <path d="M-12-14h22v20a6 6 0 0 1-6 6h-10a6 6 0 0 1-6-6Z" fill="var(--ill-cover)"/>
+                  <path d="M10-8h4a4 4 0 0 1 0 10h-4" fill="none" stroke="var(--ill-cover)" stroke-width="2.6"/>
+                  <ellipse cx="-1" cy="-14" rx="11" ry="2.6" fill="var(--ill-wood)"/>
+                </g>
+              </g>
+            </svg>
+            <span class="print-band"><span class="label">developer tool</span><span class="print-title">notify-crossx</span><span class="print-aside">Pings your desktop when your AI coding agent is done or needs you.</span></span>
+          </a>
+        </div>
+        <div class="shelf-board" aria-hidden="true"></div>
+      </div>
     </section>
   </div>
 
