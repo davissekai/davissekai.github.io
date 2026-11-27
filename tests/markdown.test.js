@@ -24,7 +24,7 @@ test("links: external ones open in a new tab, internal ones don't", () => {
     renderMarkdown("[x](https://e.com/a?b=1&c=2)"),
     '<p><a href="https://e.com/a?b=1&amp;c=2" rel="noopener" target="_blank">x</a></p>',
   );
-  assert.equal(renderMarkdown("[q](#questions)"), '<p><a href="#questions">q</a></p>');
+  assert.equal(renderMarkdown("[q](#notes)"), '<p><a href="#notes">q</a></p>');
 });
 
 test("raw HTML is shown as text, never run", () => {
