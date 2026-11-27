@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { SCENES, sceneFor, allScenes } from "../js/scenes.js";
+import { SCENES, sceneFor, allScenes, backdropView } from "../js/scenes.js";
 
 test("home, notes, questions and about each have a day and a night photo", () => {
   for (const view of ["home", "notes", "questions", "about"]) {
@@ -27,4 +27,18 @@ test("every photo is listed exactly once for preloading", () => {
   const all = allScenes();
   assert.equal(all.length, 6);
   assert.equal(new Set(all).size, 6);
+});
+
+test("closing a panel keeps that panel's photo up instead of going back to home's", () => {
+  assert.equal(backdropView("home", "notes"), "notes");
+  assert.equal(backdropView("home", "questions"), "questions");
+});
+
+test("opening a panel shows that panel's photo, whatever was up before", () => {
+  assert.equal(backdropView("questions", "notes"), "questions");
+  assert.equal(backdropView("archive", "notes"), "archive");
+});
+
+test("arriving on home with nothing shown yet gets home's photo", () => {
+  assert.equal(backdropView("home", "home"), "home");
 });
