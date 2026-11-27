@@ -1,10 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#3f8fdc"/>
-  <g fill="#fff" opacity="0.92">
-    <circle cx="11" cy="12" r="3.5"/>
-    <circle cx="16" cy="10.5" r="4.5"/>
-    <circle cx="21" cy="12.5" r="3.5"/>
-    <rect x="9" y="12" width="15" height="4" rx="2"/>
+  <!-- A postcard, tilted as if just dropped on a desk: scribbled message, address lines, and an Earth stamp. -->
+  <g transform="rotate(-10 16 16)">
+    <rect x="2" y="7" width="28" height="19" rx="1.5" fill="#fff3df" stroke="#c9a77f" stroke-width=".8"/>
+    <path d="M16 10v13" stroke="#c9a77f" stroke-width=".8"/>
+    <path d="M5 12.5q2-1 4 0t4 0M5 16q2-1 4 0t4 0M5 19.5q2-1 4 0t2 0" fill="none" stroke="#2f4466" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M18.5 19h8M18.5 22h6" stroke="#2f4466" stroke-width="1.1" stroke-linecap="round"/>
+    <rect x="21" y="9" width="6.5" height="7.5" fill="#e09a5a" stroke="#fff3df" stroke-width="1" stroke-dasharray="1 .7"/>
+    <circle cx="24.25" cy="12.75" r="2.3" fill="#3f7fb4"/>
+    <path d="M22.6 12q1-1 2 0t1.4-.6M23.5 14.4q1 .5 2-.4" fill="none" stroke="#8cbf6a" stroke-width="1.1" stroke-linecap="round"/>
   </g>
-  <path d="M0 32V24Q8 18 16 24T32 22V32Z" fill="#4c8a3f"/>
 </svg>
